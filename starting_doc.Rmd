@@ -1,0 +1,71 @@
+---
+title: "Getting Started Doc"
+author: "Your Name Here"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document: 
+    toc: yes
+    toc_depth: 3
+    number_sections: yes
+    theme: united
+    highlight: tango
+  pdf_document: 
+    toc: yes
+    toc_depth: '3'
+    
+---
+
+This is a template document to get you started. 
+
+## Troubleshooting:
+* Make sure you have all libraries installed, otherwise the loading functions will fail.
+* Path names will fail if your `.Rproj` file is not located in the top level of you project repository
+  * For example, it should be located here: `/Path_to_Project/ProjectName/<name_of_project>.Rproj`
+
+
+## Setup environment
+
+This chunk of code will need to be run prior to running any of the scripts in `Code/Analysis` directory.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE)  # Sets default knit settings for document
+
+# Check project file location is in correct directory
+proj.path <- getwd()
+
+# SourceFolder function
+source(paste0(proj.path,"/Code/Functions/StartFunctions/sourceFolder.R"))
+
+# Import all helper functions found in `/Functions`
+sourceFolder(paste0(proj.path,"/Code/Functions"), T)
+
+
+
+# Important Paths
+path.code <- paste0(proj.path,"/Code")
+path.data <- paste0(proj.path,"/Data")
+path.objects <- paste0(proj.path, "/Data/R_objects")
+path.input <- paste0(proj.path,"/Data/Input") 
+path.results <- paste0(proj.path,"/Results") 
+
+# Analysis ID
+analysis.ID <- paste0(
+  "ZF-Heater2022_",  # Data subsetted? If so, how? "<name>_"
+  Sys.Date()#,  # Date of analysis
+  # "_rf"  # Extra flags to differentiate analysis from prior analyses
+)
+
+# Load Environment
+## This loads all the data required for analysis.
+# 
+# load(file.path(path.data,
+#                "R_objects/RoL_HeaterTrial_PostMicrobiomeProcessing_ENV_2024-02-21.RData"
+#                ))
+
+
+```
+
+
+## Analyses
+
+After successfully loading libraries and data, you can run the individual analylsis scripts found within `Code/Analysis`.

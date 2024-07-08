@@ -1,0 +1,436 @@
+---
+title: "Cleaning Dada2 Output"
+author: "Michael Sieler"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+## Setup environment
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE)  # Sets default knit settings for document
+
+# Start script timer
+print("Starting script.")
+start_time <- Sys.time()
+
+# Check project file location is in correct directory
+## Path to project directory (Rproject file should be stored in "~/Code")
+if(grepl("/Code", getwd())){
+  proj.path <- getwd()
+} else(
+  # Script will stop if project file is not located in ~/Code directory
+  stop("Project file (`.Rproj`) is not located in `~/Code` directory. 
+       \t**Exiting script.")
+)
+
+
+# Helper Scripts
+
+## Load libraries
+source(paste0(proj.path,"/HelperScripts/libraries.R"))
+
+## Load functions
+source(paste0(proj.path,"/HelperScripts/functions_2.R"))
+
+## Load custom plot settings
+source(paste0(proj.path,"/HelperScripts/plot_settings.R"))
+
+# Set important paths
+
+## Path to data files/sub-folders
+data.path <- check_proj_struct(proj.path,  # Project path
+                               "/../Data")  # Sub-directory
+
+## Path to Robjects (Renv, Rds, Rdata, etc.) saved here
+objects.path <- check_proj_struct(data.path,  # Project path
+                                  "/Clean/Robjects")  # Sub-directory
+
+## Path to Output (Figures, Tables)
+output.path <- check_proj_struct(proj.path,  # Project path
+                                 "/../Output")  # Sub-directory
+
+
+# Save Environment 
+## save_env(objects.path)
+
+# Check if environment file exists and load newest 
+# load_env(objects.path)
+
+analysis.ID <- paste0(
+  "ZF-DietStudy_",  # Data subsetted? If so, how? "<name>_"
+  Sys.Date()  # Date of analysis
+)
+
+```
+
+## Import 
+
+### Load Uncleaned PS Object
+```{r load-uncleaned-ps-obj}
+# File contains info on important variables, analyses and output objects
+
+# ps0 <- readRDS("/Users/michaelsieler/Dropbox/Mac (2)/Documents/Project_Repos/Plug-n-Chug-Microbiome-16S-Data-Analysis/Data/Raw/Robjects_raw/phyloseq.rds")
+ps0 <- readRDS(paste0(data.path, "/Clean/Robjects_raw/phyloseq.rds"))
+# View(sample.data.frame(ps0))
+```
+
+## Variables
+
+### Rename Columns and Refactor
+
+#### Rename Columns
+```{r}
+colnames(sample_data(ps0)) <- c("Facility", "Sample.Date" , "Age", "Timepoint", "Treatment", "Diet",  "Tank", "Sex" , "Weight", "Length", "Width", "Body.Condition", "Pathology.Results", "Dose" ,"Severity.Score", "Coelom", "Ovary" ,"Kidney", "Lumen.Colonization", "Notes" )
+
+View(sample.data.frame(ps0))
+
+```
+
+#### Remove Controls
+
+```{r}
+# Removing kit controls/blanks
+ps0 <- subset_samples(ps0, !is.na(Age))
+
+View(sample.data.frame(ps0))
+```
+
+
+
+
+#### Rename Cells
+```{r}
+
+
+sample_data(ps0) <- sample.data.frame(ps0) %>%
+  mutate(Exposure = case_when(
+    Treatment == "control" ~ "Unexp",
+    Treatment != "control" ~ "Exp"), 
+    .after = Treatment)
+
+sample_data(ps0) <- sample.data.frame(ps0) %>%
+  mutate(Infection.Status = case_when(
+    Pathology.Results == "negative" ~ "Absent",
+    Pathology.Results != "negative" ~ "Present",
+    is.na(Pathology.Results) ~ "0"), 
+    .before = Pathology.Results)
+
+
+# Treatment: control, dose 1, dose 2
+sample_data(ps0)$Treatment[sample_data(ps0)$Treatment=="control"] <- "Control"
+sample_data(ps0)$Treatment[sample_data(ps0)$Treatment=="exposed/dose 1"] <- "Dose_1"
+sample_data(ps0)$Treatment[sample_data(ps0)$Treatment=="exposed/dose 2"] <- "Dose_2"
+
+# Diet: Zirc/Gemma/Watts
+sample_data(ps0)$Diet[sample_data(ps0)$Diet=="zirc"] <- "ZIRC"
+sample_data(ps0)$Diet[sample_data(ps0)$Diet=="gemma"] <- "Gemma"
+sample_data(ps0)$Diet[sample_data(ps0)$Diet=="watts"] <- "Watts"
+
+# Timepoint: Initial/Final
+sample_data(ps0)$Timepoint[sample_data(ps0)$Timepoint=="4 mo interfacility/myco"] <- "3mpf"
+sample_data(ps0)$Timepoint[sample_data(ps0)$Timepoint=="15 wpe M. chelonae/ 7 mo."] <- "6mpf"
+
+# Infection Status
+# sample_data(ps0)$Infection.Status[sample_data(ps0)$Infection.Status==0] <- "0"
+# sample_data(ps0)$Infection.Status[sample_data(ps0)$Infection.Status==1] <- "1"
+
+View(sample.data.frame(ps0))
+```
+
+
+#### Add missing physiological data
+
+```{r}
+# ps.old <- readRDS("/Users/michaelsieler/Dropbox/Mac (2)/Documents/Project_Repos/Plug-n-Chug-Microbiome-16S-Data-Analysis/Data/Clean/Robjects/phyloseq_rarefied_cleaned copy.rds")
+ps.old <- readRDS(paste0(objects.path, "/Archive/phyloseq_rarefied_cleaned copy.rds"))
+
+### rename old columns to be replaced
+
+sample_data(ps0) <- sample.data.frame(ps0) %>%
+    rename(Weight_OLD = Weight,
+           Length_OLD = Length,
+           Width_OLD = Width,
+           Body.Condition_OLD = Body.Condition) %>%
+    relocate(Weight_OLD, Length_OLD, Width_OLD, Body.Condition_OLD, .after = last_col())
+
+
+### Add columns
+## Original metadata given to me did not have all data contained. This adds the missign physiological data.
+
+sample_data(ps0) <- sample.data.frame(ps0) %>%
+    mutate(Weight = sample_data(ps.old)$Weight,
+           Length = sample_data(ps.old)$Length,
+           Width = sample_data(ps.old)$Width,
+           Body.Condition.Alt = sample_data(ps.old)$Body.Condition,
+           .after = Sex)
+
+view(sample.data.frame(ps0))
+# View(sample.data.frame(ps.old))
+```
+
+
+
+
+
+## Add columns
+
+```{r}
+## (No longer needed, but keeping here just in case)
+# sample_data(ps0) <- sample.data.frame(ps0) %>%
+#     rename(Body.Condition.Alt = Body.Condition_OLD)
+
+
+# Calculate Traditional Body Condition score
+sample_data(ps0) <- sample.data.frame(ps0) %>%
+    mutate(Body.Condition.Score = (Weight/(Length^3)*100),
+           .before = Body.Condition.Alt)
+
+
+View(sample.data.frame(ps0))
+```
+
+
+
+## Outliers
+
+### Check for Outliers
+
+```{r check-outliers}
+# Check for outliers
+## By diet
+outliers.BodyCond <- check_Outliers_ps(ps0, "Body.Condition.Score", "Diet")
+outliers.weight <- check_Outliers_ps(ps0, "Weight", "Diet")
+
+body.cond.outlier.plot.diet <- outliers.BodyCond$plot
+weight.outlier.plot.diet <- outliers.weight$plot
+
+
+# Check for outliers
+## By sex
+outliers.BodyCond <- check_Outliers_ps(ps0, "Body.Condition.Score", "Sex")
+outliers.weight <- check_Outliers_ps(ps0, "Weight", "Sex")
+
+body.cond.outlier.plot.sex <- outliers.BodyCond$plot
+weight.outlier.plot.sex <- outliers.weight$plot
+
+
+outlier.plots <- list(body.cond.outlier.plot.diet, weight.outlier.plot.diet,
+                          body.cond.outlier.plot.sex, weight.outlier.plot.sex)
+
+outlier.plots
+```
+
+
+### Remove Outliers
+```{r remove-outliers}
+# Make a copy of original phyloseq object
+# ps1 <- ps0
+
+# Remove Intermediate Outliers
+# ps <- ps %>%
+#   subset_samples(Alt_Body.Cond > outliers.Alt.body.cond[["intermediate"]][[1]] & # Must be greater than the lower bound
+#                    Alt_Body.Cond < outliers.Alt.body.cond[["intermediate"]][[2]] & # Must be lesser than the upper bound
+#                    Weight < outliers.weight[["intermediate"]][[2]])
+
+
+# Remove Extreme Outliers
+ps1 <- ps0 %>%
+  subset_samples(Body.Condition.Score > outliers.BodyCond[["extreme"]][[1]] & # Must be greater than the lower bound
+                   Body.Condition.Score < outliers.BodyCond[["extreme"]][[2]] & # Must be lesser than the upper bound
+                   Weight < outliers.weight[["intermediate"]][[2]])
+
+
+# sample.data.frame(ps1) %>%
+#     ggplot() + geom_histogram(aes(x=Body.Condition.Score, fill = Diet)) + facet_wrap(~ Sex)
+
+
+# Check new phyloseq dataframe
+View(sample.data.frame(ps1))
+```
+
+
+#### Save plots
+```{r save-alpha-plots}
+# save plots as RDS obj
+save_plots(list.plots = outlier.plots,
+           path = objects.path,
+           var.name = var_name(outlier.plots),
+           # ID = analysis.ID
+          )
+
+# Save all plots as one pdf
+ggsave(filename = paste0(output.path, "/Figures/", var_name_sub(outlier.plots), "_8w5h_", analysis.ID, ".pdf"),
+       plot= marrangeGrob(outlier.plots, nrow = 1, ncol = 1, top=NULL),
+       width = 8, height = 5)
+
+
+
+```
+
+
+### Rarefy Data
+
+```{r Rarefaction}
+# 
+# ps1 <- ps0
+# 
+# ps1.rar <- {
+#     rarefaction.minimum <- 5000
+#     min.smpl.size <- min(sample_sums(ps1)[sample_sums(ps1) >= rarefaction.minimum])
+#     ps.rar <- rarefy_even_depth(
+#         physeq = ps1, 
+#         sample.size = min.smpl.size,
+#         trimOTUs = TRUE,
+#         rngseed = 42
+#           ) %>% 
+#             subset_taxa(!is.na(Kingdom) & Kingdom != "Eukaryota")
+#     rename.NA.taxa(ps.rar)
+# }
+# 
+# 
+# # ps1
+# 
+# hist(sample_sums(ps1), main="Histogram: Read Counts before rarefaction", xlab="Total Reads", 
+#      border="blue", col="green", las=1, breaks=12)
+# 
+# rare.plot.preRare <- rarecurve(t(otu_table(ps1)), step=50, cex=0.5, label=F)
+# 
+# print(paste0("Minimum sequence depth: ", min(sample_sums(ps1))))  # "Minimum sequence depth: 475"
+# 
+# # ps1.rar
+# 
+# hist(sample_sums(ps1.rar), main="Histogram: Read Counts after rarefaction", xlab="Total Reads", 
+#      border="blue", col="green", las=1, breaks=12)
+# 
+# rarecurve(t(otu_table(ps1.rar)), step=50, cex=0.5, label=F) #+ abline(v=(min(sample_sums(ps1))))
+# 
+# print(paste0("Minimum sequence depth: ", min(sample_sums(ps1.rar))))  # "Minimum sequence depth: 3187"
+```
+
+
+
+
+```{r}
+sample_sums(ps1)
+```
+
+
+### Visualization
+
+```{r, echo=FALSE, results='hide', message=FALSE, warning=FALSE, fig.show='hide'}
+# Merge everything to the phylum level
+ps1_phylum <- tax_glom(ps0, "Phylum", NArm = TRUE)
+
+# Transform Taxa counts to relative abundance
+ps1_phylum_relabun <- transform_sample_counts(ps1_phylum, function(OTU) OTU/sum(OTU) * 100)
+
+# Extract Data
+taxa_abundance_table_phylum <- psmelt(ps1_phylum_relabun)
+```
+
+```{r, echo=FALSE, results='hide', message=FALSE, warning=FALSE, fig.show='hide'}
+StackedBarPlot_Strain_phylum <- taxa_abundance_table_phylum %>% 
+  ggplot(aes(x =Sample, y = Abundance, fill = Phylum)) +
+  geom_bar(stat = "identity") +
+  labs(x = "",
+       y = "Relative Abundance",
+       title = "Phylum Relative Abundance") +
+  facet_grid(~ Strain, scales = "free") +
+  theme(
+    axis.text.x = element_text(size = 10, angle = 90, vjust = 0.5, hjust = 1),
+    axis.text.y = element_text(size = 12),
+    legend.text = element_text(size = 10),
+    strip.text = element_text(size = 12)
+  )  +
+  theme(axis.title.x=element_blank(),  # Removes X-axis labels
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        legend.position = "right")
+
+
+
+
+StackedBarPlot_Strain_phylum
+
+```
+
+#### Refactor
+
+```{r}
+
+
+levels(sample_data(ps1)$Treatment) <- factor(levels(sample_data(ps1)$Treatment), levels = c("Control", "Dose_1", "Dose_2"))   # Not sure why unique() is needed here
+levels(sample_data(ps1)$Treatment)
+
+levels(sample_data(ps1)$Timepoint) <- factor(levels(sample_data(ps1)$Timepoint), levels = c("3mpf", "6mpf"))
+levels(sample_data(ps1)$Timepoint)
+
+levels(sample_data(ps1)$Exposure) <- factor(levels(sample_data(ps1)$Exposure), levels = c("Unexp", "Exp"))
+levels(sample_data(ps1)$Exposure)
+
+levels(sample_data(ps1)$Sex) <- factor(levels(sample_data(ps1)$Sex), levels = c("Female", "Male"))
+levels(sample_data(ps1)$Sex)
+
+
+view(sample.data.frame(ps1))
+
+
+##### Code from another data set below #####
+# sample_data(ps0) <- sample.data.frame(ps0) %>%
+#   mutate(Timepoint = case_when(
+#     Experiment == "31 dpe" ~ "31_dpe",
+#     Experiment == "44 dpe" ~ "44_dpe"),
+#     .after = 4)
+# 
+# levels(sample_data(ps0)$Timepoint) <- factor(levels(sample_data(ps0)$Timepoint), levels = c("31_dpe", "44_dpe"))
+# levels(sample_data(ps0)$Timepoint)
+# 
+# levels(sample_data(ps0)$Treatment) <- factor(levels(sample_data(ps0)$Treatment), levels = c("Control", "Exposed"))
+# levels(sample_data(ps0)$Treatment)
+# 
+# levels(sample_data(ps0)$Strain) <- factor(levels(sample_data(ps0)$Strain), levels = c("5D", "AB", "Casper", "TU"))
+# levels(sample_data(ps0)$Strain)
+# 
+# levels(sample_data(ps0)$Sex) <- factor(levels(sample_data(ps0)$Sex), levels = c("M", "F"))
+# levels(sample_data(ps0)$Sex)
+# 
+# levels(sample_data(ps0)$Pathology.Results) <- factor(levels(sample_data(ps0)$Pathology.Results), levels = c("negative", "positive"))
+# levels(sample_data(ps0)$Pathology.Results)
+
+# Remove any duplicated columns
+# sample.dt[, which(duplicated(names(sample.dt))) := NULL]
+
+
+# Remove columns by name
+# sample_data(ps0)[c("Experiment", "Fish.ID", "Sample")] <- NULL
+
+# View(sample.data.frame(ps0))
+```
+
+
+
+
+## Export
+
+### Save Phyloseq Object
+
+```{r save-ps-obj}
+# saveRDS(ps, file = file.path(paste0(objects.path, "/phyloseq_cleaned_", Sys.Date(),".rds")))
+
+# Save PS obj, sample data table cleaned
+saveRDS(ps0, file = file.path(paste0(objects.path, "/phyloseq_sampData_cleaned_Outliers_", Sys.Date(),".rds")))
+clean.ps.obj <- paste0(objects.path, "/phyloseq_sampData_cleaned_Outliers_", Sys.Date(),".rds")
+
+# Save PS obj, no outliers
+saveRDS(ps1, file = file.path(paste0(objects.path, "/phyloseq_sampData_cleaned_noOutliers_", Sys.Date(),".rds")))
+
+# # Save PS obj, samp data cleaned, no outliers, rarefied
+# saveRDS(ps1.rar, file = file.path(paste0(objects.path, "/phyloseq_cleaned_rarefied_", Sys.Date(),".rds")))
+
+
+# Save Environment
+save_env(objects.path,
+         extra_info = "cleaning_data2_output")
+```
