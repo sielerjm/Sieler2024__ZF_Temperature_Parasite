@@ -1,0 +1,69 @@
+Mac version
+
+Using ReadLine,Boost,HDF5,GSL
+mothur v.1.46.1
+Last updated: 9/1/21
+by
+Patrick D. Schloss
+
+Department of Microbiology & Immunology
+
+University of Michigan
+http://www.mothur.org
+
+When using, please cite:
+Schloss, P.D., et al., Introducing mothur: Open-source, platform-independent, community-supported software for describing and comparing microbial communities. Appl Environ Microbiol, 2009. 75(23):7537-41.
+
+Distributed under the GNU General Public License
+
+Type 'help()' for information on the commands that are available
+
+For questions and analysis support, please visit our forum at https://forum.mothur.org
+
+Type 'quit()' to exit program
+
+[NOTE]: Setting random seed to 19760620.
+
+Script Mode
+
+
+mothur > align.seqs( fasta=dada2_1.26.0_2022-11-15_output/asv_and_guide_seqs.fasta, reference=template.align, flip=t, keepdots=t, processors=9, outputdir=dada2_1.26.0_2022-11-15_output/ )
+Setting output directory to: dada2_1.26.0_2022-11-15_output/
+[WARNING]: keepdots is not a valid parameter, ignoring.
+The valid parameters are: reference, fasta, search, ksize, match, align, mismatch, gapopen, gapextend, processors, flip, threshold, seed, inputdir, and outputdir.
+
+Using 9 processors.
+
+Reading in the template.align template sequences...	DONE.
+It took 14 to read  7656 sequences.
+
+Aligning sequences from dada2_1.26.0_2022-11-15_output/asv_and_guide_seqs.fasta ...
+It took 3 secs to align 4463 sequences.
+
+[WARNING]: 20 of your sequences generated alignments that eliminated too many bases, a list is provided in dada2_1.26.0_2022-11-15_output/asv_and_guide_seqs.flip.accnos.
+[NOTE]: 10 of your sequences were reversed to produce a better alignment.
+
+It took 3 seconds to align 4463 sequences.
+
+Output File Names: 
+dada2_1.26.0_2022-11-15_output/asv_and_guide_seqs.align
+dada2_1.26.0_2022-11-15_output/asv_and_guide_seqs.align.report
+dada2_1.26.0_2022-11-15_output/asv_and_guide_seqs.flip.accnos
+
+
+mothur > quit()
+
+
+It took 24 seconds to run 2 commands from your script.
+
+Logfile : mothur.1668534350.logfile
+
+
+
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<^>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<^>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<^>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Detected 2 [WARNING] messages, please review.
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<^>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<^>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<^>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

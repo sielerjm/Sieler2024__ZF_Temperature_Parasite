@@ -1,0 +1,285 @@
+Sample,Sample.Date,Age.Days,DPE,Treatment,Temperature,Tank.ID,Sex,Pathology.Results,Total.Worm.Count,Worms.w.Eggs,Repeat.Extract,No.PCR.Product,Notes
+RTF001,2021-09-24 00:00:00,164,0,Control,35,4,M,NA,NA,NA,0,0,All fish 5D; all 0 dpe samples nonlethal and no pathology; fish sex visual assessement only
+RTF002,2021-09-24 00:00:00,164,0,Control,35,4,F,NA,NA,NA,0,0,
+RTF003,2021-09-24 00:00:00,164,0,Control,35,4,F,NA,NA,NA,0,0,
+RTF004,2021-09-24 00:00:00,164,0,Control,35,4,F,NA,NA,NA,0,0,
+RTF005,2021-09-24 00:00:00,164,0,Control,35,4,M,NA,NA,NA,0,0,
+RTF006,2021-09-24 00:00:00,164,0,Control,32,12,M,NA,NA,NA,0,0,
+RTF007,2021-09-24 00:00:00,164,0,Control,32,12,F,NA,NA,NA,0,0,
+RTF008,2021-09-24 00:00:00,164,0,Control,32,12,M,NA,NA,NA,0,0,
+RTF009,2021-09-24 00:00:00,164,0,Control,32,12,M,NA,NA,NA,0,0,
+RTF010,2021-09-24 00:00:00,164,0,Control,32,12,F,NA,NA,NA,0,0,
+RTF011,2021-09-24 00:00:00,164,0,Control,28,9,M,NA,NA,NA,0,0,
+RTF012,2021-09-24 00:00:00,164,0,Control,28,9,F,NA,NA,NA,0,0,
+RTF013,2021-09-24 00:00:00,164,0,Control,28,9,F,NA,NA,NA,0,0,
+RTF014,2021-09-24 00:00:00,164,0,Control,28,9,F,NA,NA,NA,0,0,
+RTF015,2021-09-24 00:00:00,164,0,Control,28,9,M,NA,NA,NA,0,0,
+RTF016,2021-09-24 00:00:00,164,0,Control,28,7,F,NA,NA,NA,0,0,
+RTF017,2021-09-24 00:00:00,164,0,Control,28,7,M,NA,NA,NA,0,0,
+RTF018,2021-09-24 00:00:00,164,0,Control,28,7,M,NA,NA,NA,0,0,
+RTF019,2021-09-24 00:00:00,164,0,Control,28,7,M,NA,NA,NA,0,0,
+RTF020,2021-09-24 00:00:00,164,0,Control,28,7,F,NA,NA,NA,0,0,
+RTF021,2021-09-24 00:00:00,164,0,Control,35,2,F,NA,NA,NA,0,0,
+RTF022,2021-09-24 00:00:00,164,0,Control,35,2,F,NA,NA,NA,0,0,
+RTF023,2021-09-24 00:00:00,164,0,Control,35,2,F,NA,NA,NA,0,0,
+RTF024,2021-09-24 00:00:00,164,0,Control,35,2,M,NA,NA,NA,0,0,
+RTF025,2021-09-24 00:00:00,164,0,Control,35,2,F,NA,NA,NA,0,0,
+RTF026,2021-09-24 00:00:00,164,0,Control,32,5,M,NA,NA,NA,0,0,
+RTF027,2021-09-24 00:00:00,164,0,Control,32,5,M,NA,NA,NA,0,0,
+RTF028,2021-09-24 00:00:00,164,0,Control,32,5,M,NA,NA,NA,0,0,
+RTF029,2021-09-24 00:00:00,164,0,Control,32,5,F,NA,NA,NA,0,0,
+RTF030,2021-09-24 00:00:00,164,0,Control,32,5,M,NA,NA,NA,0,0,
+RTF031,2021-09-24 00:00:00,164,0,Exposed,35,11,F,NA,NA,NA,0,0,
+RTF032,2021-09-24 00:00:00,164,0,Exposed,35,11,F,NA,NA,NA,0,0,
+RTF033,2021-09-24 00:00:00,164,0,Exposed,35,11,M,NA,NA,NA,0,0,
+RTF034,2021-09-24 00:00:00,164,0,Exposed,35,11,F,NA,NA,NA,0,0,
+RTF035,2021-09-24 00:00:00,164,0,Exposed,35,11,F,NA,NA,NA,0,0,
+RTF036,2021-09-24 00:00:00,164,0,Exposed,32,1,M,NA,NA,NA,0,0,
+RTF037,2021-09-24 00:00:00,164,0,Exposed,32,1,M,NA,NA,NA,0,0,
+RTF038,2021-09-24 00:00:00,164,0,Exposed,32,1,M,NA,NA,NA,0,0,
+RTF039,2021-09-24 00:00:00,164,0,Exposed,32,1,M,NA,NA,NA,0,0,
+RTF040,2021-09-24 00:00:00,164,0,Exposed,32,1,F,NA,NA,NA,0,0,
+RTF041,2021-09-24 00:00:00,164,0,Exposed,28,6,M,NA,NA,NA,0,0,
+RTF042,2021-09-24 00:00:00,164,0,Exposed,28,6,M,NA,NA,NA,0,0,
+RTF043,2021-09-24 00:00:00,164,0,Exposed,28,6,M,NA,NA,NA,0,0,
+RTF044,2021-09-24 00:00:00,164,0,Exposed,28,6,F,NA,NA,NA,0,0,
+RTF045,2021-09-24 00:00:00,164,0,Exposed,28,6,F,NA,NA,NA,0,0,
+RTF046,2021-09-24 00:00:00,164,0,Exposed,28,10,M,NA,NA,NA,0,0,
+RTF047,2021-09-24 00:00:00,164,0,Exposed,28,10,F,NA,NA,NA,0,0,
+RTF048,2021-09-24 00:00:00,164,0,Exposed,28,10,F,NA,NA,NA,0,0,
+RTF049,2021-09-24 00:00:00,164,0,Exposed,28,10,M,NA,NA,NA,0,0,
+RTF050,2021-09-24 00:00:00,164,0,Exposed,28,10,F,NA,NA,NA,0,0,
+RTF051,2021-09-24 00:00:00,164,0,Exposed,35,3,M,NA,NA,NA,0,0,
+RTF052,2021-09-24 00:00:00,164,0,Exposed,35,3,F,NA,NA,NA,0,0,
+RTF053,2021-09-24 00:00:00,164,0,Exposed,35,3,F,NA,NA,NA,0,0,
+RTF054,2021-09-24 00:00:00,164,0,Exposed,35,3,M,NA,NA,NA,0,0,
+RTF055,2021-09-24 00:00:00,164,0,Exposed,35,3,F,NA,NA,NA,0,0,
+RTF056,2021-09-24 00:00:00,164,0,Exposed,32,8,M,NA,NA,NA,0,0,
+RTF057,2021-09-24 00:00:00,164,0,Exposed,32,8,M,NA,NA,NA,0,0,
+RTF058,2021-09-24 00:00:00,164,0,Exposed,32,8,M,NA,NA,NA,0,0,
+RTF059,2021-09-24 00:00:00,164,0,Exposed,32,8,F,NA,NA,NA,0,0,
+RTF060,2021-09-24 00:00:00,164,0,Exposed,32,8,F,NA,NA,NA,0,0,
+RTF062,2021-10-08 00:00:00,178,14,Control,35,4,F,negative,0,0,0,0,
+RTF063,2021-10-08 00:00:00,178,14,Control,35,4,F,negative,0,0,0,0,
+RTF064,2021-10-08 00:00:00,178,14,Control,35,4,M,negative,0,0,1,0,
+RTF065,2021-10-08 00:00:00,178,14,Control,35,4,M,negative,0,0,0,0,Visually assessed female.
+RTF066,2021-10-08 00:00:00,178,14,Control,32,12,F,negative,0,0,0,0,Visually assessed male.
+RTF067,2021-10-08 00:00:00,178,14,Control,32,12,F,negative,0,0,0,0,Visually assessed male; egg bound?
+RTF068,2021-10-08 00:00:00,178,14,Control,32,12,F,negative,0,0,0,0,
+RTF069,2021-10-08 00:00:00,178,14,Control,32,12,F,negative,0,0,0,0,
+RTF070,2021-10-08 00:00:00,178,14,Control,32,12,F,negative,0,0,0,0,Visually assessed male.
+RTF071,2021-10-08 00:00:00,178,14,Control,28,9,F,negative,0,0,0,0,Visually assessed male.
+RTF072,2021-10-08 00:00:00,178,14,Control,28,9,F,negative,0,0,0,0,Visually assessed male.
+RTF073,2021-10-08 00:00:00,178,14,Control,28,9,M,negative,0,0,0,0,small fish
+RTF074,2021-10-08 00:00:00,178,14,Control,28,9,F,negative,0,0,0,0,eggs
+RTF075,2021-10-08 00:00:00,178,14,Control,28,9,M,negative,0,0,0,0,
+RTF076,2021-10-08 00:00:00,178,14,Control,28,7,F,negative,0,0,0,0,
+RTF077,2021-10-08 00:00:00,178,14,Control,28,7,M,negative,0,0,0,0,
+RTF078,2021-10-08 00:00:00,178,14,Control,28,7,F,negative,0,0,0,0,Visually assessed male.
+RTF079,2021-10-08 00:00:00,178,14,Control,28,7,F,negative,0,0,0,0,Visually assessed male.
+RTF080,2021-10-08 00:00:00,178,14,Control,28,7,F,negative,0,0,0,0,Visual sex assessment only.
+RTF081,2021-10-08 00:00:00,178,14,Control,35,2,F,negative,0,0,0,0,Visually assessed male.
+RTF082,2021-10-08 00:00:00,178,14,Control,35,2,M,negative,0,0,0,0,
+RTF083,2021-10-08 00:00:00,178,14,Control,35,2,F,negative,0,0,0,0,
+RTF084,2021-10-08 00:00:00,178,14,Control,35,2,M,negative,0,0,0,0,Visual sex assessment only.
+RTF085,2021-10-08 00:00:00,178,14,Control,35,2,F,negative,0,0,0,0,
+RTF086,2021-10-08 00:00:00,178,14,Control,32,5,F,negative,0,0,0,0,Visually assessed male.
+RTF087,2021-10-08 00:00:00,178,14,Control,32,5,F,negative,0,0,0,0,Visually assessed male.
+RTF088,2021-10-08 00:00:00,178,14,Control,32,5,F,negative,0,0,0,0,Visually assessed male.
+RTF089,2021-10-08 00:00:00,178,14,Control,32,5,F,negative,0,0,0,0,Visually assessed male.
+RTF090,2021-10-08 00:00:00,178,14,Control,32,5,F,negative,0,0,0,0,
+RTF091,2021-10-08 00:00:00,178,14,Exposed,35,11,F,negative,0,0,0,0,Visually assessed male.
+RTF092,2021-10-08 00:00:00,178,14,Exposed,35,11,F,negative,0,0,0,0,
+RTF093,2021-10-08 00:00:00,178,14,Exposed,35,11,F,negative,0,0,0,0,Visually assessed male.
+RTF094,2021-10-08 00:00:00,178,14,Exposed,35,11,M,negative,0,0,0,0,Visually assessed female.
+RTF095,2021-10-08 00:00:00,178,14,Exposed,35,11,M,negative,0,0,0,0,Visually assessed female.
+RTF096,2021-10-08 00:00:00,178,14,Exposed,32,1,F,negative,0,0,0,0,Visually assessed male.
+RTF097,2021-10-08 00:00:00,178,14,Exposed,32,1,F,negative,0,0,0,0,
+RTF098,2021-10-08 00:00:00,178,14,Exposed,32,1,F,negative,0,0,0,0,
+RTF099,2021-10-08 00:00:00,178,14,Exposed,32,1,M,negative,0,0,0,0,
+RTF100,2021-10-08 00:00:00,178,14,Exposed,32,1,F,positive,2,1,0,0,"Visually assessed male; 1 larve, 1mature"
+RTF101,2021-10-08 00:00:00,178,14,Exposed,28,6,M,positive,1,0,0,0,1 larve
+RTF102,2021-10-08 00:00:00,178,14,Exposed,28,6,M,positive,3,0,0,0,Larve like
+RTF103,2021-10-08 00:00:00,178,14,Exposed,28,6,F,negative,0,0,0,0,Visually assessed male.
+RTF104,2021-10-08 00:00:00,178,14,Exposed,28,6,M,positive,1,0,0,0,Transparent fecal material?
+RTF105,2021-10-08 00:00:00,178,14,Exposed,28,6,M,negative,0,0,0,0,
+RTF106,2021-10-08 00:00:00,178,14,Exposed,28,10,M,positive,10,0,0,0,Transparent fecal material?
+RTF107,2021-10-08 00:00:00,178,14,Exposed,28,10,F,positive,7,0,0,0,Visually assessed male.
+RTF108,2021-10-08 00:00:00,178,14,Exposed,28,10,F,negative,0,0,0,0,
+RTF109,2021-10-08 00:00:00,178,14,Exposed,28,10,M,negative,0,0,0,0,Visually assessed female.
+RTF110,2021-10-08 00:00:00,178,14,Exposed,28,10,F,positive,1,0,0,0,"Small, larva?"
+RTF111,2021-10-08 00:00:00,178,14,Exposed,35,3,F,negative,0,0,0,0,
+RTF112,2021-10-08 00:00:00,178,14,Exposed,35,3,M,negative,0,0,0,0,
+RTF113,2021-10-08 00:00:00,178,14,Exposed,35,3,M,positive,1,0,0,0,
+RTF114,2021-10-08 00:00:00,178,14,Exposed,35,3,F,negative,0,0,0,0,Visually assessed male.
+RTF115,2021-10-08 00:00:00,178,14,Exposed,35,3,F,negative,0,0,0,0,
+RTF116,2021-10-08 00:00:00,178,14,Exposed,32,8,F,positive,9,0,0,0,Many large subadults
+RTF117,2021-10-08 00:00:00,178,14,Exposed,32,8,M,positive,7,0,0,0,Many large subadults
+RTF118,2021-10-08 00:00:00,178,14,Exposed,32,8,M,positive,15,0,0,0,Many large subadults
+RTF119,2021-10-08 00:00:00,178,14,Exposed,32,8,M,negative,0,0,0,0,Fecal sample collected post mortem? Pulled from vent; no food
+RTF120,2021-10-08 00:00:00,178,14,Exposed,32,8,F,negative,0,0,0,0,Visually assessed male.
+RTF121,2021-10-15 00:00:00,185,21,Control,35,4,F,negative,0,0,0,0,Visually assessed male.
+RTF122,2021-10-15 00:00:00,185,21,Control,35,4,F,negative,0,0,0,0,
+RTF123,2021-10-15 00:00:00,185,21,Control,35,4,F,negative,0,0,0,0,
+RTF124,2021-10-15 00:00:00,185,21,Control,35,4,M,negative,0,0,0,0,
+RTF125,2021-10-15 00:00:00,185,21,Control,35,4,M,negative,0,0,0,0,
+RTF126,2021-10-15 00:00:00,185,21,Control,32,12,F,negative,0,0,0,0,Visually assessed male.
+RTF127,2021-10-15 00:00:00,185,21,Control,32,12,M,negative,0,0,0,0,Visually assessed female.
+RTF128,2021-10-15 00:00:00,185,21,Control,32,12,M,negative,0,0,0,0,Visually assessed female.
+RTF129,2021-10-15 00:00:00,185,21,Control,32,12,F,negative,0,0,0,0,
+RTF130,2021-10-15 00:00:00,185,21,Control,32,12,F,negative,0,0,0,0,
+RTF131,2021-10-15 00:00:00,185,21,Control,28,9,M,negative,0,0,0,0,Visually assessed female; small fish
+RTF132,2021-10-15 00:00:00,185,21,Control,28,9,F,negative,0,0,0,0,
+RTF133,2021-10-15 00:00:00,185,21,Control,28,9,F,negative,0,0,0,0,Visually assessed male.
+RTF134,2021-10-15 00:00:00,185,21,Control,28,9,F,negative,0,0,0,0,
+RTF135,2021-10-15 00:00:00,185,21,Control,28,9,M,negative,0,0,0,0,"Knocked iso tank, fish recovered from floor prior to fecal collection."
+RTF136,2021-10-15 00:00:00,185,21,Control,28,7,M,negative,0,0,0,0,Visually assessed female.
+RTF137,2021-10-15 00:00:00,185,21,Control,28,7,M,negative,0,0,0,0,
+RTF138,2021-10-15 00:00:00,185,21,Control,28,7,M,negative,0,0,0,0,
+RTF139,2021-10-15 00:00:00,185,21,Control,28,7,F,negative,0,0,0,0,
+RTF140,2021-10-15 00:00:00,185,21,Control,28,7,F,negative,0,0,0,0,Immature
+RTF142,2021-10-15 00:00:00,185,21,Control,35,2,F,negative,0,0,0,0,
+RTF143,2021-10-15 00:00:00,185,21,Control,35,2,F,negative,0,0,0,0,
+RTF144,2021-10-15 00:00:00,185,21,Control,35,2,F,negative,0,0,0,0,Visually assessed male; immature
+RTF145,2021-10-15 00:00:00,185,21,Control,35,2,F,negative,0,0,0,0,
+RTF146,2021-10-15 00:00:00,185,21,Control,32,5,F,negative,0,0,0,0,
+RTF147,2021-10-15 00:00:00,185,21,Control,32,5,F,negative,0,0,0,0,
+RTF148,2021-10-15 00:00:00,185,21,Control,32,5,M,negative,0,0,0,0,Visually assessed female.
+RTF149,2021-10-15 00:00:00,185,21,Control,32,5,F,negative,0,0,0,0,Visually assessed male.
+RTF150,2021-10-15 00:00:00,185,21,Control,32,5,F,negative,0,0,0,0,
+RTF151,2021-10-15 00:00:00,185,21,Exposed,35,11,M,negative,0,0,0,0,Visually assessed female; dead before ice bath/gilling stopped.
+RTF152,2021-10-15 00:00:00,185,21,Exposed,35,11,M,negative,0,0,0,0,Visually assessed female.
+RTF153,2021-10-15 00:00:00,185,21,Exposed,35,11,F,negative,0,0,0,0,Visually assessed male; immature
+RTF154,2021-10-15 00:00:00,185,21,Exposed,35,11,M,negative,0,0,1,0,
+RTF155,2021-10-15 00:00:00,185,21,Exposed,35,11,M,negative,0,0,0,0,Visually assessed female.
+RTF156,2021-10-15 00:00:00,185,21,Exposed,32,1,M,negative,0,0,0,0,Visually assessed female.
+RTF157,2021-10-15 00:00:00,185,21,Exposed,32,1,M,positive,6,0,1,0,
+RTF158,2021-10-15 00:00:00,185,21,Exposed,32,1,F,negative,0,0,0,0,
+RTF159,2021-10-15 00:00:00,185,21,Exposed,32,1,M,positive,10,0,1,0,
+RTF160,2021-10-15 00:00:00,185,21,Exposed,32,1,M,negative,0,0,0,0,Visually assessed female.
+RTF161,2021-10-15 00:00:00,185,21,Exposed,28,6,F,positive,8,0,0,0,Visually assessed male.
+RTF162,2021-10-15 00:00:00,185,21,Exposed,28,6,M,negative,0,0,1,0,Visually assessed female.
+RTF163,2021-10-15 00:00:00,185,21,Exposed,28,6,M,negative,0,0,0,0,
+RTF164,2021-10-15 00:00:00,185,21,Exposed,28,6,M,positive,5,0,0,0,
+RTF165,2021-10-15 00:00:00,185,21,Exposed,28,6,F,positive,3,0,1,0,Visually assessed male; immature
+RTF166,2021-10-15 00:00:00,185,21,Exposed,28,10,M,negative,0,0,0,0,Thin body wall.
+RTF168,2021-10-15 00:00:00,185,21,Exposed,28,10,M,positive,9,0,1,0,
+RTF169,2021-10-15 00:00:00,185,21,Exposed,28,10,M,positive,7,0,1,0,Visually assessed female.
+RTF170,2021-10-15 00:00:00,185,21,Exposed,28,10,F,positive,15,0,1,0,Visually assessed male; female immature
+RTF171,2021-10-15 00:00:00,185,21,Exposed,35,3,F,negative,0,0,0,0,
+RTF172,2021-10-15 00:00:00,185,21,Exposed,35,3,F,negative,0,0,0,0,Immature
+RTF173,2021-10-15 00:00:00,185,21,Exposed,35,3,F,negative,0,0,0,0,Visually assessed male; immature
+RTF174,2021-10-15 00:00:00,185,21,Exposed,35,3,F,negative,0,0,0,0,
+RTF175,2021-10-15 00:00:00,185,21,Exposed,35,3,M,negative,0,0,1,0,
+RTF176,2021-10-15 00:00:00,185,21,Exposed,32,8,M,positive,11,0,0,0,
+RTF177,2021-10-15 00:00:00,185,21,Exposed,32,8,M,negative,0,0,0,0,Visually assessed female.
+RTF178,2021-10-15 00:00:00,185,21,Exposed,32,8,F,positive,2,0,0,0,
+RTF179,2021-10-15 00:00:00,185,21,Exposed,32,8,F,negative,0,0,0,0,
+RTF180,2021-10-15 00:00:00,185,21,Exposed,32,8,F,positive,2,1,1,0,1 worm developing eggs
+RTF181,2021-10-22 00:00:00,192,28,Control,35,4,M,negative,0,0,0,0,
+RTF182,2021-10-22 00:00:00,192,28,Control,35,4,M,negative,0,0,0,0,
+RTF183,2021-10-22 00:00:00,192,28,Control,35,4,M,negative,0,0,0,0,Visually assessed as female.
+RTF184,2021-10-22 00:00:00,192,28,Control,35,4,F,negative,0,0,0,0,Immature female
+RTF185,2021-10-22 00:00:00,192,28,Control,35,4,M,negative,0,0,0,0,Visually assessed as female.
+RTF186,2021-10-22 00:00:00,192,28,Control,32,12,M,negative,0,0,0,0,
+RTF187,2021-10-22 00:00:00,192,28,Control,32,12,M,negative,0,0,0,0,Visual sex assessment only.
+RTF188,2021-10-22 00:00:00,192,28,Control,32,12,M,negative,0,0,0,0,Visually assessed female.
+RTF189,2021-10-22 00:00:00,192,28,Control,32,12,M,negative,0,0,0,0,
+RTF190,2021-10-22 00:00:00,192,28,Control,32,12,F,negative,0,0,0,0,
+RTF191,2021-10-22 00:00:00,192,28,Control,28,9,M,negative,0,0,0,0,Visually assessed female.
+RTF192,2021-10-22 00:00:00,192,28,Control,28,9,M,negative,0,0,0,0,Visually assessed female.
+RTF193,2021-10-22 00:00:00,192,28,Control,28,9,F,negative,0,0,0,0,Visually assessed male.
+RTF194,2021-10-22 00:00:00,192,28,Control,28,9,M,negative,0,0,0,0,
+RTF195,2021-10-22 00:00:00,192,28,Control,28,9,M,negative,0,0,0,0,
+RTF196,2021-10-22 00:00:00,192,28,Control,28,7,F,negative,0,0,0,0,
+RTF197,2021-10-22 00:00:00,192,28,Control,28,7,M,negative,0,0,0,0,Visual sex assessment only.
+RTF198,2021-10-22 00:00:00,192,28,Control,28,7,M,negative,0,0,0,0,Visually assessed female.
+RTF199,2021-10-22 00:00:00,192,28,Control,28,7,M,negative,0,0,0,0,
+RTF200,2021-10-22 00:00:00,192,28,Control,28,7,F,negative,0,0,0,0,
+RTF201,2021-10-22 00:00:00,192,28,Control,35,2,F,negative,0,0,0,0,
+RTF202,2021-10-22 00:00:00,192,28,Control,35,2,M,negative,0,0,0,0,
+RTF203,2021-10-22 00:00:00,192,28,Control,35,2,F,negative,0,0,0,0,
+RTF204,2021-10-22 00:00:00,192,28,Control,35,2,F,negative,0,0,0,0,Visually assessed male.
+RTF206,2021-10-22 00:00:00,192,28,Control,32,5,M,negative,0,0,0,0,
+RTF207,2021-10-22 00:00:00,192,28,Control,32,5,F,negative,0,0,0,0,Visually assessed male.
+RTF208,2021-10-22 00:00:00,192,28,Control,32,5,F,negative,0,0,0,0,
+RTF209,2021-10-22 00:00:00,192,28,Control,32,5,M,negative,0,0,0,0,
+RTF211,2021-10-22 00:00:00,192,28,Exposed,35,11,M,negative,0,0,0,0,Visually assessed female; DNA
+RTF212,2021-10-22 00:00:00,192,28,Exposed,35,11,M,negative,0,0,0,0,
+RTF213,2021-10-22 00:00:00,192,28,Exposed,35,11,M,negative,0,0,0,0,DNA
+RTF214,2021-10-22 00:00:00,192,28,Exposed,35,11,M,positive,1,0,0,0,1 worm in a hot fish
+RTF216,2021-10-22 00:00:00,192,28,Exposed,32,1,M,positive,4,0,0,0,Emaciated
+RTF217,2021-10-22 00:00:00,192,28,Exposed,32,1,F,positive,3,0,1,0,Visually assessed male; immature
+RTF218,2021-10-22 00:00:00,192,28,Exposed,32,1,F,negative,0,0,0,0,
+RTF219,2021-10-22 00:00:00,192,28,Exposed,32,1,F,negative,0,0,0,0,
+RTF220,2021-10-22 00:00:00,192,28,Exposed,32,1,M,positive,11,3,0,0,Many eggs; gall bladder
+RTF221,2021-10-22 00:00:00,192,28,Exposed,28,6,F,positive,9,0,0,0,Visually assessed male; immature female
+RTF222,2021-10-22 00:00:00,192,28,Exposed,28,6,M,positive,11,0,1,0,
+RTF223,2021-10-22 00:00:00,192,28,Exposed,28,6,F,positive,8,2,1,0,Visual sex assessment only.
+RTF224,2021-10-22 00:00:00,192,28,Exposed,28,6,M,positive,3,0,0,0,Visually assessed female.
+RTF226,2021-10-22 00:00:00,192,28,Exposed,28,10,F,positive,8,0,0,0,
+RTF227,2021-10-22 00:00:00,192,28,Exposed,28,10,F,positive,1,0,0,0,
+RTF228,2021-10-22 00:00:00,192,28,Exposed,28,10,M,positive,3,1,0,0,Visually assessed female; DNA
+RTF229,2021-10-22 00:00:00,192,28,Exposed,28,10,M,positive,8,2,0,0,
+RTF231,2021-10-22 00:00:00,192,28,Exposed,35,3,M,negative,0,0,0,0,DNA
+RTF232,2021-10-22 00:00:00,192,28,Exposed,35,3,M,negative,0,0,0,0,DNA
+RTF233,2021-10-22 00:00:00,192,28,Exposed,35,3,M,negative,0,0,0,0,
+RTF234,2021-10-22 00:00:00,192,28,Exposed,35,3,F,negative,0,0,0,0,DNA
+RTF236,2021-10-22 00:00:00,192,28,Exposed,32,8,M,positive,4,0,1,0,Emaciated
+RTF237,2021-10-22 00:00:00,192,28,Exposed,32,8,M,positive,9,0,1,0,Small maybe female
+RTF238,2021-10-22 00:00:00,192,28,Exposed,32,8,F,positive,3,0,0,0,Visually assessed male; small fish
+RTF239,2021-10-22 00:00:00,192,28,Exposed,32,8,M,positive,1,0,0,0,Visually assessed female.
+RTF241,2021-11-05 00:00:00,206,42,Control,35,4,M,negative,0,0,0,0,
+RTF242,2021-11-05 00:00:00,206,42,Control,35,4,F,negative,0,0,0,0,
+RTF243,2021-11-05 00:00:00,206,42,Control,35,4,F,negative,0,0,0,0,
+RTF244,2021-11-05 00:00:00,206,42,Control,35,4,M,negative,0,0,0,0,
+RTF246,2021-11-05 00:00:00,206,42,Control,32,12,F,negative,0,0,0,0,Visually assessed male.
+RTF247,2021-11-05 00:00:00,206,42,Control,32,12,M,negative,0,0,1,0,Visually assessed female.
+RTF249,2021-11-05 00:00:00,206,42,Control,32,12,F,negative,0,0,0,0,
+RTF250,2021-11-05 00:00:00,206,42,Control,32,12,F,negative,0,0,0,0,Visually assessed male.
+RTF251,2021-11-05 00:00:00,206,42,Control,28,9,M,negative,0,0,0,0,Visually assessed female.
+RTF252,2021-11-05 00:00:00,206,42,Control,28,9,M,negative,0,0,0,0,Visually assessed female.
+RTF253,2021-11-05 00:00:00,206,42,Control,28,9,M,negative,0,0,0,0,Visually assessed female.
+RTF254,2021-11-05 00:00:00,206,42,Control,28,9,F,negative,0,0,0,0,Visually assessed female.
+RTF255,2021-11-05 00:00:00,206,42,Control,28,9,F,negative,0,0,0,0,
+RTF256,2021-11-05 00:00:00,206,42,Control,28,7,F,negative,0,0,0,0,
+RTF257,2021-11-05 00:00:00,206,42,Control,28,7,F,negative,0,0,0,0,
+RTF258,2021-11-05 00:00:00,206,42,Control,28,7,F,negative,0,0,0,0,
+RTF259,2021-11-05 00:00:00,206,42,Control,28,7,F,negative,0,0,0,0,
+RTF260,2021-11-05 00:00:00,206,42,Control,28,7,M,negative,0,0,0,0,
+RTF261,2021-11-05 00:00:00,206,42,Control,35,2,M,negative,0,0,0,0,
+RTF262,2021-11-05 00:00:00,206,42,Control,35,2,F,negative,0,0,0,0,Visually assessed male.
+RTF263,2021-11-05 00:00:00,206,42,Control,35,2,F,negative,0,0,0,0,Visually assessed male.
+RTF264,2021-11-05 00:00:00,206,42,Control,35,2,M,negative,0,0,0,0,
+RTF265,2021-11-05 00:00:00,206,42,Control,35,2,M,negative,0,0,0,0,
+RTF266,2021-11-05 00:00:00,206,42,Control,32,5,M,negative,0,0,0,0,Visually assessed female.
+RTF267,2021-11-05 00:00:00,206,42,Control,32,5,M,negative,0,0,0,0,
+RTF268,2021-11-05 00:00:00,206,42,Control,32,5,M,negative,0,0,1,0,
+RTF269,2021-11-05 00:00:00,206,42,Control,32,5,M,negative,0,0,0,0,Visually assessed female.
+RTF270,2021-11-05 00:00:00,206,42,Control,32,5,M,negative,0,0,0,0,
+RTF271,2021-11-05 00:00:00,206,42,Exposed,35,11,M,negative,0,0,0,0,
+RTF272,2021-11-05 00:00:00,206,42,Exposed,35,11,M,negative,0,0,0,0,Visually assessed female.
+RTF273,2021-11-05 00:00:00,206,42,Exposed,35,11,F,negative,0,0,0,0,
+RTF274,2021-11-05 00:00:00,206,42,Exposed,35,11,M,negative,0,0,0,0,Visually assessed female.
+RTF275,2021-11-05 00:00:00,206,42,Exposed,35,11,M,negative,0,0,0,0,
+RTF276,2021-11-05 00:00:00,206,42,Exposed,32,1,F,negative,0,0,0,0,
+RTF277,2021-11-05 00:00:00,206,42,Exposed,32,1,M,negative,0,0,0,0,Visually assessed female.
+RTF278,2021-11-05 00:00:00,206,42,Exposed,32,1,M,positive,9,0,0,0,
+RTF279,2021-11-05 00:00:00,206,42,Exposed,32,1,M,positive,7,0,0,0,
+RTF280,2021-11-05 00:00:00,206,42,Exposed,32,1,F,positive,2,0,0,0,
+RTF281,2021-11-05 00:00:00,206,42,Exposed,28,6,M,negative,0,0,0,0,
+RTF282,2021-11-05 00:00:00,206,42,Exposed,28,6,M,positive,14,1,0,0,
+RTF283,2021-11-05 00:00:00,206,42,Exposed,28,6,M,positive,12,0,0,0,Small fish
+RTF284,2021-11-05 00:00:00,206,42,Exposed,28,6,M,negative,0,0,0,0,Skinny
+RTF285,2021-11-05 00:00:00,206,42,Exposed,28,6,F,positive,12,0,0,0,Immature
+RTF287,2021-11-05 00:00:00,206,42,Exposed,28,10,F,positive,4,1,0,0,
+RTF288,2021-11-05 00:00:00,206,42,Exposed,28,10,M,positive,4,0,1,0,
+RTF289,2021-11-05 00:00:00,206,42,Exposed,28,10,M,positive,7,2,0,0,Small? Male?
+RTF290,2021-11-05 00:00:00,206,42,Exposed,28,10,M,positive,6,3,0,0,Visually assessed female; male?
+RTF292,2021-11-05 00:00:00,206,42,Exposed,35,3,M,negative,0,0,0,0,
+RTF293,2021-11-05 00:00:00,206,42,Exposed,35,3,F,negative,0,0,0,0,
+RTF294,2021-11-05 00:00:00,206,42,Exposed,35,3,M,negative,0,0,0,0,
+RTF295,2021-11-05 00:00:00,206,42,Exposed,35,3,F,negative,0,0,0,0,
+RTF299,2021-11-05 00:00:00,206,42,Exposed,32,8,F,positive,1,0,0,0,Visually assessed male.
+RTF300,2021-11-05 00:00:00,206,42,Exposed,32,8,M,positive,14,0,0,0,
+RTF301,2021-11-05 00:00:00,206,42,Control,32,12,M,negative,0,0,0,0,Visually assessed female.

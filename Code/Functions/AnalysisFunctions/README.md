@@ -1,3 +1,3 @@
-# Dada2
+# Analysis Functions
 
-This folder contains files related to Dada2
+This folder contains files for analysis functions

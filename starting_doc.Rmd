@@ -1,6 +1,6 @@
 ---
 title: "Getting Started Doc"
-author: "Your Name Here"
+author: "Michael Sieler"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
   html_document: 
@@ -50,7 +50,7 @@ path.results <- paste0(proj.path,"/Results")
 
 # Analysis ID
 analysis.ID <- paste0(
-  "ZF-Heater2022_",  # Data subsetted? If so, how? "<name>_"
+  "Sieler2024_",  # Data subsetted? If so, how? "<name>_"
   Sys.Date()#,  # Date of analysis
   # "_rf"  # Extra flags to differentiate analysis from prior analyses
 )
