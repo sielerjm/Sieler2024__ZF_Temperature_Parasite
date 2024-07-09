@@ -1,0 +1,127 @@
+---
+title: "PostDADA2Cleaning"
+author: "Michael Sieler"
+date: "2024-07-08"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Overview
+
+Description:
+- This document is for any post-DADA2 cleaning of the metadata sheet to facilitate data analysis (e.g., renaming columns)
+
+Input: 
+- Phyloseq object generated after running DADA2
+
+Output:
+- Phyloseq with updated variable names for microbiome analysis
+
+## Import Phyloseq Object
+
+```{r}
+
+ps.postDADA2 <- readRDS( file.path(path.code, "Dada2/dada2_1.26.0_2022-11-15_output/phyloseq.rds") )
+
+```
+
+## Cleaning Phyloseq Object
+
+### MicroViz
+
+```{r}
+
+ps.MicroViz <- phyloseq_validate(ps.postDADA2, remove_undetected = TRUE)
+
+# Remove unwanted reads ala Ed W. Davis
+
+ps.MicroViz_2 <- ps.MicroViz %>%
+  # Fix names for taxonomic ranks not identified
+  tax_fix(suffix_rank = "current", anon_unique = T, unknown = NA) %>% 
+  # Filter out any samples that contain less than 5000 reads
+  ps_filter(sample_sums(.) > 5000) %>%
+  # Any taxa not found in at least 3 samples are removed
+  tax_filter(min_prevalence = 3, undetected = 0) %>%
+  # Remove any unwanted reads
+  tax_select(c("Mitochondria", "Chloroplast", "Eukaryota"), deselect = TRUE) %>%
+  tax_select(c("Bacteria, Phylum"), deselect = TRUE) 
+
+# Check
+samdat_tbl(ps.MicroViz_2)
+# view(taxa.data.table(ps.raw.val.fix))
+```
+
+### Add Helper Columns
+
+```{r}
+ps.MicroViz_3 <-
+  ps.MicroViz_2 %>%
+  # For color scheme
+    microViz::ps_mutate(
+      Treatment = as.factor(Treatment),
+      Temperature = as.factor(Temperature),
+      # DPE = as.factor(DPE),
+      
+  # Interaction terms
+      Temp.DPE = paste0(Temperature,"°C__", DPE, "DPE"), 
+      Temp.Treat = paste0(Temperature,"°C__", Treatment),
+      Treat.Temp.DPE = paste0(Treatment, "__", Temperature,"°C__", DPE, "DPE"),
+  # Factorize
+      Treat.Temp.DPE = as.factor(Treat.Temp.DPE),
+      Treatment. = as.numeric(Treatment),
+      Temperature. = as.numeric(Temperature),
+      DPE. = as.numeric(as.factor(DPE)),
+      Temp.DPE. = as.numeric(as.factor(Temp.DPE)),
+      Temp.Treat. = as.numeric(as.factor(Temp.Treat)),
+      Treat.Temp.DPE. = as.numeric(Treat.Temp.DPE)
+    ) %>% 
+  
+  # Clean up Pathology Results Column
+  
+    # If == NA, assign "negative"
+    microViz::ps_mutate(Pathology.Results = ifelse(is.na(Pathology.Results), "negative", Pathology.Results)) %>%
+  
+    microViz::ps_mutate(Path.Res. = as.numeric(as.factor(Pathology.Results)),
+                        Temp.Path = paste0(Temperature,"°C__", ifelse(Pathology.Results == "positive", "pos", "neg")),
+                        Temp.Path. = as.numeric(as.factor(Temp.Path))) %>%
+    microViz::ps_mutate(Total.Worm.Count = ifelse(is.na(Total.Worm.Count), 0, Total.Worm.Count)) %>%
+  
+  # Add a column for "Pre-exposure" and "Post-Exposure"
+    microViz::ps_mutate(PrePostExp = case_when(
+      DPE == 0 ~ "Pre-Exposure",
+      DPE != 0 ~ "Post-Exposure",
+    )) %>%
+    microViz::ps_mutate(PrePostExp = fct_relevel(factor(PrePostExp, 
+                                                        levels = c("Pre-Exposure", "Post-Exposure")))) %>%
+    microViz::ps_mutate(Temp.PPE.Treat = paste0(Temperature,"°C__", PrePostExp, "__", Treatment)) %>%
+
+  # Misc
+    microViz::tax_names2rank(colname = "unique") # Unique ASVs listed under "unique" column
+
+
+ps.MicroViz_3 %>% samdat_tbl()
+```
+
+
+## Save Phyloseq Object
+
+```{r}
+# Save PS obj, MicroViz
+saveRDS(ps.MicroViz_3, file = file.path(path.data, "R_objects", paste0("phyloseq__PostDADA2Cleaning_", Sys.Date(),".rds")))
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
