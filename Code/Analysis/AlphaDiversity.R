@@ -16,7 +16,7 @@ ps.list[["All"]] <- # Saves to the phyloseq object
   ps_calc_diversity(
     rank = "Genus",
     index = "inverse_simpson",
-    varname = "Simpson_Genus" # Column name in sample data
+    varname = "Simpson__Genus" # Column name in sample data
   ) %>%
   ps_calc_richness( # related to ps_calc_diversity, this calculates richness or "observed" values
     rank = "Genus",
@@ -41,7 +41,7 @@ ps.list[["Unexposed"]] <- # Saves to the phyloseq object
   ps_calc_diversity(
     rank = "Genus",
     index = "inverse_simpson",
-    varname = "Simpson_Genus" # Column name in sample data
+    varname = "Simpson__Genus" # Column name in sample data
   ) %>%
   ps_calc_richness( # related to ps_calc_diversity, this calculates richness or "observed" values
     rank = "Genus",
@@ -66,7 +66,7 @@ ps.list[["Exposed"]] <- # Saves to the phyloseq object
   ps_calc_diversity(
     rank = "Genus",
     index = "inverse_simpson",
-    varname = "Simpson_Genus" # Column name in sample data
+    varname = "Simpson__Genus" # Column name in sample data
   ) %>%
   ps_calc_richness( # related to ps_calc_diversity, this calculates richness or "observed" values
     rank = "Genus",
@@ -91,7 +91,7 @@ ps.list[["PreExposed"]] <- # Saves to the phyloseq object
   ps_calc_diversity(
     rank = "Genus",
     index = "inverse_simpson",
-    varname = "Simpson_Genus" # Column name in sample data
+    varname = "Simpson__Genus" # Column name in sample data
   ) %>%
   ps_calc_richness( # related to ps_calc_diversity, this calculates richness or "observed" values
     rank = "Genus",
@@ -117,7 +117,7 @@ ps.list[["PostExposed"]] <- # Saves to the phyloseq object
   ps_calc_diversity(
     rank = "Genus",
     index = "inverse_simpson",
-    varname = "Simpson_Genus" # Column name in sample data
+    varname = "Simpson__Genus" # Column name in sample data
   ) %>%
   ps_calc_richness( # related to ps_calc_diversity, this calculates richness or "observed" values
     rank = "Genus",
