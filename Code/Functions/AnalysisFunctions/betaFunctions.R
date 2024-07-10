@@ -127,7 +127,7 @@ get_HoD_anova <- function(betaDisper, beta_metric_col = diversity.method[["beta"
 }
 
 
-# Get HOD ADONIS (Beta) -------------------------------------------------------------------------
+# Get HOD Tukey (Beta) -------------------------------------------------------------------------
 # Description: 
 # Input: 
 # Output: 

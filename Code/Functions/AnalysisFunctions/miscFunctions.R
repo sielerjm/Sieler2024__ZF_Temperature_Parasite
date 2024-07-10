@@ -139,19 +139,76 @@ psObjToDfLong <- function(ps.obj,
 }
 
 
-# -------------------------------------------------------------------------
+# Print Tables -------------------------------------------------------------------------
 # Description: 
-# Input: 
-# Output: 
+# Input: list of GT tables
+# Output: Prints GT tables to screen
+
+print_tables <- function(x, parent_name = "") {
+  if (is.list(x)) {
+    for (name in names(x)) {
+      new_parent_name <- paste0(parent_name, if (parent_name != "") "::", name)
+      if (grepl("Table", name)) {
+        print(paste0("Table found: ", new_parent_name))
+        print(x[[name]])
+      } else {
+        print_tables(x[[name]], new_parent_name)
+      }
+    }
+  }
+}
 
 
-
-# -------------------------------------------------------------------------
+# Save Tables PDF -------------------------------------------------------------------------
 # Description: 
-# Input: 
-# Output: 
+# Input: list of GT tables
+# Output: Saves pdfs to desired location
 
-
+save_tables_as_files <- function(x, parent_name = "", output_dir = "output", counter = 1, suffix = "", format = "pdf") {
+  pdf_dir <- file.path(output_dir, "PDF")
+  png_dir <- file.path(output_dir, "PNG")
+  
+  if (!dir.exists(output_dir)) {
+    dir.create(output_dir)
+  }
+  
+  if (format == "pdf" && !dir.exists(pdf_dir)) {
+    dir.create(pdf_dir, recursive = TRUE)
+  }
+  
+  if (format == "png" && !dir.exists(png_dir)) {
+    dir.create(png_dir, recursive = TRUE)
+  }
+  
+  
+  if (is.list(x)) {
+    for (name in names(x)) {
+      new_parent_name <- paste0(parent_name, if (parent_name != "") "::", name)
+      if (grepl("Table", name)) {
+        file_name <- gsub("[::\\.]", "-", new_parent_name)  # Replace "::" and "." with "-"
+        sub_dir <- if (format == "pdf") pdf_dir else png_dir
+        file_path <- file.path(sub_dir, paste0(suffix, "_", counter, "_", file_name, ".", format))
+        cat("Saving Table:", file_path, "\n")
+        
+        # Save the gt table as PDF or PNG
+        gt_table <- x[[name]]
+        if (format == "pdf") {
+          gtsave(data = gt_table, filename = file_path)
+        } else if (format == "png") {
+          gtsave(data = gt_table, filename = file_path, vwidth = 800, vheight = 600, expand = 0)
+        } else {
+          stop("Unsupported format. Use 'pdf' or 'png'.")
+        }
+        
+        counter <- counter + 1  # Increment the counter for the next table
+      } else {
+        counter <- save_tables_as_files(x[[name]], new_parent_name, output_dir, counter, suffix, format)
+      }
+    }
+  }
+  
+  return(counter)
+}
 
 
 # -------------------------------------------------------------------------

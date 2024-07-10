@@ -1,5 +1,5 @@
 
-# 01__Temp_Unexposed__Stats_Plots --------------------------------------------------
+# 02__Temp_Unexposed__Stats_Plots --------------------------------------------------
 
 tmp.psOBJ <- ps.list[["Unexposed"]]
 tmp.resSubSection <- "Unexposed"
@@ -10,7 +10,7 @@ tmp.resSubSection <- "Unexposed"
 
 #### GLM ---------------------------------------------------------------------
 
-alpha.stats[[tmp.resSubSection]][["Temperature"]][["GLM"]] <- 
+alpha.stats[[tmp.resSubSection]][["TEMP"]][["GLM"]] <- 
   tmp.psOBJ %>%
   
   # Convert phyloseq object into a dataframe and pivot longer by Alpha Metric and Score
@@ -24,8 +24,8 @@ alpha.stats[[tmp.resSubSection]][["Temperature"]][["GLM"]] <-
 
 ### Table
 
-alpha.stats[[tmp.resSubSection]][["Temperature"]][["GLM.Table"]] <-
-  alpha.stats[[tmp.resSubSection]][["Temperature"]][["GLM"]] %>%
+alpha.stats[[tmp.resSubSection]][["TEMP"]][["GLM.Table"]] <-
+  alpha.stats[[tmp.resSubSection]][["TEMP"]][["GLM"]] %>%
   
   # Create a column called "Alpha.Metric" for each metric's GLM model
   purrr::imap(., ~tidy(.x) %>% mutate(Alpha.Metric = .y)) %>%
@@ -48,13 +48,13 @@ alpha.stats[[tmp.resSubSection]][["Temperature"]][["GLM.Table"]] <-
 
 #### ANOVA -------------------------------------------------------------------
 
-alpha.stats[[tmp.resSubSection]][["Temperature"]][["ANOVA"]] <-
-  run_glm_anova(alpha.stats[[tmp.resSubSection]][["Temperature"]][["GLM"]])
+alpha.stats[[tmp.resSubSection]][["TEMP"]][["ANOVA"]] <-
+  run_glm_anova(alpha.stats[[tmp.resSubSection]][["TEMP"]][["GLM"]])
 
 ### Table
 
-alpha.stats[[tmp.resSubSection]][["Temperature"]][["ANOVA.Table"]] <-
-  alpha.stats[[tmp.resSubSection]][["Temperature"]][["ANOVA"]] %>%
+alpha.stats[[tmp.resSubSection]][["TEMP"]][["ANOVA.Table"]] <-
+  alpha.stats[[tmp.resSubSection]][["TEMP"]][["ANOVA"]] %>%
   
   # Create GT Table
   set_GT(var = "p.value", group.by = "Alpha.Metric") %>%
@@ -69,7 +69,7 @@ alpha.stats[[tmp.resSubSection]][["Temperature"]][["ANOVA.Table"]] <-
 
 #### TUKEY -------------------------------------------------------------------
 
-alpha.stats[[tmp.resSubSection]][["Temperature"]][["Tukey"]] <-
+alpha.stats[[tmp.resSubSection]][["TEMP"]][["Tukey"]] <-
   tmp.psOBJ %>%
   
   # Convert phyloseq object into a dataframe and pivot longer by Alpha Metric and Score
@@ -84,8 +84,8 @@ alpha.stats[[tmp.resSubSection]][["Temperature"]][["Tukey"]] <-
 
 ### Table
 
-alpha.stats[[tmp.resSubSection]][["Temperature"]][["Tukey.Table"]] <-
-  alpha.stats[[tmp.resSubSection]][["Temperature"]][["Tukey"]] %>%
+alpha.stats[[tmp.resSubSection]][["TEMP"]][["Tukey.Table"]] <-
+  alpha.stats[[tmp.resSubSection]][["TEMP"]][["Tukey"]] %>%
   
   # Combine the different alpha diversity metrics into one dataframe
   dplyr::bind_rows() %>%
@@ -107,7 +107,7 @@ alpha.stats[[tmp.resSubSection]][["Temperature"]][["Tukey.Table"]] <-
 
 #### Capscale ----------------------------------------------------------------
 
-beta.stats[[tmp.resSubSection]][["Temperature"]][["CAP.mod"]] <-
+beta.stats[[tmp.resSubSection]][["TEMP"]][["CAP.mod"]] <-
   run_capscale(ps.list[[tmp.resSubSection]], 
                dist.matrix = beta.dist.mat[[tmp.resSubSection]], 
                formula_str = "dist ~ Temperature")
@@ -116,7 +116,7 @@ beta.stats[[tmp.resSubSection]][["Temperature"]][["CAP.mod"]] <-
 
 ##### ADONIS ------------------------------------------------------------------
 
-beta.stats[[tmp.resSubSection]][["Temperature"]][["CAP.ADONIS"]] <-
+beta.stats[[tmp.resSubSection]][["TEMP"]][["CAP.ADONIS"]] <-
   run_cap_adonis(ps.list[[tmp.resSubSection]],
                  dist.matrix = beta.dist.mat[[tmp.resSubSection]], 
                  formula_str = "dist ~ Temperature",
@@ -124,8 +124,8 @@ beta.stats[[tmp.resSubSection]][["Temperature"]][["CAP.ADONIS"]] <-
 
 ### Table
 
-beta.stats[[tmp.resSubSection]][["Temperature"]][["CAP.ADONIS.Table"]] <-
-  beta.stats[[tmp.resSubSection]][["Temperature"]][["CAP.ADONIS"]] %>%
+beta.stats[[tmp.resSubSection]][["TEMP"]][["CAP.ADONIS.Table"]] <-
+  beta.stats[[tmp.resSubSection]][["TEMP"]][["CAP.ADONIS"]] %>%
     set_GT(var = "p.value", group.by = "Beta.Metric") %>%
   
   # Title/caption
@@ -137,20 +137,20 @@ beta.stats[[tmp.resSubSection]][["Temperature"]][["CAP.ADONIS.Table"]] <-
 
 #### Dispersion --------------------------------------------------------------
 
-beta.stats[[tmp.resSubSection]][["Temperature"]][["HoD.model"]] <-
+beta.stats[[tmp.resSubSection]][["TEMP"]][["HoD.model"]] <-
   run_BetaDispersion(dist.matrix = beta.dist.mat[[tmp.resSubSection]], 
                      var = c("Temperature"))
 
 ##### ANOVA ------------------------------------------------------------------
 
-beta.stats[[tmp.resSubSection]][["Temperature"]][["HoD.ANOVA"]] <-
-  get_HoD_anova(betaDisper = beta.stats[[tmp.resSubSection]][["Temperature"]][["HoD.model"]],
+beta.stats[[tmp.resSubSection]][["TEMP"]][["HoD.ANOVA"]] <-
+  get_HoD_anova(betaDisper = beta.stats[[tmp.resSubSection]][["TEMP"]][["HoD.model"]],
                 var = c("Temperature"))
 
 ### Table
 
-beta.stats[[tmp.resSubSection]][["Temperature"]][["HoD.ANOVA.Table"]] <-
-  beta.stats[[tmp.resSubSection]][["Temperature"]][["HoD.ANOVA"]] %>%
+beta.stats[[tmp.resSubSection]][["TEMP"]][["HoD.ANOVA.Table"]] <-
+  beta.stats[[tmp.resSubSection]][["TEMP"]][["HoD.ANOVA"]] %>%
   
     # Create the table
     dplyr::group_by(Beta.Metric) %>%
@@ -164,14 +164,14 @@ beta.stats[[tmp.resSubSection]][["Temperature"]][["HoD.ANOVA.Table"]] <-
 
 ##### Tukey ------------------------------------------------------------------
 
-beta.stats[[tmp.resSubSection]][["Temperature"]][["HoD.Tukey"]] <-
-  get_HoD_tukey(betaDisper = beta.stats[[tmp.resSubSection]][["Temperature"]][["HoD.model"]],
+beta.stats[[tmp.resSubSection]][["TEMP"]][["HoD.Tukey"]] <-
+  get_HoD_tukey(betaDisper = beta.stats[[tmp.resSubSection]][["TEMP"]][["HoD.model"]],
                 var = c("Temperature")) 
 
 ### Table
 
-beta.stats[[tmp.resSubSection]][["Temperature"]][["HoD.Tukey.Table"]] <-
-  beta.stats[[tmp.resSubSection]][["Temperature"]][["HoD.Tukey"]] %>%
+beta.stats[[tmp.resSubSection]][["TEMP"]][["HoD.Tukey.Table"]] <-
+  beta.stats[[tmp.resSubSection]][["TEMP"]][["HoD.Tukey"]] %>%
   
   # Create the table
   dplyr::group_by(Beta.Metric) %>%
