@@ -2,6 +2,181 @@
 
 
 
+# Run Capscale -------------------------------------------------------------------------
+# Description: 
+# Input: 
+# Output: 
+
+
+run_capscale <- function( ps.OBJ, dist.matrix, beta_metric_col = diversity.method[["beta"]], formula_str) {
+  
+  # Get sample data
+  data <- ps.OBJ %>% microViz::samdat_tbl()
+  
+  # Extract unique alpha metrics
+  unique_metrics <- beta_metric_col
+    
+  # Run Cap models for each unique alpha metric
+  cap_models <- purrr::map(unique_metrics, function(x){
+    
+    # Get distance matrix
+    dist <- dist.matrix[[x]] %>% microViz::dist_get()
+    
+    # Run capscale
+    vegan::capscale(as.formula(formula_str), data = data,
+                    na.action = na.omit,
+                    sqrt.dist = FALSE)
+  }) %>% setNames(unique_metrics) 
+  
+  return(cap_models)
+}
+
+
+# Run Capscale ADONIS (Beta) -------------------------------------------------------------------------
+# Description: 
+# Input: 
+# Output: 
+
+run_cap_adonis <- function(ps.OBJ, dist.matrix, beta_metric_col = diversity.method[["beta"]], formula_str, by.method = "margin") {
+
+    # Get sample data
+  data <- ps.OBJ %>% microViz::samdat_tbl()
+  
+  # Extract unique alpha metrics
+  unique_metrics <- beta_metric_col
+  
+  # Run Cap models for each unique alpha metric
+  anova.table <- purrr::map(unique_metrics, function(x){
+    
+    # Get distance matrix
+    dist <- dist.matrix[[x]] %>% microViz::dist_get()
+    
+    # Run Adonis
+    adonis2(formula = as.formula(formula_str), data, by = by.method, parallel = 8) %>%
+      broom::tidy() %>%
+      dplyr::mutate(Beta.Metric = x, .before = 1)  %>%
+      dplyr::mutate(sig = case_when(
+        p.value <= 0.0001 ~ "****",
+        p.value <= 0.001 ~ "***",
+        p.value <= 0.01 ~ "**",
+        p.value < 0.05 ~ "*",
+        p.value >= 0.05 ~ "ns"))
+  }) %>% setNames(unique_metrics) %>% dplyr::bind_rows()
+  
+  return(anova.table)
+}
+
+
+# Run Capscale -------------------------------------------------------------------------
+# Description: 
+# Input: 
+# Output: 
+
+
+run_BetaDispersion <- function(dist.matrix, beta_metric_col = diversity.method[["beta"]], var) {
+  
+  # Extract unique alpha metrics
+  unique_metrics <- beta_metric_col
+  
+  # Run HoD models for each unique alpha metric
+  HoD_models <- purrr::map(unique_metrics, function(x){
+    
+    dist.matrix[[x]] %>% 
+      microViz::dist_bdisp(variables = var) %>% 
+      microViz::bdisp_get()
+
+  }) %>% setNames(unique_metrics) 
+  
+  return(HoD_models)
+}
+
+
+# Get HOD ADONIS (Beta) -------------------------------------------------------------------------
+# Description: 
+# Input: 
+# Output: 
+
+get_HoD_anova <- function(betaDisper, beta_metric_col = diversity.method[["beta"]], var) {
+  
+  # Extract unique alpha metrics
+  unique_metrics <- beta_metric_col
+  
+  anova.table <-
+    purrr::map(unique_metrics, function(x){
+      purrr::map(c(var), function(y){
+        
+        betaDisper[[x]][[y]][["anova"]] %>% 
+          broom::tidy() %>%
+          dplyr::mutate(Beta.Metric = x, 
+                        .before = 1) %>%
+          dplyr::mutate(term = dplyr::case_when(
+            term == "Groups" ~ y,
+            .default =  "Residual"
+          )) %>%
+          dplyr::mutate(sig = case_when(
+            p.value <= 0.0001 ~ "****",
+            p.value <= 0.001 ~ "***",
+            p.value <= 0.01 ~ "**",
+            p.value < 0.05 ~ "*", 
+            p.value >= 0.05 ~ "ns")) 
+        
+      }) %>% bind_rows()
+    }) %>% bind_rows() 
+  
+  return(anova.table)
+}
+
+
+# Get HOD ADONIS (Beta) -------------------------------------------------------------------------
+# Description: 
+# Input: 
+# Output: 
+
+get_HoD_tukey <- function(betaDisper, beta_metric_col = diversity.method[["beta"]], var) {
+  
+  # Extract unique alpha metrics
+  unique_metrics <- beta_metric_col
+  
+  tukey.table <-
+    purrr::map(unique_metrics, function(x){
+      purrr::map(c(var), function(y){
+        
+        betaDisper[[x]][[y]][["tukeyHSD"]] %>% 
+          broom::tidy() %>%
+          dplyr::mutate(Beta.Metric = x, 
+                        .before = 1) %>%
+          dplyr::mutate(term = y) %>%
+          # dplyr::mutate(term = dplyr::case_when(
+          #   term == "Groups" ~ y,
+          #   .default =  "Residual"
+          # )) %>%
+          dplyr::mutate(sig = case_when(
+            adj.p.value <= 0.0001 ~ "****",
+            adj.p.value <= 0.001 ~ "***",
+            adj.p.value <= 0.01 ~ "**",
+            adj.p.value < 0.05 ~ "*", 
+            adj.p.value >= 0.05 ~ "ns")) 
+        
+      }) %>% bind_rows()
+    }) %>% bind_rows()  %>%
+    select(-c(null.value)) %>%
+    tidyr::separate(contrast, c('group1', 'group2'), sep = "-") %>% # Dataframe clean up
+    dplyr::mutate(`.y.` = "Distance", .after = 1) 
+  
+  return(tukey.table)
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
