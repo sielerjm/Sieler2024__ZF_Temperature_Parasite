@@ -68,4 +68,11 @@ analysis.ID <- paste0(
 
 ## Analyses
 
-After successfully loading libraries and data, you can run the individual analylsis scripts found within `Code/Analysis`.
+### Stats & Plots
+
+```{r}
+# This function will run all the scripts within the folders contained in Analysis directory
+sourceFolder(paste0(proj.path,"/Code/Analysis"), T)
+
+```
+
