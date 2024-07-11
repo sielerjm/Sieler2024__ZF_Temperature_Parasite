@@ -40,3 +40,8 @@ vignettes/*.pdf
 
 # Shiny token, see https://shiny.rstudio.com/articles/shinyapps.html
 rsconnect/
+
+
+# Files that are > 100mb
+
+Code/Dada2/dada2_1.26.0_2022-11-15_output/asv_and_guide_seqs.align
