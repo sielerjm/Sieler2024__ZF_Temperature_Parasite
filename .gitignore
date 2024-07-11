@@ -42,6 +42,6 @@ vignettes/*.pdf
 rsconnect/
 
 
-# Files that are > 100mb
+# Files that are > 100mb (as needed)
 
 Code/Dada2/dada2_1.26.0_2022-11-15_output/asv_and_guide_seqs.align
