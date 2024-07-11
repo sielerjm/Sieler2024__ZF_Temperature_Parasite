@@ -42,8 +42,8 @@ pal.BrBg <- RColorBrewer::brewer.pal(11, "BrBG")
 
 ## Plot Specific Palettes --------------------------------------------------
 
-col.Temp <- pal.Spectral[c(9,8,1)]
-# col.Temp <- pal.Spectral[c(9,8,1)]
+# col.Temp <- pal.Spectral[c(9,8,1)] # c("#3288BD" "#66C2A5" "#D53E4F")
+col.Temp <- c("#3B65DB", "#7AB84C", "#A03022")
 col.DPE <- RColorBrewer::brewer.pal(9, "YlOrRd")
 col.Treat <- c(pal.Dark2[c(3,5)])
 col.Worm <- RColorBrewer::brewer.pal(9, "YlOrBr")

@@ -37,7 +37,8 @@ proj.path <- getwd()
 source(paste0(proj.path,"/Code/Functions/StartFunctions/sourceFolder.R"))
 
 # Import all helper functions found in `/Functions`
-sourceFolder(paste0(proj.path,"/Code/Functions"), T)
+sourceFolder(paste0(proj.path,"/Code/Functions/StartFunctions"), T)
+sourceFolder(paste0(proj.path,"/Code/Functions/HelperFunctions"), T)
 
 
 
@@ -47,13 +48,6 @@ path.data <- paste0(proj.path,"/Data")
 path.objects <- paste0(proj.path, "/Data/R_objects")
 path.input <- paste0(proj.path,"/Data/Input") 
 path.results <- paste0(proj.path,"/Results") 
-
-# Analysis ID
-analysis.ID <- paste0(
-  "Sieler2024_",  # Data subsetted? If so, how? "<name>_"
-  Sys.Date()#,  # Date of analysis
-  # "_rf"  # Extra flags to differentiate analysis from prior analyses
-)
 
 # Load Environment
 ## This loads all the data required for analysis.
@@ -70,9 +64,14 @@ analysis.ID <- paste0(
 
 ### Stats & Plots
 
+Run this code to:
+  - Calculate alpha diversity scores
+  - Calculate beta dissimilarity matrices
+  - Run code to generate alpha and beta stats and plots
+
 ```{r}
 # This function will run all the scripts within the folders contained in Analysis directory
-sourceFolder(paste0(proj.path,"/Code/Analysis"), T)
+source(paste0(proj.path,"/MicrobiomeProcessing_2024-07-08.R"))
 
 ```
 

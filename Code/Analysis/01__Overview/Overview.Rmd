@@ -6,7 +6,7 @@ output: html_document
 ---
 
 ## Print Tables
-```{r}
+```{r eval=FALSE, include=FALSE}
 
 table.path <- "/Users/michaelsieler/Dropbox/Mac (2)/Documents/Sharpton_Lab/Projects_Repository/Rules_of_Life/Sieler2024__ZF_Temperature_Parasite/Results/Tables"
 

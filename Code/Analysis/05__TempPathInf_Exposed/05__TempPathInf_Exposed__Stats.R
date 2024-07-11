@@ -142,13 +142,13 @@ beta.stats[[tmp.resSubSection]][["TEMP:PATH"]][["CAP.ADONIS.Table"]] <-
 
 beta.stats[[tmp.resSubSection]][["TEMP:PATH"]][["HoD.model"]] <-
   run_BetaDispersion(dist.matrix = beta.dist.mat[[tmp.resSubSection]], 
-                     var = c("Temp.DPE"))
+                     var = c("Temp.Path"))
 
 ##### ANOVA ------------------------------------------------------------------
 
 beta.stats[[tmp.resSubSection]][["TEMP:PATH"]][["HoD.ANOVA"]] <-
   get_HoD_anova(betaDisper = beta.stats[[tmp.resSubSection]][["TEMP:PATH"]][["HoD.model"]],
-                var = c("Temp.DPE"))
+                var = c("Temp.Path"))
 
 ### Table
 
@@ -162,14 +162,14 @@ beta.stats[[tmp.resSubSection]][["TEMP:PATH"]][["HoD.ANOVA.Table"]] <-
   # Title/caption
   gt::tab_header(
     title = "ANOVA: Homogeneity of Dispersion",
-    subtitle = "ANOVA(Beta Disperson ~ Temperature); Exposed fish"
+    subtitle = "ANOVA(Beta Disperson ~ Temperature*Pathology.Results); Exposed fish"
   )
 
 ##### Tukey ------------------------------------------------------------------
 
 beta.stats[[tmp.resSubSection]][["TEMP:PATH"]][["HoD.Tukey"]] <-
   get_HoD_tukey(betaDisper = beta.stats[[tmp.resSubSection]][["TEMP:PATH"]][["HoD.model"]],
-                var = c("Temp.Path.")) 
+                var = c("Temp.Path")) 
 
 ### Table
 

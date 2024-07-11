@@ -105,15 +105,27 @@ ps.list[["PostExposed"]] <-
 
 ### Calculate Scores --------------------------------------------------------
 
-source(paste0(proj.path,"/Code/Functions/AnalysisFunctions/AlphaDiversity.R"))
+source(paste0(proj.path,"/Code/Functions/AnalysisScripts/AlphaDiversity.R"))
 
 
 ## Beta -------------------------------------------------------------------
 
 ### Calculate Scores --------------------------------------------------------
 
-source(paste0(proj.path,"/Code/Functions/AnalysisFunctions/BetaDiversity.R"))
+source(paste0(proj.path,"/Code/Functions/AnalysisScripts/BetaDiversity.R"))
 
+
+
+# Stats & Plots -----------------------------------------------------------
+
+
+## Run stats ---------------------------------------------------------------
+
+sourceFolder(paste0(proj.path,"/Code/Analysis"), T)
+
+## Make plots ---------------------------------------------------------------
+
+sourceFolder(paste0(proj.path,"/Code/Plots"), T)
 
 # Save Environment --------------------------------------------------------
 
