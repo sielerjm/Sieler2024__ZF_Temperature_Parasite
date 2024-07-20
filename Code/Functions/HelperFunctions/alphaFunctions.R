@@ -192,7 +192,7 @@ run_tukey_glm <- function(data, alpha_score_col, alpha_metric_col, variables, gr
         set_names() %>%
         map_df(~ run_glm_tukey(metric_data, .x, alpha_score_col, group_by_var)) %>%
         mutate(Alpha.Metric = .x) %>%
-        select(-c(null.value)) %>%
+        dplyr::select(-any_of("null.value")) %>%
         tidyr::separate(contrast, c('group1', 'group2'), sep = " - ") %>% # Dataframe clean up
         dplyr::mutate(`.y.` = "Alpha.Score", .after = 1) 
     })

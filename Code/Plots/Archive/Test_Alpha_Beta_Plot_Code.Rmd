@@ -1,0 +1,4374 @@
+---
+title: "Test_Alpha_Beta_Plots"
+author: "Michael Sieler"
+date: "2024-07-13"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+tmp.psOBJ <- ps.list[["All"]]
+tmp.resSubSection <- "All"
+
+```
+
+
+```{r}
+data.dynamics[["Alpha"]][["Metadata"]] %>%
+  cutCellNames(col = "Alpha.Metric") %>%
+  filter(Alpha.Metric == "Simpson") %>%
+  select(Sample, Treatment, Temperature, DPE, Alpha.Metric, Alpha.Score)
+```
+
+
+
+## Alpha
+
+```{r, fig.width=11, fig.height=5, warning=FALSE}
+data.median <- 
+  data.dynamics[["Alpha"]][["Metadata"]] %>%
+    cutCellNames(col = "Alpha.Metric") %>%
+    filter(Alpha.Metric == "Simpson") %>%
+    
+    group_by(Temperature, Treatment, DPE, Alpha.Metric) %>%
+    summarize(
+      Alpha.Score_median = median(Alpha.Score),
+      CI_lower = boot::boot(Alpha.Score, median_func, R = 1000, 
+                            parallel = "multicore")$t0 - 1.96 * sd(boot::boot(Alpha.Score, median_func, R = 1000, 
+                                                                              parallel = "multicore")$t),
+      CI_upper = boot::boot(Alpha.Score, median_func, R = 1000, 
+                            parallel = "multicore")$t0 + 1.96 * sd(boot::boot(Alpha.Score, median_func, R = 1000, 
+                                                                              parallel = "multicore")$t)
+    ) 
+
+data.median %>%
+  filter(DPE == 42)
+
+```
+
+
+
+```{r, fig.width=11, fig.height=5, warning=FALSE}
+data.mean <- 
+  data.dynamics[["Alpha"]][["Metadata"]] %>%
+    cutCellNames(col = "Alpha.Metric") %>%
+    filter(Alpha.Metric == "Simpson") %>%
+    
+    group_by(Temperature, Treatment, DPE, Alpha.Metric) %>%
+    summarize(
+      # Alpha.Score_median = median(Alpha.Score),
+      Alpha.Score_mean = mean(Alpha.Score)
+      # CI_lower = boot::boot(Alpha.Score, median_func, R = 1000, 
+      #                       parallel = "multicore")$t0 - 1.96 * sd(boot::boot(Alpha.Score, median_func, R = 1000, 
+      #                                                                         parallel = "multicore")$t),
+      # CI_upper = boot::boot(Alpha.Score, median_func, R = 1000, 
+      #                       parallel = "multicore")$t0 + 1.96 * sd(boot::boot(Alpha.Score, median_func, R = 1000, 
+      #                                                                         parallel = "multicore")$t)
+    ) 
+
+```
+
+### Control (temp)
+
+#### Stats
+
+#### Stats
+
+##### Tests
+
+```{r}
+run_dunn_test_temp <- function(data) {
+  dunn <- rstatix::dunn_test(Alpha.Score ~ Temperature, data = data, p.adjust.method = "BH") 
+  return(dunn)
+}
+```
+
+
+```{r}
+data.pair_ctrl_temp <-
+  data.dynamics_Unexp[["Alpha"]][["Metadata"]] %>%
+      cutCellNames(col = "Alpha.Metric") %>%
+      filter(Alpha.Metric == "Simpson") %>%
+     # Convert DPE (time) into a factor for pairwise comparison
+      # dplyr::mutate(DPE = as.factor(DPE)) %>%
+    # Group by DPE
+      # group_by(DPE) %>%
+    # Nest the data for looping with map()
+      # nest(data = -c(DPE)) %>%
+  
+  # GLM
+    # Create a column called test to store the results of the GLM, emmeans, contrasts, and tidy
+      # dplyr::mutate(test = map(.x=data, 
+      #                          ~ glm(formula = Alpha.Score ~ -1 + Treatment, data = .x, family = "quasibinomial") %>% 
+      #                            emmeans::emmeans( ~ Treatment ) %>%
+      #                            emmeans::contrast(method = "pairwise", adjust = "tukey") %>% 
+      #                            tidy() )) %>%
+  # Dunn
+  run_dunn_test_temp() %>%
+    #   mutate(test = map(data, ~ run_dunn_test_temp(.x) )) %>%
+    # # Unnest the test column into a tibble
+    #   unnest(test) %>%
+    # # Remove any of the following columns if they exist
+    #   dplyr::select(-any_of(c("null.value", "data"))) %>%
+ 
+  # GLM 
+    # # Separate out the contrast column for later significance bar plotting
+    #   tidyr::separate(contrast, c('group1', 'group2'), sep = " - ") %>% # GLM
+    # # Add a column ".y." for plotting worm counts
+    #   dplyr::mutate(`.y.` = "Alpha.Score", .before = 1) %>%
+    # Clean up cell values under the group1 and 2 columns to get rid of the prefix
+      # dplyr::mutate(group1 = (str_remove(group1, term)),
+      #               group2 = (str_remove(group2, term))) %>%
+  
+    # Ungroup
+      dplyr::ungroup() %>%
+      # SigStars(pval.var = "p.value")
+  SigStars(pval.var = "p.adj.signif")
+    
+```
+
+#### Plot
+
+```{r}
+plot_data_ctrl_temp <- data.dynamics_Unexp[["Alpha"]][["Metadata"]] %>%
+      cutCellNames(col = "Alpha.Metric") %>%
+      filter(Alpha.Metric == "Simpson") %>%
+      # mutate(DPE = as.factor(DPE)) %>%
+      group_by(Temperature, Alpha.Metric) %>%
+    summarize(
+      Alpha.Score = median(Alpha.Score),
+      CI_lower = boot::boot(Alpha.Score, median_func, R = 1000, 
+                            parallel = "multicore")$t0 - 1.96 * sd(boot::boot(Alpha.Score, median_func, R = 1000, 
+                                                                              parallel = "multicore")$t),
+      CI_upper = boot::boot(Alpha.Score, median_func, R = 1000, 
+                            parallel = "multicore")$t0 + 1.96 * sd(boot::boot(Alpha.Score, median_func, R = 1000, 
+                                                                              parallel = "multicore")$t)
+    ) %>%
+  ungroup() %>%
+      left_join(data.pair_ctrl_temp, by = c("Temperature" = "group2"), multiple = "first") %>%
+      mutate(stars = ifelse(p.adj.sig == "ns", NA, "*"))
+```
+
+
+```{r}
+data.points_ctrl_temp <-
+  data.dynamics_Unexp[["Alpha"]][["Metadata"]] %>%
+      cutCellNames(col = "Alpha.Metric") %>%
+      filter(Alpha.Metric == "Simpson") %>%
+      # mutate(DPE = as.factor(DPE)) %>%
+      mutate(Cluster = case_when(
+    ((Treatment == "Exposed") & (Alpha.Score >= quantile(Alpha.Score, .75)) & (Total.Worm.Count > quantile(Total.Worm.Count, 0.75))) ~ "High",
+    ((Treatment == "Exposed") & (Alpha.Score <= quantile(Alpha.Score, .25)) & (Total.Worm.Count > quantile(Total.Worm.Count, 0.75))) ~ "Low",
+    .default = "Other"
+  ), .after = "Treatment") %>%
+  mutate(Cluster = fct_relevel(factor(Cluster, levels = c("Other", "Low", "High")))) 
+```
+
+##### *** Plot
+
+```{r fig.height=6.5, fig.width=7, message=F, warning=FALSE}
+
+plot_data_ctrl_temp %>%  
+  # filter(Treatment == "Control") %>%
+  # dplyr::mutate(DPE = as.numeric(levels(DPE)[DPE])) %>%
+  ggplot(aes(x = Temperature, y = Alpha.Score)) +
+
+  
+  ## Background Points ##
+  
+  geom_violin(data = data.points_ctrl_temp, aes(color = Temperature,
+                      fill = Temperature,
+                      group = interaction(Temperature)),
+                  # position = position_dodge(width = 5),
+                  # width = 4,
+                  size = 1.25,
+                  alpha = .75,
+                  scale = "width",
+            show.legend = F,
+           na.rm = T) +
+  scale_fill_manual(values = c(col.Temp, "white"), name = "Temp (°C)", guide = "none") +
+    # scale_alpha_manual(values = c(.75, .1), guide = "none") +
+    ggnewscale::new_scale_fill() +
+
+
+  scale_color_manual(values = col.Temp, name = "Temp (°C)", guide = "none") +
+  # # # scale_shape_manual(values = c(21, 23), name = "Treatment ", guide = "none") +
+  # # scale_linetype_manual(values = c("solid", "dashed"), guide = "none") +
+  # # scale_alpha_manual(values = c(1, 1), guide = "none") +
+  ggnewscale::new_scale_color() +
+  ggnewscale::new_scale_fill() +
+  # ggnewscale::new_scale("alpha") +
+
+  geom_line(aes(color = Temperature),
+            size = 4.5,
+            linetype = "solid",
+            position = position_dodge2(width = 5), show.legend = F) +
+  scale_color_manual(values = c("white", "white", "white"), name = "Treatment", guide = "none") +
+  scale_linetype_manual(values = c("solid", "solid")) +
+  ggnewscale::new_scale_color() +
+  ggnewscale::new_scale("linetype") +
+  geom_line(aes(color = Temperature, linetype = "solid"),
+            size = 2,
+            # linetype = "solid",
+            # position = position_dodge2(width = 5), 
+            show.legend = T) +
+
+  scale_linetype_manual(values = c("solid"), name = "Treatment", guide = "none") +
+  scale_color_manual(values = c(col.Temp), name = "Treatment", guide = "none") +
+  # # scale_alpha_manual(values = c(.75, 1), guide = "none") +
+  ggnewscale::new_scale_color() +
+
+  geom_point(aes(group = interaction(Temperature)),
+             color = "white",
+             fill = "white",
+             size = 8,
+             shape = 21,
+             show.legend = F,
+    # position = position_dodge2(width = 5),
+           na.rm = T) +
+  ggnewscale::new_scale_color() +
+  # ggnewscale::new_scale("alpha") +
+
+  geom_point(aes(color = Temperature,
+                 fill = Temperature),
+             size = 3,
+             shape = 21,
+             stroke = 2,
+             show.legend = T,
+    # position = position_dodge2(width = 5),
+           na.rm = T) +
+
+  scale_fill_manual(values = c(col.Temp, "white"), name = "Temp (°C)", guide = "none") +
+  scale_color_manual(values = col.Temp, name = "Temp (°C)", guide = "none") +
+
+    geom_text(aes(label = stars, y = -.05),
+            # nudge_x = 1.5,
+            # nudge_y = -.0175,
+            size = 15,
+            # position = position_dodge2(width = 5),
+             fontface = "bold") +
+
+  # scale_x_continuous(limits = c(-5, 47), breaks = c(0, 7, 14, 21, 28, 35, 42)) +
+  scale_y_continuous(limits = c(-0.05, 1), breaks = seq(0, 1, by = .25)) +
+  labs(title = "Alpha Diversity Scores across Temperature and Time", #caption = "Alpha; All",
+       x = "Temperature (°C)",
+       y = "Alpha Score (Normalized)"
+       ) +
+  guides(
+    color = guide_legend(order = 1, title = "Temp (°C)",
+                            override.aes = list(shape = 16, size = 5, linetype = NA))
+  ) +
+  theme(legend.position = "right",
+        legend.justification = "center",
+        legend.direction = "vertical",
+        panel.grid.major.x = element_blank())
+  
+  
+  
+  
+  
+```
+
+
+### Control (temp:time)
+
+#### Stats
+
+#### Stats
+
+##### Tests
+
+```{r}
+run_dunn_test_temp <- function(data) {
+  dunn <- rstatix::dunn_test(Alpha.Score ~ Temperature, data = data, p.adjust.method = "BH") 
+  return(dunn)
+}
+```
+
+```{r}
+data.dunn_ctrl <-
+  data.dynamics[["Alpha"]][["Metadata"]] %>%
+    filter(Alpha.Metric == "Simpson__Genus_norm") %>%
+    mutate(DPE = as.factor(DPE)) %>%
+    group_by(DPE) %>%
+    nest(data = -c(DPE)) %>%
+    mutate(test = map(data, ~ run_dunn_test_temp(.x) )) %>%
+    unnest(test) %>%
+    select(-any_of(c("null.value", "data"))) %>%
+    mutate(`.y.` = "Alpha.Score", .after = 1) %>%
+    ungroup() 
+```
+
+```{r}
+data.pair_ctrl <-
+  data.dynamics[["Alpha"]][["Metadata"]] %>%
+      cutCellNames(col = "Alpha.Metric") %>%
+      filter(Alpha.Metric == "Simpson") %>%
+     # Convert DPE (time) into a factor for pairwise comparison
+      dplyr::mutate(DPE = as.factor(DPE)) %>%
+    # Group by DPE
+      group_by(DPE) %>%
+    # Nest the data for looping with map()
+      nest(data = -c(DPE)) %>%
+  
+  # GLM
+    # Create a column called test to store the results of the GLM, emmeans, contrasts, and tidy
+      # dplyr::mutate(test = map(.x=data, 
+      #                          ~ glm(formula = Alpha.Score ~ -1 + Treatment, data = .x, family = "quasibinomial") %>% 
+      #                            emmeans::emmeans( ~ Treatment ) %>%
+      #                            emmeans::contrast(method = "pairwise", adjust = "tukey") %>% 
+      #                            tidy() )) %>%
+  # Dunn
+      mutate(test = map(data, ~ run_dunn_test_temp(.x) )) %>%
+    # Unnest the test column into a tibble
+      unnest(test) %>%
+    # Remove any of the following columns if they exist
+      dplyr::select(-any_of(c("null.value", "data"))) %>%
+ 
+  # GLM 
+    # # Separate out the contrast column for later significance bar plotting
+    #   tidyr::separate(contrast, c('group1', 'group2'), sep = " - ") %>% # GLM
+    # # Add a column ".y." for plotting worm counts
+    #   dplyr::mutate(`.y.` = "Alpha.Score", .before = 1) %>%
+    # Clean up cell values under the group1 and 2 columns to get rid of the prefix
+      # dplyr::mutate(group1 = (str_remove(group1, term)),
+      #               group2 = (str_remove(group2, term))) %>%
+  
+    # Ungroup
+      dplyr::ungroup() %>%
+      # SigStars(pval.var = "p.value")
+  SigStars(pval.var = "p.adj.signif")
+    
+```
+
+#### Plot
+
+```{r}
+plot_data_ctrl <- data.dynamics[["Alpha"]][["Metadata"]] %>%
+      cutCellNames(col = "Alpha.Metric") %>%
+      filter(Alpha.Metric == "Simpson") %>%
+      mutate(DPE = as.factor(DPE)) %>%
+      group_by(Temperature, DPE, Alpha.Metric) %>%
+    summarize(
+      Alpha.Score = median(Alpha.Score),
+      CI_lower = boot::boot(Alpha.Score, median_func, R = 1000, 
+                            parallel = "multicore")$t0 - 1.96 * sd(boot::boot(Alpha.Score, median_func, R = 1000, 
+                                                                              parallel = "multicore")$t),
+      CI_upper = boot::boot(Alpha.Score, median_func, R = 1000, 
+                            parallel = "multicore")$t0 + 1.96 * sd(boot::boot(Alpha.Score, median_func, R = 1000, 
+                                                                              parallel = "multicore")$t)
+    ) %>%
+  ungroup() %>%
+      left_join(data.pair_ctrl, by = c("Temperature" = "group2", "DPE"), multiple = "first") %>%
+      mutate(stars = ifelse(p.adj.sig == "ns", NA, "*"))
+```
+
+
+```{r}
+data.points_ctrl <-
+  data.dynamics[["Alpha"]][["Metadata"]] %>%
+      cutCellNames(col = "Alpha.Metric") %>%
+      filter(Alpha.Metric == "Simpson") %>%
+      # mutate(DPE = as.factor(DPE)) %>%
+      mutate(Cluster = case_when(
+    ((Treatment == "Exposed") & (Alpha.Score >= quantile(Alpha.Score, .75)) & (Total.Worm.Count > quantile(Total.Worm.Count, 0.75))) ~ "High",
+    ((Treatment == "Exposed") & (Alpha.Score <= quantile(Alpha.Score, .25)) & (Total.Worm.Count > quantile(Total.Worm.Count, 0.75))) ~ "Low",
+    .default = "Other"
+  ), .after = "Treatment") %>%
+  mutate(Cluster = fct_relevel(factor(Cluster, levels = c("Other", "Low", "High")))) 
+```
+
+```{r fig.height=6.5, fig.width=8.5, message=F, warning=FALSE}
+
+plot_data_ctrl %>%  
+  # filter(Treatment == "Control") %>%
+  dplyr::mutate(DPE = as.numeric(levels(DPE)[DPE])) %>%
+  ggplot(aes(x = DPE, y = Alpha.Score)) +
+
+  
+  ## Background Points ##
+  
+  geom_violin(data = data.points, aes(color = Temperature,
+                      fill = Temperature,
+                      group = interaction(Temperature, DPE)),
+                  position = position_dodge(width = 5),
+                  width = 4,
+                  size = 1.25,
+                  alpha = .75,
+                  scale = "width",
+            show.legend = F,
+           na.rm = T) +
+  scale_fill_manual(values = c(col.Temp, "white"), name = "Temp (°C)", guide = "none") +
+    # scale_alpha_manual(values = c(.75, .1), guide = "none") +
+    ggnewscale::new_scale_fill() +
+
+
+  scale_color_manual(values = col.Temp, name = "Temp (°C)", guide = "none") +
+  # # # scale_shape_manual(values = c(21, 23), name = "Treatment ", guide = "none") +
+  # # scale_linetype_manual(values = c("solid", "dashed"), guide = "none") +
+  # # scale_alpha_manual(values = c(1, 1), guide = "none") +
+  ggnewscale::new_scale_color() +
+  ggnewscale::new_scale_fill() +
+  # ggnewscale::new_scale("alpha") +
+
+  geom_line(aes(color = Temperature),
+            size = 4.5,
+            linetype = "solid",
+            position = position_dodge2(width = 5), show.legend = F) +
+  scale_color_manual(values = c("white", "white", "white"), name = "Treatment", guide = "none") +
+  scale_linetype_manual(values = c("solid", "solid")) +
+  ggnewscale::new_scale_color() +
+  ggnewscale::new_scale("linetype") +
+  geom_line(aes(color = Temperature, linetype = "solid"),
+            size = 2,
+            # linetype = "solid",
+            position = position_dodge2(width = 5), 
+            show.legend = T) +
+
+  scale_linetype_manual(values = c("solid"), name = "Treatment", guide = "none") +
+  scale_color_manual(values = c(col.Temp), name = "Treatment", guide = "none") +
+  # # scale_alpha_manual(values = c(.75, 1), guide = "none") +
+  ggnewscale::new_scale_color() +
+
+  geom_point(aes(group = interaction(Temperature, DPE)),
+             color = "white",
+             fill = "white",
+             size = 8,
+             shape = 21,
+             show.legend = F,
+    position = position_dodge2(width = 5),
+           na.rm = T) +
+  ggnewscale::new_scale_color() +
+  # ggnewscale::new_scale("alpha") +
+
+  geom_point(aes(color = Temperature,
+                 fill = Temperature),
+             size = 3,
+             shape = 21,
+             stroke = 2,
+             show.legend = T,
+    position = position_dodge2(width = 5),
+           na.rm = T) +
+
+  scale_fill_manual(values = c(col.Temp, "white"), name = "Temp (°C)", guide = "none") +
+  scale_color_manual(values = col.Temp, name = "Temp (°C)", guide = "none") +
+
+    geom_text(aes(label = stars, y = -.05),
+            # nudge_x = 1.5,
+            # nudge_y = -.0175,
+            size = 15,
+            position = position_dodge2(width = 5),
+             fontface = "bold") +
+
+  scale_x_continuous(limits = c(-5, 47), breaks = c(0, 7, 14, 21, 28, 35, 42)) +
+  scale_y_continuous(limits = c(-0.05, 1), breaks = seq(0, 1, by = .25)) +
+  labs(title = "Alpha Diversity Scores across Temperature and Time", #caption = "Alpha; All",
+       x = "Time (Days Post Exposure (DPE))",
+       y = "Alpha Score (Normalized)"
+       ) +
+  guides(
+    color = guide_legend(order = 1, title = "Temp (°C)",
+                            override.aes = list(shape = 16, size = 5, linetype = NA))
+  ) +
+  theme(legend.position = "right",
+        legend.justification = "center",
+        legend.direction = "vertical",
+        panel.grid.major.x = element_blank())
+  
+  
+  
+  
+  
+```
+
+##### Loop
+
+```{r fig.height=6.5, fig.width=8.5, message=F, warning=FALSE}
+# Define the list of DPE values
+dpe_values <- c(0, 14, 21, 28, 42)
+
+# Loop through the DPE values
+for (dpe in dpe_values) {
+  plot <-
+  plot_data_ctrl %>%
+    dplyr::mutate(DPE = as.numeric(levels(DPE)[DPE])) %>%
+        filter(DPE <= dpe) %>%
+
+  ggplot(aes(x = DPE, y = Alpha.Score)) +
+
+  
+  ## Background Points ##
+  
+  geom_violin(data = subset(data.points, DPE <= dpe), aes(color = Temperature,
+                      fill = Temperature,
+                      group = interaction(Temperature, DPE)),
+                  position = position_dodge(width = 5),
+                  width = 4,
+                  size = 1.25,
+                  alpha = .75,
+                  scale = "width",
+            show.legend = F,
+           na.rm = T) +
+  scale_fill_manual(values = c(col.Temp, "white"), name = "Temp (°C)", guide = "none") +
+    # scale_alpha_manual(values = c(.75, .1), guide = "none") +
+    ggnewscale::new_scale_fill() +
+
+
+  scale_color_manual(values = col.Temp, name = "Temp (°C)", guide = "none") +
+  # # # scale_shape_manual(values = c(21, 23), name = "Treatment ", guide = "none") +
+  # # scale_linetype_manual(values = c("solid", "dashed"), guide = "none") +
+  # # scale_alpha_manual(values = c(1, 1), guide = "none") +
+  ggnewscale::new_scale_color() +
+  ggnewscale::new_scale_fill() +
+  # ggnewscale::new_scale("alpha") +
+
+  geom_line(aes(color = Temperature),
+            size = 4.5,
+            linetype = "solid",
+            position = position_dodge2(width = 5), show.legend = F) +
+  scale_color_manual(values = c("white", "white", "white"), name = "Treatment", guide = "none") +
+  scale_linetype_manual(values = c("solid", "solid")) +
+  ggnewscale::new_scale_color() +
+  ggnewscale::new_scale("linetype") +
+  geom_line(aes(color = Temperature, linetype = "solid"),
+            size = 2,
+            # linetype = "solid",
+            position = position_dodge2(width = 5), 
+            show.legend = T) +
+
+  scale_linetype_manual(values = c("solid"), name = "Treatment", guide = "none") +
+  scale_color_manual(values = c(col.Temp), name = "Treatment", guide = "none") +
+  # # scale_alpha_manual(values = c(.75, 1), guide = "none") +
+  ggnewscale::new_scale_color() +
+
+  geom_point(aes(group = interaction(Temperature, DPE)),
+             color = "white",
+             fill = "white",
+             size = 8,
+             shape = 21,
+             show.legend = F,
+    position = position_dodge2(width = 5),
+           na.rm = T) +
+  ggnewscale::new_scale_color() +
+  # ggnewscale::new_scale("alpha") +
+
+  geom_point(aes(color = Temperature,
+                 fill = Temperature),
+             size = 3,
+             shape = 21,
+             stroke = 2,
+             show.legend = T,
+    position = position_dodge2(width = 5),
+           na.rm = T) +
+
+  scale_fill_manual(values = c(col.Temp, "white"), name = "Temp (°C)", guide = "none") +
+  scale_color_manual(values = col.Temp, name = "Temp (°C)", guide = "none") +
+
+    geom_text(aes(label = stars, y = -.05),
+            # nudge_x = 1.5,
+            # nudge_y = -.0175,
+            size = 15,
+            position = position_dodge2(width = 5),
+             fontface = "bold") +
+
+  scale_x_continuous(limits = c(-5, 47), breaks = c(0, 7, 14, 21, 28, 35, 42)) +
+  scale_y_continuous(limits = c(-0.05, 1), breaks = seq(0, 1, by = .25)) +
+  labs(title = "Alpha Diversity Scores across Temperature and Time", #caption = "Alpha; All",
+       x = "Time (Days Post Exposure (DPE))",
+       y = "Alpha Score (Normalized)"
+       ) +
+  guides(
+    color = guide_legend(order = 1, title = "Temp (°C)",
+                            override.aes = list(shape = 16, size = 5, linetype = NA))
+  ) +
+  theme(legend.position = "right",
+        legend.justification = "center",
+        legend.direction = "vertical",
+        panel.grid.major.x = element_blank())
+  
+  print(plot)
+}
+
+```
+
+
+
+#### Control and Exposed (Temp)
+
+##### Stats
+
+###### Tests
+
+```{r}
+run_dunn_test_treat <- function(data) {
+  dunn <- rstatix::dunn_test(Alpha.Score ~ Treatment, data = data, p.adjust.method = "BH") 
+  return(dunn)
+}
+```
+
+
+```{r}
+data.pair_temp <-
+  data.dynamics[["Alpha"]][["Metadata"]] %>%
+      cutCellNames(col = "Alpha.Metric") %>%
+      filter(Alpha.Metric == "Simpson") %>%
+     # Convert DPE (time) into a factor for pairwise comparison
+      # dplyr::mutate(DPE = as.factor(DPE)) %>%
+    # Group by DPE
+      group_by(Temperature) %>%
+     # Group by DPE
+      group_by(Temperature) %>%
+    # Nest the data for looping with map()
+      nest(data = -c(Temperature)) %>%
+  
+  # GLM
+    # Create a column called test to store the results of the GLM, emmeans, contrasts, and tidy
+      # dplyr::mutate(test = map(.x=data, 
+      #                          ~ glm(formula = Beta.Score_norm ~ -1 + Treatment, data = .x, family = "quasibinomial") %>% 
+      #                            emmeans::emmeans( ~ Treatment ) %>%
+      #                            emmeans::contrast(method = "pairwise", adjust = "tukey") %>% 
+      #                            tidy() )) %>%
+  # Dunn
+      mutate(test = map(data, ~ run_dunn_test_treat(.x) )) %>%
+    # Unnest the test column into a tibble
+      unnest(test) %>%
+    # Remove any of the following columns if they exist
+      dplyr::select(-any_of(c("null.value", "data"))) %>%
+  
+    # Ungroup
+      dplyr::ungroup() %>%
+      # SigStars(pval.var = "p.value")
+  SigStars(pval.var = "p.adj.signif")
+    
+```
+
+#### Plot
+
+```{r}
+plot_data_temp <- data.dynamics[["Alpha"]][["Metadata"]] %>%
+      cutCellNames(col = "Alpha.Metric") %>%
+      filter(Alpha.Metric == "Simpson") %>%
+      # mutate(DPE = as.factor(DPE)) %>%
+      group_by(Temperature, Treatment, Alpha.Metric)  %>%
+    summarize(
+      Alpha.Score = median(Alpha.Score),
+      CI_lower = boot::boot(Alpha.Score, median_func, R = 1000, 
+                            parallel = "multicore")$t0 - 1.96 * sd(boot::boot(Alpha.Score, median_func, R = 1000, 
+                                                                              parallel = "multicore")$t),
+      CI_upper = boot::boot(Alpha.Score, median_func, R = 1000, 
+                            parallel = "multicore")$t0 + 1.96 * sd(boot::boot(Alpha.Score, median_func, R = 1000, 
+                                                                              parallel = "multicore")$t)
+    ) %>%
+      left_join(data.pair_temp, by = c("Temperature", "Treatment" = "group2")) %>%
+      mutate(stars = ifelse(p.adj.sig == "ns", NA, "*"))
+```
+
+
+```{r}
+data.points_temp <-
+  data.dynamics[["Alpha"]][["Metadata"]] %>%
+      cutCellNames(col = "Alpha.Metric") %>%
+      filter(Alpha.Metric == "Simpson") %>%
+      # mutate(DPE = as.factor(DPE)) %>%
+      mutate(Cluster = case_when(
+    ((Treatment == "Exposed") & (Alpha.Score >= quantile(Alpha.Score, .75)) & (Total.Worm.Count > quantile(Total.Worm.Count, 0.75))) ~ "High",
+    ((Treatment == "Exposed") & (Alpha.Score <= quantile(Alpha.Score, .25)) & (Total.Worm.Count > quantile(Total.Worm.Count, 0.75))) ~ "Low",
+    .default = "Other"
+  ), .after = "Treatment") %>%
+  mutate(Cluster = fct_relevel(factor(Cluster, levels = c("Other", "Low", "High")))) 
+```
+
+
+
+```{r fig.height=6.5, fig.width=7, message=F, warning=FALSE}
+
+plot_data_temp %>%  
+  # dplyr::mutate(DPE = as.numeric(levels(DPE)[DPE])) %>%
+  ggplot(aes(x = Treatment, y = Alpha.Score)) +
+
+  
+  ## Background Points ##
+  
+  geom_violin(data = data.points_temp, aes(color = Temperature,
+                      fill = Temperature,
+                      alpha = Treatment,
+                      group = interaction(Temperature, Treatment)),
+                  # position = position_dodge(width = 5),
+                  # width = 4,
+                  size = 1.25,
+                  scale = "width", 
+            show.legend = F,
+           na.rm = T) +
+  scale_fill_manual(values = c(col.Temp, "white"), name = "Temp (°C)", guide = "none") +
+    scale_alpha_manual(values = c(.75, .1), guide = "none") +
+    ggnewscale::new_scale_fill() +
+    ggnewscale::new_scale("alpha") +
+
+  scale_color_manual(values = col.Temp, name = "Temp (°C)", guide = "none") +
+  # # scale_shape_manual(values = c(21, 23), name = "Treatment ", guide = "none") +
+  # scale_linetype_manual(values = c("solid", "dashed"), guide = "none") +
+  # scale_alpha_manual(values = c(1, 1), guide = "none") +
+  ggnewscale::new_scale_color() +
+  ggnewscale::new_scale_fill() +
+  ggnewscale::new_scale("alpha") +
+  
+  # geom_line(aes(color = Temperature, linetype = Treatment), 
+  #           size = 4.5,
+  #           # position = position_dodge2(width = 5), 
+  #           show.legend = F) +
+  scale_color_manual(values = c("white", "white", "white"), name = "Treatment", guide = "none") +
+  scale_linetype_manual(values = c("solid", "solid"), guide = "none") +
+  ggnewscale::new_scale_color() +
+  ggnewscale::new_scale("linetype") +
+  # geom_line(aes(color = Temperature, linetype = Treatment),
+  #           size = 2,
+  #           # position = position_dodge2(width = 5),
+  #           show.legend = F) +
+
+  scale_color_manual(values = c(col.Temp), name = "Treatment", guide = "none") +
+  ggnewscale::new_scale_color() +
+  ggnewscale::new_scale("alpha") +
+  
+  geom_point(aes(shape = Treatment,
+                 group = interaction(Treatment, Temperature)), 
+             color = "white",
+             fill = "white",
+             size = 7,
+             show.legend = F,
+    # position = position_dodge2(width = 5),
+           na.rm = T) +
+  ggnewscale::new_scale_color() +
+  ggnewscale::new_scale("alpha") +
+  
+  geom_point(aes(color = Temperature,
+                 fill = ifelse(Treatment == "Control", Temperature, "white"),
+                 # stroke = ifelse(Treatment == "Control", NA, 2),
+                 # size = ifelse(Treatment == "Control", 4, 5),
+                 shape = Treatment,
+                 alpha = Treatment),
+             size = 3,
+             stroke = 2,
+             show.legend = T,
+    # position = position_dodge2(width = 5),
+           na.rm = T) +
+
+  scale_fill_manual(values = c(col.Temp, "white"), name = "Temp (°C)", guide = "none") +
+  scale_color_manual(values = col.Temp, name = "Temp (°C)") +
+  scale_alpha_manual(values = c(1, 1), guide = "none") +
+  
+  ggnewscale::new_scale_color() +
+  # ggnewscale::new_scale_fill() +
+  ggnewscale::new_scale("alpha") +
+  
+    geom_text(aes(label = stars, y = -0.1),
+            # nudge_x = 1.5,
+            # nudge_y = -.0175,
+            size = 15,
+            # position = position_dodge2(width = 5),
+             fontface = "bold") +
+    scale_shape_manual(values = c(16, 23), name = "Treatment") +
+  # scale_fill_manual(values = c("white", pal.Set1[c(8,5)]), name = "Cluster" ) +
+  
+  facet_grid(Temperature ~ .) +
+  # scale_x_continuous(limits = c(-5, 47), breaks = c(0, 7, 14, 21, 28, 35, 42)) +
+  scale_y_continuous(limits = c(-0.1, 1), breaks = seq(0, 1, by = .25)) +
+  labs(title = "Alpha Scores across Temperature", #caption = "Alpha; All",
+       x = "Treatment",
+       y = "Alpha Score (Normalized)"
+       ) +
+  theme(legend.position = "right",
+        legend.justification = "center",
+        legend.direction = "vertical",
+        panel.grid.minor.y = element_blank(),
+        panel.grid.major.x = element_blank())  +
+  guides(color = guide_legend(override.aes = list(size = 6, 
+                                                  shape = c(16, 16, 16), 
+                                                  color = c(col.Temp)
+                                                  )),
+         shape = guide_legend(override.aes = list(size = 4,
+                                                  fill = c("black", "white")))) 
+  
+  
+  
+  
+  
+```
+
+### Control and Exposed (temp:time)
+
+#### Stats
+
+##### Tests
+
+```{r}
+run_dunn_test <- function(data) {
+  dunn <- rstatix::dunn_test(Alpha.Score ~ Treatment, data = data, p.adjust.method = "BH") 
+  return(dunn)
+}
+```
+
+
+```{r}
+data.pair <-
+  data.dynamics[["Alpha"]][["Metadata"]] %>%
+      cutCellNames(col = "Alpha.Metric") %>%
+      filter(Alpha.Metric == "Simpson") %>%
+     # Convert DPE (time) into a factor for pairwise comparison
+      dplyr::mutate(DPE = as.factor(DPE)) %>%
+    # Group by DPE
+      group_by(DPE, Temperature) %>%
+    # Nest the data for looping with map()
+      nest(data = -c(DPE, Temperature)) %>%
+  
+  # GLM
+    # Create a column called test to store the results of the GLM, emmeans, contrasts, and tidy
+      # dplyr::mutate(test = map(.x=data, 
+      #                          ~ glm(formula = Alpha.Score ~ -1 + Treatment, data = .x, family = "quasibinomial") %>% 
+      #                            emmeans::emmeans( ~ Treatment ) %>%
+      #                            emmeans::contrast(method = "pairwise", adjust = "tukey") %>% 
+      #                            tidy() )) %>%
+  # Dunn
+      mutate(test = map(data, ~ run_dunn_test(.x) )) %>%
+    # Unnest the test column into a tibble
+      unnest(test) %>%
+    # Remove any of the following columns if they exist
+      dplyr::select(-any_of(c("null.value", "data"))) %>%
+ 
+  # GLM 
+    # # Separate out the contrast column for later significance bar plotting
+    #   tidyr::separate(contrast, c('group1', 'group2'), sep = " - ") %>% # GLM
+    # # Add a column ".y." for plotting worm counts
+    #   dplyr::mutate(`.y.` = "Alpha.Score", .before = 1) %>%
+    # Clean up cell values under the group1 and 2 columns to get rid of the prefix
+      # dplyr::mutate(group1 = (str_remove(group1, term)),
+      #               group2 = (str_remove(group2, term))) %>%
+  
+    # Ungroup
+      dplyr::ungroup() %>%
+      # SigStars(pval.var = "p.value")
+  SigStars(pval.var = "p.adj.signif")
+    
+```
+
+
+##### Plot
+
+```{r}
+plot_data <- data.dynamics[["Alpha"]][["Metadata"]] %>%
+      cutCellNames(col = "Alpha.Metric") %>%
+      filter(Alpha.Metric == "Simpson") %>%
+      mutate(DPE = as.factor(DPE)) %>%
+      group_by(Temperature, Treatment, DPE, Alpha.Metric) %>%
+    summarize(
+      Alpha.Score = median(Alpha.Score),
+      CI_lower = boot::boot(Alpha.Score, median_func, R = 1000, 
+                            parallel = "multicore")$t0 - 1.96 * sd(boot::boot(Alpha.Score, median_func, R = 1000, 
+                                                                              parallel = "multicore")$t),
+      CI_upper = boot::boot(Alpha.Score, median_func, R = 1000, 
+                            parallel = "multicore")$t0 + 1.96 * sd(boot::boot(Alpha.Score, median_func, R = 1000, 
+                                                                              parallel = "multicore")$t)
+    ) %>%
+      left_join(data.pair, by = c("Temperature", "DPE", "Treatment" = "group2")) %>%
+      mutate(stars = ifelse(p.adj.sig == "ns", NA, "*"))
+```
+
+
+```{r}
+data.points <-
+  data.dynamics[["Alpha"]][["Metadata"]] %>%
+      cutCellNames(col = "Alpha.Metric") %>%
+      filter(Alpha.Metric == "Simpson") %>%
+      # mutate(DPE = as.factor(DPE)) %>%
+      mutate(Cluster = case_when(
+    ((Treatment == "Exposed") & (Alpha.Score >= quantile(Alpha.Score, .75)) & (Total.Worm.Count > quantile(Total.Worm.Count, 0.75))) ~ "High",
+    ((Treatment == "Exposed") & (Alpha.Score <= quantile(Alpha.Score, .25)) & (Total.Worm.Count > quantile(Total.Worm.Count, 0.75))) ~ "Low",
+    .default = "Other"
+  ), .after = "Treatment") %>%
+  mutate(Cluster = fct_relevel(factor(Cluster, levels = c("Other", "Low", "High")))) 
+```
+
+
+```{r}
+data.points %>%
+  filter(Cluster != "Other") %>%
+  group_by(Cluster, Temperature, DPE) %>%
+  count()
+```
+
+
+
+
+```{r , message=F, warning=FALSE}
+
+plot_data %>%  
+  dplyr::mutate(DPE = as.numeric(levels(DPE)[DPE])) %>%
+  ggplot(aes(x = DPE, y = Alpha.Score)) +
+  
+  ## Background Points ##
+  
+  ggbeeswarm::geom_quasirandom(data = subset(data.points, Treatment == "Control"), 
+           aes(
+             color = Temperature,
+             fill = Temperature,
+             # stroke = ifelse(Treatment == "Control", NA, 2),
+             # size = ifelse(Treatment == "Control", 4, 5),
+             # alpha = .25,
+             group = interaction(Treatment, Temperature, DPE)
+             ),
+           shape = 21,
+         size = 2,
+         # stroke = 1,
+         show.legend = F) +
+  scale_fill_manual(values = col.Temp, name = "Temp (°C)", guide = "none") +
+  ggnewscale::new_scale_fill() +
+  
+  ggbeeswarm::geom_quasirandom(data = subset(data.points, Treatment == "Exposed"), 
+             aes(
+               color = Temperature,
+               fill = Cluster,
+               # stroke = ifelse(Treatment == "Control", NA, 2),
+               # size = ifelse(Treatment == "Control", 4, 5),
+               # alpha = .25,
+               group = interaction(Treatment, Temperature, DPE)
+               ),
+             shape = 23,
+           size = 2,
+           # stroke = 1,
+           show.legend = F) +
+  
+  scale_fill_manual(values = c("white",  pal.Set1[c(8,5)]), name = "Cluster") +
+  scale_color_manual(values = col.Temp, name = "Temp (°C)", guide = "none") +
+  # scale_shape_manual(values = c(21, 23), name = "Treatment ", guide = "none") +
+  scale_linetype_manual(values = c("solid", "dashed"), guide = "none") +
+  ggnewscale::new_scale("alpha") +
+  ggnewscale::new_scale_color() +
+  ggnewscale::new_scale_fill() +
+
+  
+  ##
+  
+  
+  geom_errorbar(aes(ymin = CI_lower, ymax = CI_upper,
+                    color = ifelse(Treatment == "Control", Temperature, "black"),
+                    alpha = Treatment),
+                # color = "black",
+                width = 2, size = .75, show.legend = F) +
+  scale_color_manual(values = c(col.Temp, "black"), name = "Temp (°C)", guide = "none") +
+  scale_alpha_manual(values = c(.75, 1), guide = "none") +
+  ggnewscale::new_scale_color() +
+  ggnewscale::new_scale("alpha") +
+  
+  geom_line(aes(linetype = Treatment,
+                group = interaction(Treatment, Temperature, DPE)),
+          color = "white",
+          size = 3,
+          show.legend = F) +
+  geom_point(aes(shape = Treatment,
+                 group = interaction(Treatment, Temperature, DPE)), 
+             color = "white",
+             fill = "white",
+             size = 8,
+             show.legend = F) +
+  ggnewscale::new_scale_color() +
+  ggnewscale::new_scale("alpha") +
+  
+  geom_line(aes(color = Temperature, 
+                linetype = Treatment,
+                alpha = Treatment),
+          size = 2,
+          show.legend = F) +
+  geom_point(aes(color = Temperature,
+                 fill = ifelse(Treatment == "Control", Temperature, "white"),
+                 # stroke = ifelse(Treatment == "Control", NA, 2),
+                 # size = ifelse(Treatment == "Control", 4, 5),
+                 shape = Treatment,
+                 alpha = Treatment),
+             size = 2.5,
+             stroke = 3,
+             show.legend = T) +
+
+  scale_fill_manual(values = c(col.Temp, "white"), name = "Temp (°C)", guide = "none") +
+  scale_color_manual(values = col.Temp, name = "Temp (°C)") +
+  scale_shape_manual(values = c(21, 23), name = "Treatment ") +
+  scale_linetype_manual(values = c("solid", "dashed"), guide = "none") +
+  scale_alpha_manual(values = c(1, 1), guide = "none") +
+  
+  ggnewscale::new_scale_color() +
+  ggnewscale::new_scale_fill() +
+  ggnewscale::new_scale("alpha") +
+  geom_point(aes(
+    # fill = ifelse(Cluster == "Other", "white", Cluster),
+    shape = ifelse(Treatment == "Exposed", Treatment, NA),
+                 group = interaction(Treatment, Temperature, DPE)), 
+             color = "white",
+    fill = "white",
+             size = 4,
+             show.legend = F) +
+  
+    geom_text(aes(label = stars), 
+            # nudge_x = -3.5,
+            nudge_y = -.0175,
+            size = 7,
+             fontface = "bold") +
+  
+  # scale_fill_manual(values = c("white", pal.Set1[c(8,5)]), name = "Cluster" ) +
+  
+  facet_grid(. ~ Temperature) +
+  scale_x_continuous(limits = c(-5, 45), breaks = c(0, 7, 14, 21, 28, 35, 42)) +
+  scale_y_continuous(limits = c(-.25, 1), breaks = seq(0, 1, by = .25)) +
+  labs(title = "Alpha Diversity Scores across Temperature and Time", #caption = "Alpha; All",
+       x = "Time (Days Post Exposure (DPE))",
+       y = "Median Alpha Score (Normalized)"
+       ) +
+  guides(
+    color = guide_legend(order = 1, title = "Temp (°C)"),
+    shape = guide_legend(order = 2, title = "Treatment",
+                            override.aes = list(linetype = NA)),
+    color = guide_legend(order = 3, title = "Cluster"),
+  ) +
+  theme(legend.position = "bottom",
+        legend.justification = "center",
+        legend.direction = "horizontal",
+        panel.grid.minor.x = element_blank())
+  
+  
+  
+  
+  
+```
+
+
+
+```{r fig.height=6.5, fig.width=8.5, message=F, warning=FALSE}
+
+plot_data %>%  
+  dplyr::mutate(DPE = as.numeric(levels(DPE)[DPE])) %>%
+  ggplot(aes(x = DPE, y = Alpha.Score)) +
+
+  
+  ## Background Points ##
+  
+  geom_violin(data = data.points, aes(color = Temperature,
+                      fill = Temperature,
+                      alpha = Treatment,
+                      group = interaction(Temperature, Treatment, DPE)),
+                  position = position_dodge(width = 5),
+                  width = 4,
+                  size = 1.25,
+                  scale = "width",
+            show.legend = F,
+           na.rm = T) +
+  scale_fill_manual(values = c(col.Temp, "white"), name = "Temp (°C)", guide = "none") +
+    scale_alpha_manual(values = c(.75, .1), guide = "none") +
+    ggnewscale::new_scale_fill() +
+    ggnewscale::new_scale("alpha") +
+
+  scale_color_manual(values = col.Temp, name = "Temp (°C)", guide = "none") +
+  # # scale_shape_manual(values = c(21, 23), name = "Treatment ", guide = "none") +
+  # scale_linetype_manual(values = c("solid", "dashed"), guide = "none") +
+  # scale_alpha_manual(values = c(1, 1), guide = "none") +
+  ggnewscale::new_scale_color() +
+  ggnewscale::new_scale_fill() +
+  ggnewscale::new_scale("alpha") +
+  
+  geom_line(aes(color = Temperature, linetype = Treatment), 
+            size = 4.5,
+            position = position_dodge2(width = 5), show.legend = F) +
+  scale_color_manual(values = c("white", "white", "white"), name = "Treatment", guide = "none") +
+  scale_linetype_manual(values = c("solid", "solid")) +
+  ggnewscale::new_scale_color() +
+  ggnewscale::new_scale("linetype") +
+  geom_line(aes(color = Temperature, linetype = Treatment), 
+            size = 2,
+            position = position_dodge2(width = 5), show.legend = F) +
+  
+  scale_color_manual(values = c(col.Temp), name = "Treatment", guide = "none") +
+  ggnewscale::new_scale_color() +
+  ggnewscale::new_scale("alpha") +
+  
+  geom_point(aes(shape = Treatment,
+                 group = interaction(Treatment, Temperature, DPE)), 
+             color = "white",
+             fill = "white",
+             size = 7,
+             show.legend = F,
+    position = position_dodge2(width = 5),
+           na.rm = T) +
+  ggnewscale::new_scale_color() +
+  ggnewscale::new_scale("alpha") +
+  
+  geom_point(aes(color = Temperature,
+                 fill = ifelse(Treatment == "Control", Temperature, "white"),
+                 # stroke = ifelse(Treatment == "Control", NA, 2),
+                 # size = ifelse(Treatment == "Control", 4, 5),
+                 shape = Treatment,
+                 alpha = Treatment),
+             size = 3,
+             stroke = 2,
+             show.legend = T,
+    position = position_dodge2(width = 5),
+           na.rm = T) +
+
+  scale_fill_manual(values = c(col.Temp, "white"), name = "Temp (°C)", guide = "none") +
+  scale_color_manual(values = col.Temp, name = "Temp (°C)") +
+  scale_shape_manual(values = c(16, 23), name = "Treatment") +
+  scale_alpha_manual(values = c(1, 1), guide = "none") +
+  
+  ggnewscale::new_scale_color() +
+  ggnewscale::new_scale_fill() +
+  ggnewscale::new_scale("alpha") +
+
+  
+    geom_text(aes(label = stars, y = -0.075),
+            # nudge_x = 1.5,
+            # nudge_y = -.0175,
+            size = 15,
+            position = position_dodge2(width = 5),
+             fontface = "bold") +
+  
+  # scale_fill_manual(values = c("white", pal.Set1[c(8,5)]), name = "Cluster" ) +
+  
+  facet_grid(Temperature ~ .) +
+  scale_x_continuous(limits = c(-5, 47), breaks = c(0, 7, 14, 21, 28, 35, 42)) +
+  scale_y_continuous(limits = c(-0.075, 1), breaks = seq(0, 1, by = .25)) +
+  labs(title = "Alpha Diversity Scores across Temperature and Time", #caption = "Alpha; All",
+       x = "Time (Days Post Exposure (DPE))",
+       y = "Alpha Score (Normalized)"
+       ) +
+  theme(legend.position = "right",
+        legend.justification = "center",
+        legend.direction = "vertical",
+        panel.grid.minor.y = element_blank(),
+        panel.grid.major.x = element_blank())
+  
+  
+  
+  
+  
+```
+
+###### Loop
+
+```{r fig.height=6.5, fig.width=14, message=F, warning=FALSE}
+# Define the list of DPE values
+dpe_values <- c(0, 14, 21, 28, 42)
+
+tmp.temp <- "28"
+tmp.col.pal <- col.Temp
+
+tmp.resSubSection <- "All__Alpha__"
+
+# Loop through the DPE values
+furrr::future_map(dpe_values, function(dpe){
+  plot <-
+  plot_data  %>%
+    dplyr::mutate(DPE = as.numeric(levels(DPE)[DPE])) %>%
+        filter(DPE <= dpe) %>%
+
+  ggplot(aes(x = DPE, y = Alpha.Score)) +
+
+  
+  ## Background Points ##
+  
+  geom_violin(data = subset(data.points, DPE <= dpe), aes(color = Temperature,
+                      fill = Temperature,
+                      alpha = Treatment,
+                      group = interaction(Temperature, Treatment, DPE)),
+                  position = position_dodge(width = 5),
+                  width = 4,
+                  size = 1.25,
+                  scale = "width",
+            show.legend = F,
+           na.rm = T) +
+  scale_fill_manual(values = c(tmp.col.pal, "white"), name = "Temp (°C)", guide = "none") +
+    scale_alpha_manual(values = c(.75, .1), guide = "none") +
+    ggnewscale::new_scale_fill() +
+    ggnewscale::new_scale("alpha") +
+
+  scale_color_manual(values = tmp.col.pal, name = "Temp (°C)", guide = "none") +
+  # # scale_shape_manual(values = c(21, 23), name = "Treatment ", guide = "none") +
+  # scale_linetype_manual(values = c("solid", "dashed"), guide = "none") +
+  # scale_alpha_manual(values = c(1, 1), guide = "none") +
+  ggnewscale::new_scale_color() +
+  ggnewscale::new_scale_fill() +
+  ggnewscale::new_scale("alpha") +
+  
+  geom_line(aes(color = Temperature, linetype = Treatment), 
+            size = 4.5,
+            position = position_dodge2(width = 5), show.legend = F) +
+  scale_color_manual(values = c("white", "white", "white"), name = "Treatment", guide = "none") +
+  scale_linetype_manual(values = c("solid", "solid")) +
+  ggnewscale::new_scale_color() +
+  ggnewscale::new_scale("linetype") +
+  geom_line(aes(color = Temperature, linetype = Treatment), 
+            size = 2,
+            position = position_dodge2(width = 5), show.legend = F) +
+  
+  scale_color_manual(values = c(tmp.col.pal), name = "Treatment", guide = "none") +
+  ggnewscale::new_scale_color() +
+  ggnewscale::new_scale("alpha") +
+  
+  geom_point(aes(shape = Treatment,
+                 group = interaction(Treatment, Temperature, DPE)), 
+             color = "white",
+             fill = "white",
+             size = 7,
+             show.legend = F,
+    position = position_dodge2(width = 5),
+           na.rm = T) +
+  ggnewscale::new_scale_color() +
+  ggnewscale::new_scale("alpha") +
+  
+  geom_point(aes(color = Temperature,
+                 fill = ifelse(Treatment == "Control", Temperature, "white"),
+                 # stroke = ifelse(Treatment == "Control", NA, 2),
+                 # size = ifelse(Treatment == "Control", 4, 5),
+                 shape = Treatment,
+                 alpha = Treatment),
+             size = 3,
+             stroke = 2,
+             show.legend = T,
+    position = position_dodge2(width = 5),
+           na.rm = T) +
+
+  scale_fill_manual(values = c(tmp.col.pal, "white"), name = "Temp (°C)", guide = "none") +
+  scale_color_manual(values = tmp.col.pal, name = "Temp (°C)") +
+  scale_shape_manual(values = c(16, 23), name = "Treatment") +
+  scale_alpha_manual(values = c(1, 1), guide = "none") +
+  
+  ggnewscale::new_scale_color() +
+  ggnewscale::new_scale_fill() +
+  ggnewscale::new_scale("alpha") +
+
+      geom_text(aes(label = stars, y = -0.075),
+            # nudge_x = 1.5,
+            # nudge_y = -.0175,
+            # color = "white",
+            size = 15,
+            position = position_dodge2(width = 5),
+             fontface = "bold") +
+  
+  # scale_fill_manual(values = c("white", pal.Set1[c(8,5)]), name = "Cluster" ) +
+  
+  facet_grid(Temperature ~ .) +
+    
+  scale_x_continuous(limits = c(-5, 47), breaks = c(0, 7, 14, 21, 28, 35, 42)) +
+  scale_y_continuous(limits = c(-0.075, 1), breaks = seq(0, 1, by = .25)) +
+  labs(title = "Alpha Diversity Scores across Temperature and Time", #caption = "Alpha; All",
+       x = "Time (Days Post Exposure (DPE))",
+       y = "Alpha Score (Normalized)"
+       ) +
+  theme(legend.position = "right",
+        legend.justification = "center",
+        legend.direction = "vertical",
+        panel.grid.minor.y = element_blank(),
+        panel.grid.major.x = element_blank()) 
+
+  
+  # ggsave(filename = paste0(path.results, "/Figures/PDF/", tmp.resSubSection, "plot_", dpe, "_DPE.pdf"), plot = plot, height = 6.5, width = 8.5, units = "in")
+  print(plot)
+})
+
+```
+
+
+
+
+
+## Beta
+
+
+```{r}
+tmp.psOBJ <- ps.list[["PreExposed"]]
+tmp.resSubSection <- "PreExposed"
+```
+
+
+### PCOA
+
+#### Control
+
+##### Pre-Exposed
+
+```{r fig.height=6, fig.width=6.5, message=FALSE, warning=FALSE}
+
+ps.list[["PreExposed"]] %>%
+  # ps_filter(Treatment == "Control") %>%
+  tax_agg("Genus") %>%
+  dist_calc("bray") %>%
+  ord_calc() %>%
+  microViz::ord_plot(fill = NA, 
+                         color = NA,
+                         alpha = 0,
+                         # shape = "Treatment", 
+                          size = 3,
+                         constraint_vec_style = vec_constraint(colour = "black",
+                                                               size = 2,
+                                                               alpha = 1,
+                                                               arrow = grid::arrow(length = grid::unit(0.05, units = "npc"))),
+                         constraint_lab_style = constraint_lab_style(
+                           type = "label", 
+                           justify = "side",
+                           colour = "black",
+                           max_angle = 90, perpendicular = TRUE, size = 4,
+                           check_overlap = TRUE
+                         ), show.legend = F
+      ) +
+      
+        ## Ellipses
+      ggnewscale::new_scale_color() +
+      stat_ellipse(aes(color = Temperature), 
+                   size = 1,
+                   alpha = .667,
+                   show.legend = F) + 
+      # scale_linetype_manual(values = c("solid", "dashed")) +
+      scale_color_manual(values = c(col.Temp), guide = "none") +
+  
+      ggnewscale::new_scale_color() +
+    
+      geom_point(aes(fill = Temperature),
+                     color = "black", 
+                 size = 3,
+                 shape = 21,
+                 stroke = 1,
+                   show.legend = T) +
+      
+      scale_fill_manual(values = c(col.Temp, "white"), name = "Temp (°C)") +
+      
+
+      
+      labs(title = paste0("Dissimilarity (Beta; Pre-Exposed fish)")) +
+      theme(panel.border = element_rect(colour = "black", fill=NA, size=.5, labels ),
+            legend.title = element_text(size = 14),
+            legend.text = element_text(size = 12),
+            axis.text = element_text(size = 12),
+            axis.title = element_text(size = 16),
+            plot.caption = element_text(hjust = 0, size = 10),
+            legend.position = "right") +
+  guides(fill = guide_legend(override.aes = list(size = 5)))
+
+```
+
+##### Post-Exposed
+
+```{r fig.height=6.5, fig.width=7, message=FALSE, warning=FALSE}
+
+ps.list[["Unexposed"]] %>%
+  # ps_filter(Treatment == "Control") %>%
+  tax_agg("Genus") %>%
+  dist_calc("bray") %>%
+  ord_calc() %>%
+  microViz::ord_plot(fill = NA, 
+                         color = NA,
+                         alpha = 0,
+                         # shape = "Treatment", 
+                          size = 3,
+                         constraint_vec_style = vec_constraint(colour = "black",
+                                                               size = 2,
+                                                               alpha = 1,
+                                                               arrow = grid::arrow(length = grid::unit(0.05, units = "npc"))),
+                         constraint_lab_style = constraint_lab_style(
+                           type = "label", 
+                           justify = "side",
+                           colour = "black",
+                           max_angle = 90, perpendicular = TRUE, size = 4,
+                           check_overlap = TRUE
+                         ), show.legend = F
+      ) +
+      
+        ## Ellipses
+      ggnewscale::new_scale_color() +
+      stat_ellipse(aes(color = Temperature), 
+                   size = 1,
+                   alpha = .667,
+                   show.legend = F) + 
+      # scale_linetype_manual(values = c("solid", "dashed")) +
+      scale_color_manual(values = c(col.Temp), guide = "none") +
+  
+      ggnewscale::new_scale_color() +
+    
+      geom_point(aes(fill = Temperature),
+                     color = "black", 
+                 size = 3,
+                 shape = 21,
+                 stroke = 1,
+                   show.legend = T) +
+      
+      scale_fill_manual(values = c(col.Temp, "white"), name = "Temp (°C)") +
+      
+
+      
+      labs(title = paste0("Dissimilarity (Beta; Parasite unexposed fish)")) +
+      theme(panel.border = element_rect(colour = "black", fill=NA, size=.5, labels ),
+            legend.title = element_text(size = 14),
+            legend.text = element_text(size = 12),
+            axis.text = element_text(size = 12),
+            axis.title = element_text(size = 16),
+            plot.caption = element_text(hjust = 0, size = 10),
+            legend.position = "right") +
+  guides(fill = guide_legend(override.aes = list(size = 5)))
+
+```
+
+###### Jitter
+
+```{r}
+
+BetaDisp.Rank.df <-
+data.points_ctrl_beta_temp %>%
+  group_by(Sample) %>%
+  mutate(BetaDisp.Rank = case_when(
+    Beta.Score_norm <= quantile(data.points_ctrl_beta_temp$Beta.Score_norm, .1) ~ "Low",
+    Beta.Score_norm >= quantile(data.points_ctrl_beta_temp$Beta.Score_norm, .9) ~ "High",
+    .default = "Mid"
+  ), .after = "Cluster") %>%
+  select(Sample, BetaDisp.Rank)
+
+mid.BetaDisp <- data.points_ctrl_beta_temp %>%
+  filter(Beta.Score_norm >= quantile(data.points_ctrl_beta_temp$Beta.Score_norm, .1) & 
+           Beta.Score_norm <= quantile(data.points_ctrl_beta_temp$Beta.Score_norm, .9)) %>% 
+  select(Sample) %>%
+  pull()
+
+low.BetaDisp <- data.points_ctrl_beta_temp %>%
+  filter(Beta.Score_norm <= quantile(data.points_ctrl_beta_temp$Beta.Score_norm, .1)) %>% 
+  select(Sample) %>%
+  pull()
+
+high.BetaDisp <- data.points_ctrl_beta_temp %>%
+  filter(Beta.Score_norm >= quantile(data.points_ctrl_beta_temp$Beta.Score_norm, .9)) %>% 
+  select(Sample) %>%
+  pull()
+
+
+```
+
+```{r}
+    "#CAB2D6" "#6A3D9A" 
+  geom_hline(yintercept = .875, linetype = "solid", size = 40, alpha = .5, color = pal.Paired[9]) +
+  geom_hline(yintercept = .75, linetype = "solid", size = 2, color = pal.Paired[10]) +
+  geom_hline(yintercept = 1, linetype = "solid", size = 2, color = pal.Paired[10]) +
+    "#FDBF6F" "#FF7F00"
+  geom_hline(yintercept = .125, linetype = "solid", size = 40, alpha = .5, color = pal.Paired[8]) +
+  geom_hline(yintercept = .25, linetype = "solid", size = 2, color = pal.Paired[7]) +
+  geom_hline(yintercept = 0, linetype = "solid", size = 2, color = pal.Paired[7]) +
+```
+
+
+
+```{r fig.height=6.5, fig.width=7, message=FALSE, warning=FALSE}
+# test <-
+ps.list[["Unexposed"]] %>%
+  # ps_filter(Treatment == "Control") %>%
+  ps_join(.,BetaDisp.Rank.df, by = c("Sample")) %>%
+  # samdat_tbl()
+  tax_agg("Genus") %>%
+  dist_calc("bray") %>%
+  ord_calc() %>%
+  microViz::ord_plot(fill = NA, 
+                         color = NA,
+                         alpha = 0,
+                         # shape = "Treatment", 
+                          size = 3,
+                         constraint_vec_style = vec_constraint(colour = "black",
+                                                               size = 2,
+                                                               alpha = 1,
+                                                               arrow = grid::arrow(length = grid::unit(0.05, units = "npc"))),
+                         constraint_lab_style = constraint_lab_style(
+                           type = "label", 
+                           justify = "side",
+                           colour = "black",
+                           max_angle = 90, perpendicular = TRUE, size = 4,
+                           check_overlap = TRUE
+                         ), show.legend = F
+      ) +
+      
+        ## Ellipses
+      ggnewscale::new_scale_color() +
+      stat_ellipse(aes(color = Temperature,
+                       ), 
+                   size = 1,
+                   # alpha = .667,
+                   show.legend = F) + 
+      # scale_linetype_manual(values = c("solid", "dashed")) +\
+      scale_alpha(guide = "none") +
+      scale_color_manual(values = c(col.Temp), guide = "none") +
+  
+      ggnewscale::new_scale_color() +
+    
+      geom_point(aes(fill = Temperature,
+                     alpha = ifelse(BetaDisp.Rank == "Mid", .5, 1),
+                     color = BetaDisp.Rank,
+                     stroke = ifelse(BetaDisp.Rank == "Mid", 1, 2)),
+                     # color = "black", 
+                 size = 3,
+                 shape = 21,
+                 # stroke = 2,
+                   show.legend = T) +
+      
+      scale_fill_manual(values = c(col.Temp, "white"), name = "Temp (°C)") +
+      scale_color_manual(values = c("#6A3D9A","#FF7F00", "black"), name = "Low vs High") +
+
+      
+      labs(title = paste0("Dissimilarity (Beta; Parasite unexposed fish)")) +
+      theme(panel.border = element_rect(colour = "black", fill=NA, size=.5, labels ),
+            legend.title = element_text(size = 14),
+            legend.text = element_text(size = 12),
+            axis.text = element_text(size = 12),
+            axis.title = element_text(size = 16),
+            plot.caption = element_text(hjust = 0, size = 10),
+            legend.position = "right") +
+  guides(fill = guide_legend(override.aes = list(size = 5)),
+         color = guide_legend(override.aes = list(size = 4,stroke = 2)))
+
+```
+
+
+###### Loop
+
+```{r}
+ps.list[["Unexposed"]] %>% samdat_tbl()
+```
+
+
+```{r fig.height=6.5, fig.width=7, message=FALSE, warning=FALSE}
+
+dpe_values <- c(0, 14, 21, 28, 42)
+
+tmp.resSubSection <- "Unexposed__BetaDiv__"
+
+furrr::future_map(dpe_values, function(dpe){
+  
+  plot <-
+  ps.list[["Unexposed"]] %>%
+  # ps_mutate(DPE = as.numeric(levels(DPE)[DPE])) %>%
+  # ps_filter(DPE <= dpe) %>%
+  tax_agg("Genus") %>%
+  dist_calc("bray") %>%
+  ord_calc() %>%
+  microViz::ord_plot(fill = NA, 
+                         color = NA,
+                         alpha = 0,
+                         # shape = "Treatment", 
+                          size = 3,
+                         constraint_vec_style = vec_constraint(colour = "black",
+                                                               size = 2,
+                                                               alpha = 1,
+                                                               arrow = grid::arrow(length = grid::unit(0.05, units = "npc"))),
+                         constraint_lab_style = constraint_lab_style(
+                           type = "label", 
+                           justify = "side",
+                           colour = "black",
+                           max_angle = 90, perpendicular = TRUE, size = 4,
+                           check_overlap = TRUE
+                         ), show.legend = F
+      ) +
+      
+        ## Ellipses
+      ggnewscale::new_scale_color() +
+      stat_ellipse(aes(color = Temperature), 
+                   size = 1,
+                   alpha = .667,
+                   show.legend = F) + 
+      # scale_linetype_manual(values = c("solid", "dashed")) +
+      scale_color_manual(values = c(col.Temp), guide = "none") +
+  
+      ggnewscale::new_scale_color() +
+    
+      geom_point(aes(fill = Temperature,
+                     alpha = ifelse(DPE == dpe, 1, .33)),
+                     color = "black", 
+                 size = 3,
+                 shape = 21,
+                 stroke = 1,
+                   show.legend = T) +
+      
+      scale_fill_manual(values = c(col.Temp, "white"), name = "Temp (°C)") +
+    scale_alpha(guide = "none") +
+      
+
+      
+      labs(title = paste0("Dissimilarity (Beta; Parasite unexposed fish)")) +
+      theme(panel.border = element_rect(colour = "black", fill=NA, size=.5, labels ),
+            legend.title = element_text(size = 14),
+            legend.text = element_text(size = 12),
+            axis.text = element_text(size = 12),
+            axis.title = element_text(size = 16),
+            plot.caption = element_text(hjust = 0, size = 10),
+            legend.position = "right") +
+  guides(fill = guide_legend(override.aes = list(size = 5)))
+  
+    ggsave(filename = paste0(path.results, "/Figures/PDF/", tmp.resSubSection, "plot_", dpe, "_DPE.pdf"), plot = plot, height = 6.5, width = 7, units = "in")
+  # print(plot)
+  })
+
+```
+
+
+#### Exposed
+
+##### *** PCOA
+
+```{r, fig.height=6.5, fig.width=4.75}
+ps.list[["All"]] %>%
+  # group_by(Treatment) %>%
+  ps_mutate(Cluster = if_else(
+    Treatment == "Exposed",
+    case_when(
+      Simpson__Genus_norm %in% head(sort(Simpson__Genus_norm), 10) ~ "Low",
+      Simpson__Genus_norm %in% tail(sort(Simpson__Genus_norm), 10) ~ "High",
+      TRUE ~ "Other"
+    ),
+    "Other"
+  )) %>%
+  # ungroup()  %>%
+  ps_mutate(Cluster = fct_relevel(factor(Cluster, levels = c("Other", "Low", "High")))) %>%
+  # samdat_tbl()
+  tax_agg("Genus") %>%
+  dist_calc("bray") %>%
+  ord_calc() %>%
+  microViz::ord_plot(fill = NA, 
+                         color = NA,
+                         alpha = 0,
+                         shape = "Treatment", size = 3,
+                         constraint_vec_style = vec_constraint(colour = "black",
+                                                               size = 2,
+                                                               alpha = 1,
+                                                               arrow = grid::arrow(length = grid::unit(0.05, units = "npc"))),
+                         constraint_lab_style = constraint_lab_style(
+                           type = "label", 
+                           justify = "side",
+                           colour = "black",
+                           max_angle = 90, perpendicular = TRUE, size = 4,
+                           check_overlap = TRUE
+                         ), show.legend = F
+      ) +
+      
+      geom_point(aes(color = Temperature,
+                     fill = Cluster,
+                     alpha = ifelse(Cluster != "Other", "Other", "H v L"),
+                     shape = Treatment),
+                 size = 4,
+                 stroke = 1.5) +
+  scale_fill_manual(values = c("white", "orange", "purple")) +
+  scale_shape_manual(values = c(21, 23)) +
+  scale_color_manual(values = col.Temp) +
+  scale_alpha_manual(values = c(.1, 1), guide = "none") +
+  # scale_alpha(guide = "none") +
+  
+  ggnewscale::new_scale_color() +
+  # stat_ellipse(aes(color = Cluster),
+  #              level = 0.95,
+  #              size = 1.5) +
+  scale_color_manual(values = c("white", "orange", "purple"), name = "Cluster") +
+  
+  # scale_x_continuous(limits = c(-1, 3)) +
+  
+    guides(color = guide_legend(override.aes = list(size = 6, 
+                                                    linetype = NA,
+                                                  shape = c(23, 23, 23), 
+                                                  fill = c("white", "orange", "purple")
+                                                  )),
+           fill = guide_legend(override.aes = list(size = 5, stroke = 1, 
+                                                    linetype = NA,
+                                                  shape = c(23, 23, 23), 
+                                                  fill = c("white", "orange", "purple")
+                                                  ))
+           ) +
+  theme(legend.position = "none")
+```
+
+##### Personalization
+
+
+```{r}
+run_dunn_test_temp_beta <- function(data) {
+  dunn <- rstatix::dunn_test(Beta.Score_norm ~ Temperature, data = data, p.adjust.method = "BH") 
+  return(dunn)
+}
+```
+
+
+
+```{r}
+data.pair_exp_beta_temp <-
+  data.dynamics_Exp[["Beta"]][["Metadata"]] %>%
+      cutCellNames(col = "Beta.Metric") %>%
+      filter(Beta.Metric == "Bray-Curtis") %>%
+     # Convert DPE (time) into a factor for pairwise comparison
+    #   dplyr::mutate(DPE = as.factor(DPE)) %>%
+    # # Group by DPE
+    #   group_by(DPE) %>%
+    # # Nest the data for looping with map()
+    #   nest(data = -c(DPE)) %>%
+  
+  # GLM
+    # Create a column called test to store the results of the GLM, emmeans, contrasts, and tidy
+      # dplyr::mutate(test = map(.x=data, 
+      #                          ~ glm(formula = Alpha.Score ~ -1 + Treatment, data = .x, family = "quasibinomial") %>% 
+      #                            emmeans::emmeans( ~ Treatment ) %>%
+      #                            emmeans::contrast(method = "pairwise", adjust = "tukey") %>% 
+      #                            tidy() )) %>%
+  # Dunn
+      # mutate(test = map(data, ~ run_dunn_test_temp_beta(.x) )) %>%
+    run_dunn_test_temp_beta() %>%
+    # Unnest the test column into a tibble
+      # unnest(test) %>%
+    # Remove any of the following columns if they exist
+      dplyr::select(-any_of(c("null.value", "data"))) %>%
+ 
+  # GLM 
+    # # Separate out the contrast column for later significance bar plotting
+    #   tidyr::separate(contrast, c('group1', 'group2'), sep = " - ") %>% # GLM
+    # # Add a column ".y." for plotting worm counts
+    #   dplyr::mutate(`.y.` = "Alpha.Score", .before = 1) %>%
+    # Clean up cell values under the group1 and 2 columns to get rid of the prefix
+      # dplyr::mutate(group1 = (str_remove(group1, term)),
+      #               group2 = (str_remove(group2, term))) %>%
+  
+    # Ungroup
+      dplyr::ungroup() %>%
+      # SigStars(pval.var = "p.value")
+  SigStars(pval.var = "p.adj.signif")
+    
+```
+
+#### Plot
+
+```{r}
+plot_data_exp_beta_temp <- data.dynamics_Exp[["Beta"]][["Metadata"]] %>%
+      cutCellNames(col = "Beta.Metric") %>%
+      filter(Beta.Metric == "Bray-Curtis") %>%
+      mutate(DPE = as.factor(DPE)) %>%
+      group_by(Temperature, Beta.Metric) %>%
+    summarize(
+      Beta.Score_norm = median(Beta.Score_norm),
+      CI_lower = boot::boot(Beta.Score_norm, median_func, R = 1000, 
+                            parallel = "multicore")$t0 - 1.96 * sd(boot::boot(Beta.Score_norm, median_func, R = 1000, 
+                                                                              parallel = "multicore")$t),
+      CI_upper = boot::boot(Beta.Score_norm, median_func, R = 1000, 
+                            parallel = "multicore")$t0 + 1.96 * sd(boot::boot(Beta.Score_norm, median_func, R = 1000, 
+                                                                              parallel = "multicore")$t)
+    ) %>%
+  ungroup() %>%
+      left_join(data.pair_exp_beta_temp, by = c("Temperature" = "group2"), multiple = "first") %>%
+      mutate(stars = ifelse(p.adj.sig == "ns", NA, "*"))
+```
+
+
+```{r}
+data.points_exp_beta_temp <-
+  data.dynamics_Exp[["Beta"]][["Metadata"]] %>%
+      cutCellNames(col = "Beta.Metric") %>%
+      filter(Beta.Metric == "Bray-Curtis") %>%
+      # mutate(DPE = as.factor(DPE)) %>%
+      mutate(Cluster = case_when(
+    ((Treatment == "Exposed") & (Beta.Score_norm >= quantile(Beta.Score_norm, .75)) & (Total.Worm.Count > quantile(Total.Worm.Count, 0.75))) ~ "High",
+    ((Treatment == "Exposed") & (Beta.Score_norm <= quantile(Beta.Score_norm, .25)) & (Total.Worm.Count > quantile(Total.Worm.Count, 0.75))) ~ "Low",
+    .default = "Other"
+  ), .after = "Treatment") %>%
+  mutate(Cluster = fct_relevel(factor(Cluster, levels = c("Other", "Low", "High")))) 
+```
+
+
+```{r}
+
+```
+
+
+###### Jitter
+
+
+
+```{r fig.height=6.5, fig.width=7, message=F, warning=FALSE}
+
+plot_data_exp_beta_temp %>%  
+  # filter(Treatment == "Control") %>%
+  # dplyr::mutate(DPE = as.numeric(levels(DPE)[DPE])) %>%
+  ggplot(aes(x = Temperature, y = Beta.Score_norm)) +
+
+  
+  ## Background Points ##
+  
+  geom_violin(data = data.points_exp_beta_temp, aes(color = Temperature,
+                      fill = Temperature,
+                      group = interaction(Temperature)),
+                  # position = position_dodge(width = 5),
+                  # width = 4,
+                  size = 1.25,
+                  alpha = .667,
+                  scale = "width",
+            show.legend = F,
+           na.rm = T) +
+  scale_fill_manual(values = c(col.Temp, "white"), name = "Temp (°C)", guide = "none") +
+    ggnewscale::new_scale_fill() +
+
+  # # "#A6CEE3" "#1F78B4" "#B2DF8A" "#33A02C" "#FB9A99" "#E31A1C" "#FDBF6F" "#FF7F00" "#CAB2D6" "#6A3D9A" "#FFFF99" "#B15928"
+  geom_hline(yintercept = .95, linetype = "solid", size = 40, alpha = .33, color = pal.Paired[9]) +
+  geom_hline(yintercept = quantile(data.points_exp_beta_temp$Beta.Score_norm, .9), linetype = "solid", size = 2, color = pal.Paired[10]) +
+  # geom_hline(yintercept = 1, linetype = "solid", size = 2, color = pal.Paired[10]) +
+  geom_hline(yintercept = .145, linetype = "solid", size = 50, alpha = .33, color = pal.Paired[8]) +
+  geom_hline(yintercept = quantile(data.points_exp_beta_temp$Beta.Score_norm, .1), linetype = "solid", size = 2, color = pal.Paired[8]) +
+  # geom_hline(yintercept = 0, linetype = "solid", size = 2, color = pal.Paired[7]) +
+  
+  scale_color_manual(values = col.Temp, name = "Temp (°C)", guide = "none") +
+  ggnewscale::new_scale_color() +
+  ggnewscale::new_scale_fill() +
+
+  geom_line(aes(color = Temperature),
+            size = 4.5,
+            linetype = "solid",
+            position = position_dodge2(width = 5), show.legend = F) +
+  scale_color_manual(values = c("white", "white", "white"), name = "Treatment", guide = "none") +
+  scale_linetype_manual(values = c("solid", "solid")) +
+  ggnewscale::new_scale_color() +
+  ggnewscale::new_scale("linetype") +
+  geom_line(aes(color = Temperature),
+            size = 2,
+            linetype = "solid",
+            # position = position_dodge2(width = 5), 
+            show.legend = T) +
+  
+  scale_color_manual(values = c(col.Temp), name = "Treatment", guide = "none") +
+  ggnewscale::new_scale_color() +
+  
+  ggbeeswarm::geom_quasirandom(data = data.points_exp_beta_temp %>% left_join(BetaDisp.Rank.df, by = "Sample"),
+                               aes(x = Temperature,
+                                   y = Beta.Score_norm,
+                                   color = BetaDisp.Rank,
+                                 stroke = ifelse(BetaDisp.Rank == "Mid", .5, 2),
+                             fill = Temperature),
+                             shape = 21,
+                             # color = "black",
+                             # stroke = 1,
+                             size = 3) +
+
+  scale_linetype_manual(values = c("solid"), guide = "none") +
+  scale_color_manual(values = c("#6A3D9A","#FF7F00", "black"), name = "Low vs High", guide = "none") +
+  
+  ggnewscale::new_scale_color() +
+
+  geom_point(aes(group = interaction(Temperature)),
+             color = "white",
+             fill = "white",
+             size = 8,
+             shape = 21,
+             show.legend = F,
+    # position = position_dodge2(width = 5),
+           na.rm = T) +
+  ggnewscale::new_scale_color() +
+
+  geom_point(aes(color = Temperature,
+                 fill = Temperature),
+             size = 3,
+             shape = 21,
+             stroke = 2,
+             show.legend = T,
+    # position = position_dodge2(width = 5),
+           na.rm = T) +
+
+  scale_fill_manual(values = c(col.Temp, "white"), name = "Temp (°C)") +
+  scale_color_manual(values = col.Temp, name = "Temp (°C)", guide = "none") +
+
+    geom_text(aes(label = stars, y = -.05),
+            # nudge_x = 1.5,
+            # nudge_y = -.0175,
+            size = 15,
+            # position = position_dodge2(width = 5),
+             fontface = "bold") +
+
+  
+  scale_y_continuous(limits = c(0, 1), breaks = seq(0, 1, by = .25)) +
+  labs(title = "Beta Personalization Scores across Temperature (Unexposed Fish)", #caption = "Alpha; All",
+       # x = "Time (Days Post Exposure (DPE))",
+       y = "Beta Score"
+       ) +
+  theme(legend.position = "right",
+        legend.justification = "center",
+        legend.direction = "vertical",
+        # panel.grid.minor.y = element_blank(),
+        panel.grid.major.x = element_blank()) +
+  guides(fill = guide_legend(override.aes = list(size = 6, stroke = NA, linetype = NA))
+         )
+  
+  
+  
+  
+```
+
+#### Control and Exp
+
+```{r fig.height=6.5, fig.width=7, message=FALSE, warning=FALSE}
+
+ps.list[["All"]] %>%
+  # ps_filter(Treatment == "Control") %>%
+  tax_agg("Genus") %>%
+  dist_calc("bray") %>%
+  ord_calc() %>%
+  microViz::ord_plot(fill = NA, 
+                         color = NA,
+                         alpha = 0,
+                         shape = "Treatment", size = 3,
+                         constraint_vec_style = vec_constraint(colour = "black",
+                                                               size = 2,
+                                                               alpha = 1,
+                                                               arrow = grid::arrow(length = grid::unit(0.05, units = "npc"))),
+                         constraint_lab_style = constraint_lab_style(
+                           type = "label", 
+                           justify = "side",
+                           colour = "black",
+                           max_angle = 90, perpendicular = TRUE, size = 4,
+                           check_overlap = TRUE
+                         ), show.legend = F
+      ) +
+      
+        ## Ellipses
+      ggnewscale::new_scale_color() +
+      stat_ellipse(aes(color = Temperature, 
+                       linetype = Treatment), 
+                   size = 1,
+                   alpha = .667,
+                   show.legend = F) + 
+      scale_linetype_manual(values = c("solid", "dashed")) +
+      scale_color_manual(values = c(col.Temp), guide = "none") +
+  
+      ggnewscale::new_scale_color() +
+    
+      geom_point(aes(fill = ifelse(Treatment == "Control", Temperature, "white"),
+                     color = ifelse(Treatment != "Control", Temperature, "black"),
+                     # alpha = ifelse(DPE == 42, 1, .99),
+                     shape = Treatment), 
+                 size = 3,
+                 stroke = 1,
+                   show.legend = T) +
+      
+      scale_fill_manual(values = c(col.Temp, "white"), name = "Temp (°C)", guide = "none") +
+      scale_color_manual(values = c(col.Temp, "black"), name = "Temp (°C)", labels = c("1" = "28°C",
+                                                                                       "2" = "32°C",
+                                                                                       "3" = "35°C",
+                                                                                       "black" = "")) +
+      scale_shape_manual(values = c(21, 23)) +
+      scale_x_continuous(limits = c(-.75, 2.5), breaks = seq(-.5, 2, by = 1)) +
+      scale_y_continuous(limits = c(-2, 2), breaks = seq(-2, 2, by = 1)) +
+      
+      
+      
+      labs(title = paste0("Dissimilarity (Beta; Post-Exposed fish)")) +
+      theme(panel.border = element_rect(colour = "black", fill=NA, size=.5, labels ),
+            legend.title = element_text(size = 14),
+            legend.text = element_text(size = 12),
+            axis.text = element_text(size = 12),
+            axis.title = element_text(size = 16),
+            plot.caption = element_text(hjust = 0, size = 10),
+            legend.position = "right") +
+  guides(color = guide_legend(override.aes = list(size = 6, 
+                                                  shape = c(16, 16, 16, 16), 
+                                                  color = c(col.Temp, "white")
+                                                  )),
+         shape = guide_legend(override.aes = list(size = 5,
+                                                  fill = c("black", "white"))))
+
+```
+
+```{r fig.height=6.5, fig.width=7, message=FALSE, warning=FALSE}
+
+ps.list[["All"]] %>%
+  # ps_filter(Treatment == "Control") %>%
+  tax_agg("Genus") %>%
+  dist_calc("bray") %>%
+  ord_calc() %>%
+  microViz::ord_plot(fill = NA, 
+                         color = NA,
+                         alpha = 0,
+                         shape = "Treatment", size = 3,
+                         constraint_vec_style = vec_constraint(colour = "black",
+                                                               size = 2,
+                                                               alpha = 1,
+                                                               arrow = grid::arrow(length = grid::unit(0.05, units = "npc"))),
+                         constraint_lab_style = constraint_lab_style(
+                           type = "label", 
+                           justify = "side",
+                           colour = "black",
+                           max_angle = 90, perpendicular = TRUE, size = 4,
+                           check_overlap = TRUE
+                         ), show.legend = F
+      ) +
+      
+        ## Ellipses
+      ggnewscale::new_scale_color() +
+      stat_ellipse(aes(color = Temperature, 
+                       linetype = Treatment), 
+                   size = 1,
+                   alpha = .667,
+                   show.legend = F) + 
+      scale_linetype_manual(values = c("solid", "dashed")) +
+      scale_color_manual(values = c(col.Temp), guide = "none") +
+  
+      ggnewscale::new_scale_color() +
+    
+      geom_point(aes(fill = ifelse(Treatment == "Control", Temperature, "white"),
+                     color = ifelse(Treatment != "Control", Temperature, "black"),
+                     # alpha = ifelse(DPE == 42, 1, .99),
+                     shape = Treatment), 
+                 size = 3,
+                 stroke = 1,
+                   show.legend = T) +
+      
+      scale_fill_manual(values = c(col.Temp, "white"), name = "Temp (°C)", guide = "none") +
+      scale_color_manual(values = c(col.Temp, "black"), name = "Temp (°C)", labels = c("1" = "28°C",
+                                                                                       "2" = "32°C",
+                                                                                       "3" = "35°C",
+                                                                                       "black" = "")) +
+      scale_shape_manual(values = c(21, 23)) +
+      scale_x_continuous(limits = c(-.75, 2.5), breaks = seq(-.5, 2, by = 1)) +
+      scale_y_continuous(limits = c(-2, 2), breaks = seq(-2, 2, by = 1)) +
+      
+      facet_grid(Temperature~ ., labeller = labeller(Temperature = c("28" = "28°C", "32" = "32°C", "35" = "35°C"))) +
+      
+      labs(title = paste0("Dissimilarity (Beta; Post-Exposed fish)")) +
+      theme(panel.border = element_rect(colour = "black", fill=NA, size=.5, labels ),
+            legend.title = element_text(size = 14),
+            legend.text = element_text(size = 12),
+            axis.text = element_text(size = 12),
+            axis.title = element_text(size = 16),
+            strip.text = element_text(size = 20),
+            plot.caption = element_text(hjust = 0, size = 10),
+            legend.position = "right") +
+  guides(color = guide_legend(override.aes = list(size = 6, 
+                                                  shape = c(16, 16, 16, 16), 
+                                                  color = c(col.Temp, "white")
+                                                  )),
+         shape = guide_legend(override.aes = list(size = 5,
+                                                  fill = c("black", "white")))) 
+
+```
+
+###### Loop
+
+```{r}
+tmp.plot <- ps.list[["All"]] %>%
+  # ps_filter(Treatment == "Control") %>%
+  tax_agg("Genus") %>%
+  dist_calc("bray") %>%
+  ord_calc() %>%
+  microViz::ord_plot(fill = NA, 
+                         color = NA,
+                         alpha = 0,
+                         shape = "Treatment", size = 3,
+                         constraint_vec_style = vec_constraint(colour = "black",
+                                                               size = 2,
+                                                               alpha = 1,
+                                                               arrow = grid::arrow(length = grid::unit(0.05, units = "npc"))),
+                         constraint_lab_style = constraint_lab_style(
+                           type = "label", 
+                           justify = "side",
+                           colour = "black",
+                           max_angle = 90, perpendicular = TRUE, size = 4,
+                           check_overlap = TRUE
+                         ), show.legend = F
+      )
+
+tmp.plot.data <- tmp.plot$data
+```
+
+
+
+```{r fig.height=6.5, fig.width=14, message=FALSE, warning=FALSE}
+
+dpe_values <- c(0, 14, 21, 28, 42)
+
+tmp.resSubSection <- "All__BetaDiv__"
+
+furrr::future_map(dpe_values, function(dpe){
+  
+
+      tmp.plot.data %>%
+    filter(DPE <= dpe) %>%
+       
+    ggplot(aes(x = MDS1, y = MDS2)) +
+    geom_point(aes(color = ifelse(Treatment != "Control", Temperature, "black"),
+                   fill = ifelse(Treatment == "Control", Temperature, "white"),
+                   alpha = ifelse(DPE == dpe, 1, .1),
+                   shape = Treatment),
+               size = 2,
+               stroke = 1.5
+               ) +
+    
+    scale_alpha(guide = "none") +
+    scale_fill_manual(values = c(col.Temp, "white"), name = "Temp (°C)",
+                      labels = c("28°C", "32°C", "35°C", "")) +
+    scale_color_manual(values = c(col.Temp, "black"), guide = "none") +
+    scale_shape_manual(values = c(21, 23), name = "Treatment") +
+    
+    ggnewscale::new_scale_color() +
+    
+    stat_ellipse(aes(color = Temperature, linetype = Treatment),
+                 size = 1.5, 
+                 show.legend = F) +
+    
+    scale_color_manual(values = c(col.Temp), guide = "none") +
+    
+    scale_x_continuous(limits = c(-1, 2)) +
+    scale_y_continuous(limits = c(-2, 2)) +
+    
+    # facet_grid(Temperature ~ .) +
+    facet_grid(. ~ Temperature, labeller = labeller('28' = '28°C', '32' = '32°C', '35' = '35°C')) +
+    
+     guides(fill = guide_legend(override.aes = list(fill = c(col.Temp, "white"), 
+                                                    color = c("white","white", "white", "white"),
+                                                    shape = c(21, 21, 21, 21), 
+                                                    alpha = c(1,1,1,0),
+                                                    size = 4)),
+            shape = guide_legend(override.aes = list(size = 4)))
+  
+  })
+
+
+```
+
+
+```{r fig.height=6.5, fig.width=7, message=FALSE, warning=FALSE}
+
+dpe_values <- c(0, 14, 21, 28, 42)
+
+tmp.resSubSection <- "All__BetaDiv__"
+
+furrr::future_map(dpe_values, function(dpe){
+  
+  plot <-
+  ps.list[["Unexposed"]] %>%
+  # ps_mutate(DPE = as.numeric(levels(DPE)[DPE])) %>%
+  # ps_filter(DPE <= dpe) %>%
+  tax_agg("Genus") %>%
+  dist_calc("bray") %>%
+  ord_calc() %>%
+  microViz::ord_plot(fill = NA, 
+                         color = NA,
+                         alpha = 0,
+                         # shape = "Treatment", 
+                          size = 3,
+                         constraint_vec_style = vec_constraint(colour = "black",
+                                                               size = 2,
+                                                               alpha = 1,
+                                                               arrow = grid::arrow(length = grid::unit(0.05, units = "npc"))),
+                         constraint_lab_style = constraint_lab_style(
+                           type = "label", 
+                           justify = "side",
+                           colour = "black",
+                           max_angle = 90, perpendicular = TRUE, size = 4,
+                           check_overlap = TRUE
+                         ), show.legend = F
+      ) +
+      
+        ## Ellipses
+      ggnewscale::new_scale_color() +
+      stat_ellipse(aes(color = Temperature,
+                       group = interaction(Temperature, dpe)), 
+                   size = 1,
+                   alpha = .667,
+                   show.legend = F) + 
+      # scale_linetype_manual(values = c("solid", "dashed")) +
+      scale_color_manual(values = c(col.Temp), guide = "none") +
+  
+      ggnewscale::new_scale_color() +
+    
+      geom_point(aes(fill = Temperature,
+                     alpha = ifelse(DPE == dpe, 1, .33)),
+                     color = "black", 
+                 size = 3,
+                 shape = 21,
+                 stroke = 1,
+                   show.legend = T) +
+      
+      scale_fill_manual(values = c(col.Temp, "white"), name = "Temp (°C)") +
+    scale_alpha(guide = "none") +
+      
+
+      
+      labs(title = paste0("Dissimilarity (Beta; Parasite unexposed fish)")) +
+      theme(panel.border = element_rect(colour = "black", fill=NA, size=.5, labels ),
+            legend.title = element_text(size = 14),
+            legend.text = element_text(size = 12),
+            axis.text = element_text(size = 12),
+            axis.title = element_text(size = 16),
+            plot.caption = element_text(hjust = 0, size = 10),
+            legend.position = "right") +
+  guides(fill = guide_legend(override.aes = list(size = 5)))
+  
+    # ggsave(filename = paste0(path.results, "/Figures/PDF/", tmp.resSubSection, "plot_", dpe, "_DPE.pdf"), plot = plot, height = 6.5, width = 7, units = "in")
+  print(plot)
+  })
+
+```
+
+
+
+##### Extra
+
+```{r fig.height=6.5, fig.width=8.5, message=FALSE, warning=FALSE}
+
+ps.list[["All"]] %>%
+  # ps_filter(Treatment == "Control") %>%
+  tax_agg("Genus") %>%
+  dist_calc("bray") %>%
+  ord_calc() %>%
+  microViz::ord_plot(fill = NA, 
+                         color = NA,
+                         alpha = 0,
+                         shape = "Treatment", size = 3,
+                         constraint_vec_style = vec_constraint(colour = "black",
+                                                               size = 2,
+                                                               alpha = 1,
+                                                               arrow = grid::arrow(length = grid::unit(0.05, units = "npc"))),
+                         constraint_lab_style = constraint_lab_style(
+                           type = "label", 
+                           justify = "side",
+                           colour = "black",
+                           max_angle = 90, perpendicular = TRUE, size = 4,
+                           check_overlap = TRUE
+                         ), show.legend = F
+      ) +
+      
+        ## Ellipses
+      ggnewscale::new_scale_color() +
+      stat_ellipse(aes(color = Temperature, 
+                       linetype = Treatment), 
+                   size = 1,
+                   alpha = .667,
+                   show.legend = F) + 
+      scale_linetype_manual(values = c("solid", "dashed")) +
+      scale_color_manual(values = c(col.Temp), guide = "none") +
+  
+      ggnewscale::new_scale_color() +
+    
+      geom_point(aes(fill = ifelse(Treatment == "Control", Temperature, "white"),
+                     color = ifelse(Treatment != "Control", Temperature, "black"),
+                     # alpha = ifelse(DPE == 42, 1, .99),
+                     shape = Treatment), 
+                 size = 3,
+                 stroke = 1,
+                   show.legend = T) +
+      
+      scale_fill_manual(values = c(col.Temp, "white"), name = "Temp (°C)", guide = "none") +
+      scale_color_manual(values = c(col.Temp, "black"), name = "Temp (°C)", labels = c("1" = "28°C",
+                                                                                       "2" = "32°C",
+                                                                                       "3" = "35°C",
+                                                                                       "black" = "")) +
+      scale_shape_manual(values = c(21, 23)) +
+      scale_x_continuous(limits = c(-.75, 2.5), breaks = seq(-.5, 2, by = 1)) +
+      scale_y_continuous(limits = c(-2, 2), breaks = seq(-2, 2, by = 1)) +
+      
+      facet_grid(Temperature~ ., labeller = labeller(Temperature = c("28" = "28°C", "32" = "32°C", "35" = "35°C"))) +
+      
+      labs(title = paste0("Dissimilarity (Beta; Post-Exposed fish)")) +
+      theme(panel.border = element_rect(colour = "black", fill=NA, size=.5, labels ),
+            legend.title = element_text(size = 14),
+            legend.text = element_text(size = 12),
+            axis.text = element_text(size = 12),
+            axis.title = element_text(size = 16),
+            strip.text = element_text(size = 20),
+            plot.caption = element_text(hjust = 0, size = 10),
+            legend.position = "right") +
+  guides(color = guide_legend(override.aes = list(size = 6, 
+                                                  shape = c(16, 16, 16, 16), 
+                                                  color = c(col.Temp, "white")
+                                                  )),
+         shape = guide_legend(override.aes = list(size = 5,
+                                                  fill = c("black", "white")))) 
+
+```
+
+```{r fig.height=6.5, fig.width=8.5, message=FALSE, warning=FALSE}
+
+ps.list[["All"]] %>%
+  # ps_filter(Treatment == "Control") %>%
+  tax_agg("Genus") %>%
+  dist_calc("bray") %>%
+  ord_calc() %>%
+  microViz::ord_plot(fill = NA, 
+                         color = NA,
+                         alpha = 0,
+                         shape = "Treatment", size = 3,
+                         constraint_vec_style = vec_constraint(colour = "black",
+                                                               size = 2,
+                                                               alpha = 1,
+                                                               arrow = grid::arrow(length = grid::unit(0.05, units = "npc"))),
+                         constraint_lab_style = constraint_lab_style(
+                           type = "label", 
+                           justify = "side",
+                           colour = "black",
+                           max_angle = 90, perpendicular = TRUE, size = 4,
+                           check_overlap = TRUE
+                         ), show.legend = F
+      ) +
+      
+        ## Ellipses
+      ggnewscale::new_scale_color() +
+      stat_ellipse(aes(color = Temperature, 
+                       linetype = Treatment), 
+                   size = 1,
+                   alpha = .667,
+                   show.legend = F) + 
+      scale_linetype_manual(values = c("solid", "dashed")) +
+      scale_color_manual(values = c(col.Temp), guide = "none") +
+  
+      ggnewscale::new_scale_color() +
+    
+      geom_point(aes(fill = ifelse(Treatment == "Control", Temperature, "white"),
+                     color = ifelse(Treatment != "Control", Temperature, "black"),
+                     # alpha = ifelse(DPE == 42, 1, .99),
+                     shape = Treatment), 
+                 size = 3,
+                 stroke = 1,
+                   show.legend = T) +
+      
+      scale_fill_manual(values = c(col.Temp, "white"), name = "Temp (°C)", guide = "none") +
+      scale_color_manual(values = c(col.Temp, "black"), name = "Temp (°C)", labels = c("1" = "28°C",
+                                                                                       "2" = "32°C",
+                                                                                       "3" = "35°C",
+                                                                                       "black" = "")) +
+      scale_shape_manual(values = c(21, 23)) +
+      scale_x_continuous(limits = c(-.75, 2.1), breaks = seq(-.5, 2, by = 1)) +
+      scale_y_continuous(limits = c(-2.1, 1.75), breaks = seq(-2, 1.5, by = 1)) +
+      
+      facet_grid(Treatment~ ., labeller = labeller(Temperature = c("28" = "28°C", "32" = "32°C", "35" = "35°C"))) +
+      
+      labs(title = paste0("Dissimilarity (Beta; Post-Exposed fish)")) +
+      theme(panel.border = element_rect(colour = "black", fill=NA, size=.5, labels ),
+            legend.title = element_text(size = 14),
+            legend.text = element_text(size = 12),
+            axis.text = element_text(size = 12),
+            axis.title = element_text(size = 16),
+            strip.text = element_text(size = 20),
+            plot.caption = element_text(hjust = 0, size = 10),
+            legend.position = "right") +
+  guides(color = guide_legend(override.aes = list(size = 6, 
+                                                  shape = c(16, 16, 16, 16), 
+                                                  color = c(col.Temp, "white")
+                                                  )),
+         shape = guide_legend(override.aes = list(size = 5,
+                                                  fill = c("black", "white")))) 
+
+```
+
+```{r fig.height=6.5, fig.width=7, message=FALSE, warning=FALSE}
+
+ps.list[["All"]] %>%
+  # ps_filter(Treatment == "Control") %>%
+  tax_agg("Genus") %>%
+  dist_calc("bray") %>%
+  ord_calc() %>%
+  microViz::ord_plot(fill = NA, 
+                         color = NA,
+                         alpha = 0,
+                         shape = "Treatment", size = 3,
+                         constraint_vec_style = vec_constraint(colour = "black",
+                                                               size = 2,
+                                                               alpha = 1,
+                                                               arrow = grid::arrow(length = grid::unit(0.05, units = "npc"))),
+                         constraint_lab_style = constraint_lab_style(
+                           type = "label", 
+                           justify = "side",
+                           colour = "black",
+                           max_angle = 90, perpendicular = TRUE, size = 4,
+                           check_overlap = TRUE
+                         ), show.legend = F
+      ) +
+      
+        ## Ellipses
+      ggnewscale::new_scale_color() +
+      stat_ellipse(aes(color = Temperature, 
+                       linetype = Treatment), 
+                   size = 1,
+                   alpha = .667,
+                   show.legend = F) + 
+      scale_linetype_manual(values = c("solid", "dashed")) +
+      scale_color_manual(values = c(col.Temp), guide = "none") +
+  
+      ggnewscale::new_scale_color() +
+    
+      geom_point(aes(fill = ifelse(Treatment == "Control", Temperature, "white"),
+                     color = ifelse(Treatment != "Control", Temperature, "black"),
+                     # alpha = ifelse(DPE == 42, 1, .99),
+                     shape = Treatment), 
+                 size = 3,
+                 stroke = 1,
+                   show.legend = T) +
+      
+      scale_fill_manual(values = c(col.Temp, "white"), name = "Temp (°C)", guide = "none") +
+      scale_color_manual(values = c(col.Temp, "black"), name = "Temp (°C)", labels = c("1" = "28°C",
+                                                                                       "2" = "32°C",
+                                                                                       "3" = "35°C",
+                                                                                       "black" = "")) +
+      scale_shape_manual(values = c(21, 23)) +
+      scale_x_continuous(limits = c(-.75, 2.1), breaks = seq(-.5, 2, by = 1)) +
+      scale_y_continuous(limits = c(-2.1, 1.75), breaks = seq(-2, 1.5, by = 1)) +
+      
+      facet_grid(Temperature ~ ., labeller = labeller(Temperature = c("28" = "28°C", "32" = "32°C", "35" = "35°C"))) +
+      
+      labs(title = paste0("Dissimilarity (Beta; Post-Exposed fish)")) +
+      theme(panel.border = element_rect(colour = "black", fill=NA, size=.5, labels ),
+            legend.title = element_text(size = 14),
+            legend.text = element_text(size = 12),
+            axis.text = element_text(size = 12),
+            axis.title = element_text(size = 16),
+            strip.text = element_text(size = 20),
+            plot.caption = element_text(hjust = 0, size = 10),
+            legend.position = "right") +
+  guides(color = guide_legend(override.aes = list(size = 6, 
+                                                  shape = c(16, 16, 16, 16), 
+                                                  color = c(col.Temp, "white")
+                                                  )),
+         shape = guide_legend(override.aes = list(size = 5,
+                                                  fill = c("black", "white")))) 
+
+```
+
+
+```{r fig.height=6.5, fig.width=14, message=FALSE, warning=FALSE}
+
+ps.list[["All"]] %>%
+  # ps_filter(Treatment == "Control") %>%
+  tax_agg("Genus") %>%
+  dist_calc("bray") %>%
+  ord_calc() %>%
+  microViz::ord_plot(fill = NA, 
+                         color = NA,
+                         alpha = 0,
+                         shape = "Treatment", size = 3,
+                         constraint_vec_style = vec_constraint(colour = "black",
+                                                               size = 2,
+                                                               alpha = 1,
+                                                               arrow = grid::arrow(length = grid::unit(0.05, units = "npc"))),
+                         constraint_lab_style = constraint_lab_style(
+                           type = "label", 
+                           justify = "side",
+                           colour = "black",
+                           max_angle = 90, perpendicular = TRUE, size = 4,
+                           check_overlap = TRUE
+                         ), show.legend = F
+      ) +
+      
+        ## Ellipses
+      ggnewscale::new_scale_color() +
+      stat_ellipse(aes(color = Temperature, 
+                       linetype = Treatment), 
+                   size = 1,
+                   alpha = .667,
+                   show.legend = F) + 
+      scale_linetype_manual(values = c("solid", "dashed")) +
+      scale_color_manual(values = c(col.Temp), guide = "none") +
+  
+      ggnewscale::new_scale_color() +
+    
+      geom_point(aes(fill = ifelse(Treatment == "Control", Temperature, "white"),
+                     color = ifelse(Treatment != "Control", Temperature, "black"),
+                     # alpha = ifelse(DPE == 42, 1, .99),
+                     shape = Treatment), 
+                 size = 3,
+                 stroke = 1,
+                   show.legend = T) +
+      
+      scale_fill_manual(values = c(col.Temp, "white"), name = "Temp (°C)", guide = "none") +
+      scale_color_manual(values = c(col.Temp, "black"), name = "Temp (°C)", labels = c("1" = "28°C",
+                                                                                       "2" = "32°C",
+                                                                                       "3" = "35°C",
+                                                                                       "black" = "")) +
+      scale_shape_manual(values = c(21, 23)) +
+      # scale_x_continuous(limits = c(-.75, 2.1), breaks = seq(-.5, 2, by = 1)) +
+      # scale_y_continuous(limits = c(-2.1, 1.75), breaks = seq(-2, 1.5, by = 1)) +
+      
+      facet_grid(Temperature ~ DPE, labeller = labeller(Temperature = c("28" = "28°C", "32" = "32°C", "35" = "35°C"))) +
+      
+      labs(title = paste0("Dissimilarity (Beta; Post-Exposed fish)")) +
+      theme(panel.border = element_rect(colour = "black", fill=NA, size=.5, labels ),
+            legend.title = element_text(size = 14),
+            legend.text = element_text(size = 12),
+            axis.text = element_text(size = 12),
+            axis.title = element_text(size = 16),
+            strip.text = element_text(size = 20),
+            plot.caption = element_text(hjust = 0, size = 10),
+            legend.position = "right") +
+  guides(color = guide_legend(override.aes = list(size = 6, 
+                                                  shape = c(16, 16, 16, 16), 
+                                                  color = c(col.Temp, "white")
+                                                  )),
+         shape = guide_legend(override.aes = list(size = 5,
+                                                  fill = c("black", "white")))) 
+
+```
+
+### Personalization
+
+#### Control (temp)
+
+
+##### Tests
+
+```{r}
+run_dunn_test_temp_beta <- function(data) {
+  dunn <- rstatix::dunn_test(Beta.Score_norm ~ Temperature, data = data, p.adjust.method = "BH") 
+  return(dunn)
+}
+```
+
+
+
+```{r}
+data.pair_ctrl_beta_temp <-
+  data.dynamics_Unexp[["Beta"]][["Metadata"]] %>%
+      cutCellNames(col = "Beta.Metric") %>%
+      filter(Beta.Metric == "Bray-Curtis") %>%
+     # Convert DPE (time) into a factor for pairwise comparison
+    #   dplyr::mutate(DPE = as.factor(DPE)) %>%
+    # # Group by DPE
+    #   group_by(DPE) %>%
+    # # Nest the data for looping with map()
+    #   nest(data = -c(DPE)) %>%
+  
+  # GLM
+    # Create a column called test to store the results of the GLM, emmeans, contrasts, and tidy
+      # dplyr::mutate(test = map(.x=data, 
+      #                          ~ glm(formula = Alpha.Score ~ -1 + Treatment, data = .x, family = "quasibinomial") %>% 
+      #                            emmeans::emmeans( ~ Treatment ) %>%
+      #                            emmeans::contrast(method = "pairwise", adjust = "tukey") %>% 
+      #                            tidy() )) %>%
+  # Dunn
+      # mutate(test = map(data, ~ run_dunn_test_temp_beta(.x) )) %>%
+    run_dunn_test_temp_beta() %>%
+    # Unnest the test column into a tibble
+      # unnest(test) %>%
+    # Remove any of the following columns if they exist
+      dplyr::select(-any_of(c("null.value", "data"))) %>%
+ 
+  # GLM 
+    # # Separate out the contrast column for later significance bar plotting
+    #   tidyr::separate(contrast, c('group1', 'group2'), sep = " - ") %>% # GLM
+    # # Add a column ".y." for plotting worm counts
+    #   dplyr::mutate(`.y.` = "Alpha.Score", .before = 1) %>%
+    # Clean up cell values under the group1 and 2 columns to get rid of the prefix
+      # dplyr::mutate(group1 = (str_remove(group1, term)),
+      #               group2 = (str_remove(group2, term))) %>%
+  
+    # Ungroup
+      dplyr::ungroup() %>%
+      # SigStars(pval.var = "p.value")
+  SigStars(pval.var = "p.adj.signif")
+    
+```
+
+#### Plot
+
+```{r}
+plot_data_ctrl_beta_temp <- data.dynamics_Unexp[["Beta"]][["Metadata"]] %>%
+      cutCellNames(col = "Beta.Metric") %>%
+      filter(Beta.Metric == "Bray-Curtis") %>%
+      mutate(DPE = as.factor(DPE)) %>%
+      group_by(Temperature, Beta.Metric) %>%
+    summarize(
+      Beta.Score_norm = median(Beta.Score_norm),
+      CI_lower = boot::boot(Beta.Score_norm, median_func, R = 1000, 
+                            parallel = "multicore")$t0 - 1.96 * sd(boot::boot(Beta.Score_norm, median_func, R = 1000, 
+                                                                              parallel = "multicore")$t),
+      CI_upper = boot::boot(Beta.Score_norm, median_func, R = 1000, 
+                            parallel = "multicore")$t0 + 1.96 * sd(boot::boot(Beta.Score_norm, median_func, R = 1000, 
+                                                                              parallel = "multicore")$t)
+    ) %>%
+  ungroup() %>%
+      left_join(data.pair_ctrl_beta_temp, by = c("Temperature" = "group2"), multiple = "first") %>%
+      mutate(stars = ifelse(p.adj.sig == "ns", NA, "*"))
+```
+
+
+```{r}
+data.points_ctrl_beta_temp <-
+  data.dynamics_Unexp[["Beta"]][["Metadata"]] %>%
+      cutCellNames(col = "Beta.Metric") %>%
+      filter(Beta.Metric == "Bray-Curtis") %>%
+      # mutate(DPE = as.factor(DPE)) %>%
+      mutate(Cluster = case_when(
+    ((Treatment == "Exposed") & (Beta.Score_norm >= quantile(Beta.Score_norm, .75)) & (Total.Worm.Count > quantile(Total.Worm.Count, 0.75))) ~ "High",
+    ((Treatment == "Exposed") & (Beta.Score_norm <= quantile(Beta.Score_norm, .25)) & (Total.Worm.Count > quantile(Total.Worm.Count, 0.75))) ~ "Low",
+    .default = "Other"
+  ), .after = "Treatment") %>%
+  mutate(Cluster = fct_relevel(factor(Cluster, levels = c("Other", "Low", "High")))) 
+```
+
+##### Plot
+
+```{r fig.height=6.5, fig.width=8.5, message=F, warning=FALSE}
+
+plot_data_ctrl_beta_temp %>%  
+  # filter(Treatment == "Control") %>%
+  # dplyr::mutate(DPE = as.numeric(levels(DPE)[DPE])) %>%
+  ggplot(aes(x = Temperature, y = Beta.Score_norm)) +
+
+  
+  ## Background Points ##
+  
+  geom_violin(data = data.points_ctrl_beta_temp, aes(color = Temperature,
+                      fill = Temperature,
+                      group = interaction(Temperature)),
+                  # position = position_dodge(width = 5),
+                  # width = 4,
+                  size = 1.25,
+                  alpha = .75,
+                  scale = "width",
+            show.legend = F,
+           na.rm = T) +
+  scale_fill_manual(values = c(col.Temp, "white"), name = "Temp (°C)", guide = "none") +
+    # scale_alpha_manual(values = c(.75, .1), guide = "none") +
+    ggnewscale::new_scale_fill() +
+
+
+  scale_color_manual(values = col.Temp, name = "Temp (°C)", guide = "none") +
+  # # # scale_shape_manual(values = c(21, 23), name = "Treatment ", guide = "none") +
+  # # scale_linetype_manual(values = c("solid", "dashed"), guide = "none") +
+  # # scale_alpha_manual(values = c(1, 1), guide = "none") +
+  ggnewscale::new_scale_color() +
+  ggnewscale::new_scale_fill() +
+  # ggnewscale::new_scale("alpha") +
+
+  geom_line(aes(color = Temperature),
+            size = 4.5,
+            linetype = "solid",
+            position = position_dodge2(width = 5), show.legend = F) +
+  scale_color_manual(values = c("white", "white", "white"), name = "Treatment", guide = "none") +
+  scale_linetype_manual(values = c("solid", "solid")) +
+  ggnewscale::new_scale_color() +
+  ggnewscale::new_scale("linetype") +
+  geom_line(aes(color = Temperature),
+            size = 2,
+            linetype = "solid",
+            # position = position_dodge2(width = 5), 
+            show.legend = T) +
+
+  scale_linetype_manual(values = c("solid"), guide = "none") +
+  scale_color_manual(values = c(col.Temp), name = "Treatment", guide = "none") +
+  # # scale_alpha_manual(values = c(.75, 1), guide = "none") +
+  ggnewscale::new_scale_color() +
+  # ggnewscale::new_scale("alpha") +
+  # 
+  # # geom_line(aes(linetype = Treatment,
+  # #               group = interaction(Treatment, Temperature, DPE)),
+  # #         color = "white",
+  # #         size = 3,
+  # #         show.legend = F) +
+  geom_point(aes(group = interaction(Temperature)),
+             color = "white",
+             fill = "white",
+             size = 8,
+             shape = 21,
+             show.legend = F,
+    # position = position_dodge2(width = 5),
+           na.rm = T) +
+  ggnewscale::new_scale_color() +
+  # ggnewscale::new_scale("alpha") +
+
+  geom_point(aes(color = Temperature,
+                 fill = Temperature),
+             size = 3,
+             shape = 21,
+             stroke = 2,
+             show.legend = T,
+    # position = position_dodge2(width = 5),
+           na.rm = T) +
+
+  scale_fill_manual(values = c(col.Temp, "white"), name = "Temp (°C)", guide = "none") +
+  scale_color_manual(values = col.Temp, name = "Temp (°C)", guide = "none") +
+  # scale_shape_manual(values = c(21, 23), name = "Treatment ") +
+  # scale_alpha_manual(values = c(1, 1), guide = "none") +
+  # 
+  # ggnewscale::new_scale_color() +
+  # ggnewscale::new_scale_fill() +
+  # ggnewscale::new_scale("alpha") +
+  # geom_point(aes(
+  #   # fill = ifelse(Cluster == "Other", "white", Cluster),
+  #   shape = ifelse(Treatment == "Exposed", Treatment, NA),
+  #                group = interaction(Treatment, Temperature, DPE)), 
+  #            color = "white",
+  #   fill = "white",
+  #            size = 1.5,
+  #            show.legend = F,
+  #   position = position_dodge2(width = 5),
+  #          na.rm = T) +
+  # 
+    geom_text(aes(label = stars, y = -.05),
+            # nudge_x = 1.5,
+            # nudge_y = -.0175,
+            size = 15,
+            # position = position_dodge2(width = 5),
+             fontface = "bold") +
+  # 
+  # # scale_fill_manual(values = c("white", pal.Set1[c(8,5)]), name = "Cluster" ) +
+  # 
+  # facet_grid(. ~ Temperature) +
+  # scale_x_continuous(limits = c(-5, 47), breaks = c(0, 7, 14, 21, 28, 35, 42)) +
+  scale_y_continuous(limits = c(-0.05, 1), breaks = seq(0, 1, by = .25)) +
+  labs(title = "Beta Personalization Scores across Temperature (Unexposed Fish)", #caption = "Alpha; All",
+       # x = "Time (Days Post Exposure (DPE))",
+       y = "Beta Score"
+       ) +
+  guides(
+    color = guide_legend(order = 1, title = "Temp (°C)",
+                            override.aes = list(shape = 16, size = 5, linetype = NA))
+  ) +
+  theme(legend.position = "right",
+        legend.justification = "center",
+        legend.direction = "vertical",
+        # panel.grid.minor.y = element_blank(),
+        panel.grid.major.x = element_blank())
+  
+  
+  
+  
+  
+```
+
+###### Jitter
+
+```{r fig.height=6.5, fig.width=7, message=F, warning=FALSE}
+
+plot_data_ctrl_beta_temp %>%  
+  # filter(Treatment == "Control") %>%
+  # dplyr::mutate(DPE = as.numeric(levels(DPE)[DPE])) %>%
+  ggplot(aes(x = Temperature, y = Beta.Score_norm)) +
+
+  
+  ## Background Points ##
+  
+  geom_violin(data = data.points_ctrl_beta_temp, aes(color = Temperature,
+                      fill = Temperature,
+                      group = interaction(Temperature)),
+                  # position = position_dodge(width = 5),
+                  # width = 4,
+                  size = 1.25,
+                  alpha = .667,
+                  scale = "width",
+            show.legend = F,
+           na.rm = T) +
+  scale_fill_manual(values = c(col.Temp, "white"), name = "Temp (°C)", guide = "none") +
+    ggnewscale::new_scale_fill() +
+
+  # # "#A6CEE3" "#1F78B4" "#B2DF8A" "#33A02C" "#FB9A99" "#E31A1C" "#FDBF6F" "#FF7F00" "#CAB2D6" "#6A3D9A" "#FFFF99" "#B15928"
+  geom_hline(yintercept = .95, linetype = "solid", size = 40, alpha = .33, color = pal.Paired[9]) +
+  geom_hline(yintercept = quantile(data.points_ctrl_beta_temp$Beta.Score_norm, .9), linetype = "solid", size = 2, color = pal.Paired[10]) +
+  # geom_hline(yintercept = 1, linetype = "solid", size = 2, color = pal.Paired[10]) +
+  geom_hline(yintercept = .145, linetype = "solid", size = 50, alpha = .33, color = pal.Paired[8]) +
+  geom_hline(yintercept = quantile(data.points_ctrl_beta_temp$Beta.Score_norm, .1), linetype = "solid", size = 2, color = pal.Paired[8]) +
+  # geom_hline(yintercept = 0, linetype = "solid", size = 2, color = pal.Paired[7]) +
+  
+  scale_color_manual(values = col.Temp, name = "Temp (°C)", guide = "none") +
+  ggnewscale::new_scale_color() +
+  ggnewscale::new_scale_fill() +
+
+  geom_line(aes(color = Temperature),
+            size = 4.5,
+            linetype = "solid",
+            position = position_dodge2(width = 5), show.legend = F) +
+  scale_color_manual(values = c("white", "white", "white"), name = "Treatment", guide = "none") +
+  scale_linetype_manual(values = c("solid", "solid")) +
+  ggnewscale::new_scale_color() +
+  ggnewscale::new_scale("linetype") +
+  geom_line(aes(color = Temperature),
+            size = 2,
+            linetype = "solid",
+            # position = position_dodge2(width = 5), 
+            show.legend = T) +
+  
+  scale_color_manual(values = c(col.Temp), name = "Treatment", guide = "none") +
+  ggnewscale::new_scale_color() +
+  
+  ggbeeswarm::geom_quasirandom(data = data.points_ctrl_beta_temp %>% left_join(BetaDisp.Rank.df, by = "Sample"),
+                               aes(x = Temperature,
+                                   y = Beta.Score_norm,
+                                   color = BetaDisp.Rank,
+                                 stroke = ifelse(BetaDisp.Rank == "Mid", .5, 2),
+                             fill = Temperature),
+                             shape = 21,
+                             # color = "black",
+                             # stroke = 1,
+                             size = 3) +
+
+  scale_linetype_manual(values = c("solid"), guide = "none") +
+  scale_color_manual(values = c("#6A3D9A","#FF7F00", "black"), name = "Low vs High", guide = "none") +
+  
+  ggnewscale::new_scale_color() +
+
+  geom_point(aes(group = interaction(Temperature)),
+             color = "white",
+             fill = "white",
+             size = 8,
+             shape = 21,
+             show.legend = F,
+    # position = position_dodge2(width = 5),
+           na.rm = T) +
+  ggnewscale::new_scale_color() +
+
+  geom_point(aes(color = Temperature,
+                 fill = Temperature),
+             size = 3,
+             shape = 21,
+             stroke = 2,
+             show.legend = T,
+    # position = position_dodge2(width = 5),
+           na.rm = T) +
+
+  scale_fill_manual(values = c(col.Temp, "white"), name = "Temp (°C)") +
+  scale_color_manual(values = col.Temp, name = "Temp (°C)", guide = "none") +
+
+    geom_text(aes(label = stars, y = -.05),
+            # nudge_x = 1.5,
+            # nudge_y = -.0175,
+            size = 15,
+            # position = position_dodge2(width = 5),
+             fontface = "bold") +
+
+  
+  scale_y_continuous(limits = c(0, 1), breaks = seq(0, 1, by = .25)) +
+  labs(title = "Beta Personalization Scores across Temperature (Unexposed Fish)", #caption = "Alpha; All",
+       # x = "Time (Days Post Exposure (DPE))",
+       y = "Beta Score"
+       ) +
+  theme(legend.position = "right",
+        legend.justification = "center",
+        legend.direction = "vertical",
+        # panel.grid.minor.y = element_blank(),
+        panel.grid.major.x = element_blank()) +
+  guides(fill = guide_legend(override.aes = list(size = 6, stroke = NA, linetype = NA))
+         )
+  
+  
+  
+  
+```
+
+
+#### Control (temp/time)
+
+
+##### Tests
+
+```{r}
+run_dunn_test_temp_beta <- function(data) {
+  dunn <- rstatix::dunn_test(Beta.Score_norm ~ Temperature, data = data, p.adjust.method = "BH") 
+  return(dunn)
+}
+```
+
+
+
+```{r}
+data.pair_ctrl_beta <-
+  data.dynamics_Unexp[["Beta"]][["Metadata"]] %>%
+      cutCellNames(col = "Beta.Metric") %>%
+      filter(Beta.Metric == "Bray-Curtis") %>%
+     # Convert DPE (time) into a factor for pairwise comparison
+      dplyr::mutate(DPE = as.factor(DPE)) %>%
+    # Group by DPE
+      group_by(DPE) %>%
+    # Nest the data for looping with map()
+      nest(data = -c(DPE)) %>%
+  
+  # GLM
+    # Create a column called test to store the results of the GLM, emmeans, contrasts, and tidy
+      # dplyr::mutate(test = map(.x=data, 
+      #                          ~ glm(formula = Alpha.Score ~ -1 + Treatment, data = .x, family = "quasibinomial") %>% 
+      #                            emmeans::emmeans( ~ Treatment ) %>%
+      #                            emmeans::contrast(method = "pairwise", adjust = "tukey") %>% 
+      #                            tidy() )) %>%
+  # Dunn
+      mutate(test = map(data, ~ run_dunn_test_temp_beta(.x) )) %>%
+    # Unnest the test column into a tibble
+      unnest(test) %>%
+    # Remove any of the following columns if they exist
+      dplyr::select(-any_of(c("null.value", "data"))) %>%
+ 
+  # GLM 
+    # # Separate out the contrast column for later significance bar plotting
+    #   tidyr::separate(contrast, c('group1', 'group2'), sep = " - ") %>% # GLM
+    # # Add a column ".y." for plotting worm counts
+    #   dplyr::mutate(`.y.` = "Alpha.Score", .before = 1) %>%
+    # Clean up cell values under the group1 and 2 columns to get rid of the prefix
+      # dplyr::mutate(group1 = (str_remove(group1, term)),
+      #               group2 = (str_remove(group2, term))) %>%
+  
+    # Ungroup
+      dplyr::ungroup() %>%
+      # SigStars(pval.var = "p.value")
+  SigStars(pval.var = "p.adj.signif")
+    
+```
+
+#### Plot
+
+```{r}
+plot_data_ctrl_beta <- data.dynamics_Unexp[["Beta"]][["Metadata"]] %>%
+      cutCellNames(col = "Beta.Metric") %>%
+      filter(Beta.Metric == "Bray-Curtis") %>%
+      mutate(DPE = as.factor(DPE)) %>%
+      group_by(Temperature, DPE, Beta.Metric) %>%
+    summarize(
+      Beta.Score_norm = median(Beta.Score_norm),
+      CI_lower = boot::boot(Beta.Score_norm, median_func, R = 1000, 
+                            parallel = "multicore")$t0 - 1.96 * sd(boot::boot(Beta.Score_norm, median_func, R = 1000, 
+                                                                              parallel = "multicore")$t),
+      CI_upper = boot::boot(Beta.Score_norm, median_func, R = 1000, 
+                            parallel = "multicore")$t0 + 1.96 * sd(boot::boot(Beta.Score_norm, median_func, R = 1000, 
+                                                                              parallel = "multicore")$t)
+    ) %>%
+  ungroup() %>%
+      left_join(data.pair_ctrl_beta, by = c("Temperature" = "group2", "DPE"), multiple = "first") %>%
+      mutate(stars = ifelse(p.adj.sig == "ns", NA, "*"))
+```
+
+
+```{r}
+data.points_ctrl_beta <-
+  data.dynamics_Unexp[["Beta"]][["Metadata"]] %>%
+      cutCellNames(col = "Beta.Metric") %>%
+      filter(Beta.Metric == "Bray-Curtis") %>%
+      # mutate(DPE = as.factor(DPE)) %>%
+      mutate(Cluster = case_when(
+    ((Treatment == "Exposed") & (Beta.Score_norm >= quantile(Beta.Score_norm, .75)) & (Total.Worm.Count > quantile(Total.Worm.Count, 0.75))) ~ "High",
+    ((Treatment == "Exposed") & (Beta.Score_norm <= quantile(Beta.Score_norm, .25)) & (Total.Worm.Count > quantile(Total.Worm.Count, 0.75))) ~ "Low",
+    .default = "Other"
+  ), .after = "Treatment") %>%
+  mutate(Cluster = fct_relevel(factor(Cluster, levels = c("Other", "Low", "High")))) 
+```
+
+```{r fig.height=6.5, fig.width=15, message=F, warning=FALSE}
+
+plot_data_ctrl_beta %>%  
+  # filter(Treatment == "Control") %>%
+  dplyr::mutate(DPE = as.numeric(levels(DPE)[DPE])) %>%
+  ggplot(aes(x = DPE, y = Beta.Score_norm)) +
+
+  
+  ## Background Points ##
+  
+  geom_violin(data = data.points_ctrl_beta, aes(color = Temperature,
+                      fill = Temperature,
+                      group = interaction(Temperature, DPE)),
+                  position = position_dodge(width = 5),
+                  width = 4,
+                  size = 1.25,
+                  alpha = .75,
+                  scale = "width",
+            show.legend = F,
+           na.rm = T) +
+  scale_fill_manual(values = c(col.Temp, "white"), name = "Temp (°C)", guide = "none") +
+    # scale_alpha_manual(values = c(.75, .1), guide = "none") +
+    ggnewscale::new_scale_fill() +
+
+
+  scale_color_manual(values = col.Temp, name = "Temp (°C)", guide = "none") +
+  # # # scale_shape_manual(values = c(21, 23), name = "Treatment ", guide = "none") +
+  # # scale_linetype_manual(values = c("solid", "dashed"), guide = "none") +
+  # # scale_alpha_manual(values = c(1, 1), guide = "none") +
+  ggnewscale::new_scale_color() +
+  ggnewscale::new_scale_fill() +
+  # ggnewscale::new_scale("alpha") +
+
+  geom_line(aes(color = Temperature),
+            size = 4.5,
+            linetype = "solid",
+            position = position_dodge2(width = 5), show.legend = F) +
+  scale_color_manual(values = c("white", "white", "white"), name = "Treatment", guide = "none") +
+  scale_linetype_manual(values = c("solid", "solid")) +
+  ggnewscale::new_scale_color() +
+  ggnewscale::new_scale("linetype") +
+  geom_line(aes(color = Temperature),
+            size = 2,
+            linetype = "solid",
+            position = position_dodge2(width = 5), 
+            show.legend = T) +
+
+  scale_linetype_manual(values = c("solid"), guide = "none") +
+  scale_color_manual(values = c(col.Temp), name = "Treatment", guide = "none") +
+  # # scale_alpha_manual(values = c(.75, 1), guide = "none") +
+  ggnewscale::new_scale_color() +
+  # ggnewscale::new_scale("alpha") +
+  # 
+  # # geom_line(aes(linetype = Treatment,
+  # #               group = interaction(Treatment, Temperature, DPE)),
+  # #         color = "white",
+  # #         size = 3,
+  # #         show.legend = F) +
+  geom_point(aes(group = interaction(Temperature, DPE)),
+             color = "white",
+             fill = "white",
+             size = 8,
+             shape = 21,
+             show.legend = F,
+    position = position_dodge2(width = 5),
+           na.rm = T) +
+  ggnewscale::new_scale_color() +
+  # ggnewscale::new_scale("alpha") +
+
+  geom_point(aes(color = Temperature,
+                 fill = Temperature),
+             size = 3,
+             shape = 21,
+             stroke = 2,
+             show.legend = T,
+    position = position_dodge2(width = 5),
+           na.rm = T) +
+
+  scale_fill_manual(values = c(col.Temp, "white"), name = "Temp (°C)", guide = "none") +
+  scale_color_manual(values = col.Temp, name = "Temp (°C)", guide = "none") +
+  # scale_shape_manual(values = c(21, 23), name = "Treatment ") +
+  # scale_alpha_manual(values = c(1, 1), guide = "none") +
+  # 
+  # ggnewscale::new_scale_color() +
+  # ggnewscale::new_scale_fill() +
+  # ggnewscale::new_scale("alpha") +
+  # geom_point(aes(
+  #   # fill = ifelse(Cluster == "Other", "white", Cluster),
+  #   shape = ifelse(Treatment == "Exposed", Treatment, NA),
+  #                group = interaction(Treatment, Temperature, DPE)), 
+  #            color = "white",
+  #   fill = "white",
+  #            size = 1.5,
+  #            show.legend = F,
+  #   position = position_dodge2(width = 5),
+  #          na.rm = T) +
+  # 
+    geom_text(aes(label = stars, y = -.05),
+            # nudge_x = 1.5,
+            # nudge_y = -.0175,
+            size = 15,
+            position = position_dodge2(width = 5),
+             fontface = "bold") +
+  # 
+  # # scale_fill_manual(values = c("white", pal.Set1[c(8,5)]), name = "Cluster" ) +
+  # 
+  # facet_grid(. ~ Temperature) +
+  scale_x_continuous(limits = c(-5, 47), breaks = c(0, 7, 14, 21, 28, 35, 42)) +
+  scale_y_continuous(limits = c(-0.05, 1), breaks = seq(0, 1, by = .25)) +
+  labs(title = "Beta Personalization Scores across Temperature and Time", #caption = "Alpha; All",
+       x = "Time (Days Post Exposure (DPE))",
+       y = "Beta Score"
+       ) +
+  guides(
+    color = guide_legend(order = 1, title = "Temp (°C)",
+                            override.aes = list(shape = 16, size = 5, linetype = NA))
+  ) +
+  theme(legend.position = "bottom",
+        legend.justification = "center",
+        legend.direction = "horizontal",
+        panel.grid.minor.y = element_blank(),
+        panel.grid.major.x = element_blank())
+  
+  
+  
+  
+  
+```
+###### Loop
+
+
+```{r fig.height=6.5, fig.width=8.5, message=F, warning=FALSE}
+
+dpe_values <- c(0, 14, 21, 28, 42)
+
+tmp.resSubSection <- "Unexposed__BetaDisp__"
+
+# Loop through the DPE values
+furrr::future_map(dpe_values, function(dpe){
+  
+  plot <-
+  plot_data_ctrl_beta %>%
+    dplyr::mutate(DPE = as.numeric(levels(DPE)[DPE])) %>%
+        filter(DPE <= dpe) %>%  
+  ggplot(aes(x = DPE, y = Beta.Score_norm)) +
+
+  
+  ## Background Points ##
+  
+  geom_violin(data = subset(data.points_ctrl_beta, DPE <= dpe), aes(color = Temperature, 
+                      fill = Temperature,
+                      group = interaction(Temperature, DPE)),
+                  position = position_dodge(width = 5),
+                  width = 4,
+                  size = 1.25,
+                  alpha = .75,
+                  scale = "width",
+            show.legend = F,
+           na.rm = T) +
+  scale_fill_manual(values = c(col.Temp, "white"), name = "Temp (°C)", guide = "none") +
+
+    ggnewscale::new_scale_fill() +
+
+
+  scale_color_manual(values = col.Temp, name = "Temp (°C)", guide = "none") +
+
+  ggnewscale::new_scale_color() +
+  ggnewscale::new_scale_fill() +
+
+  geom_line(aes(color = Temperature),
+            size = 4.5,
+            linetype = "solid",
+            position = position_dodge2(width = 5), show.legend = F) +
+  scale_color_manual(values = c("white", "white", "white"), name = "Treatment", guide = "none") +
+  scale_linetype_manual(values = c("solid", "solid")) +
+  ggnewscale::new_scale_color() +
+  ggnewscale::new_scale("linetype") +
+  geom_line(aes(color = Temperature),
+            size = 2,
+            linetype = "solid",
+            position = position_dodge2(width = 5), 
+            show.legend = T) +
+
+  scale_linetype_manual(values = c("solid"), guide = "none") +
+  scale_color_manual(values = c(col.Temp), name = "Treatment", guide = "none") +
+  ggnewscale::new_scale_color() +
+
+  geom_point(aes(group = interaction(Temperature, DPE)),
+             color = "white",
+             fill = "white",
+             size = 8,
+             shape = 21,
+             show.legend = F,
+    position = position_dodge2(width = 5),
+           na.rm = T) +
+  ggnewscale::new_scale_color() +
+
+
+  geom_point(aes(color = Temperature,
+                 fill = Temperature),
+             size = 3,
+             shape = 21,
+             stroke = 2,
+             show.legend = T,
+    position = position_dodge2(width = 5),
+           na.rm = T) +
+
+  scale_fill_manual(values = c(col.Temp, "white"), name = "Temp (°C)", guide = "none") +
+  scale_color_manual(values = col.Temp, name = "Temp (°C)", guide = "none") +
+
+    geom_text(aes(label = stars, y = -.05),
+            # nudge_x = 1.5,
+            # nudge_y = -.0175,
+            size = 15,
+            position = position_dodge2(width = 5),
+             fontface = "bold") +
+
+  scale_x_continuous(limits = c(-5, 47), breaks = c(0, 7, 14, 21, 28, 35, 42)) +
+  scale_y_continuous(limits = c(-0.05, 1), breaks = seq(0, 1, by = .25)) +
+  labs(title = "Beta Personalization Scores across Temperature and Time", #caption = "Alpha; All",
+       x = "Time (Days Post Exposure (DPE))",
+       y = "Beta Score"
+       ) +
+  guides(
+    color = guide_legend(order = 1, title = "Temp (°C)",
+                            override.aes = list(shape = 16, size = 5, linetype = NA))
+  ) +
+  theme(legend.position = "right",
+        legend.justification = "center",
+        legend.direction = "vertical",
+        panel.grid.minor.y = element_blank(),
+        panel.grid.major.x = element_blank())
+  
+  
+    ggsave(filename = paste0(path.results, "/Figures/PDF/", tmp.resSubSection, "plot_", dpe, "_DPE.pdf"), plot = plot, height = 6.5, width = 8.5, units = "in")
+  print(plot)
+  
+  })
+  
+  
+  
+  
+  
+```
+
+```{r fig.height=6.5, fig.width=8.5, message=F, warning=FALSE}
+# Define the list of DPE values
+dpe_values <- c(0, 14, 21, 28, 42)
+
+tmp.resSubSection <- "PostExp__Alpha__"
+
+# Loop through the DPE values
+furrr::future_map(dpe_values, function(dpe){
+  plot <-
+  plot_data  %>%
+    dplyr::mutate(DPE = as.numeric(levels(DPE)[DPE])) %>%
+        filter(DPE <= dpe) %>%
+
+  ggplot(aes(x = DPE, y = Alpha.Score)) +
+
+  
+  ## Background Points ##
+  
+  geom_violin(data = subset(data.points, DPE <= dpe), aes(color = Temperature,
+                      fill = Temperature,
+                      alpha = Treatment,
+                      group = interaction(Temperature, Treatment, DPE)),
+                  position = position_dodge(width = 5),
+                  width = 4,
+                  size = 1.25,
+                  scale = "width",
+            show.legend = F,
+           na.rm = T) +
+  scale_fill_manual(values = c(col.Temp, "white"), name = "Temp (°C)", guide = "none") +
+    scale_alpha_manual(values = c(.75, .1), guide = "none") +
+    ggnewscale::new_scale_fill() +
+    ggnewscale::new_scale("alpha") +
+
+  scale_color_manual(values = col.Temp, name = "Temp (°C)", guide = "none") +
+  # # scale_shape_manual(values = c(21, 23), name = "Treatment ", guide = "none") +
+  # scale_linetype_manual(values = c("solid", "dashed"), guide = "none") +
+  # scale_alpha_manual(values = c(1, 1), guide = "none") +
+  ggnewscale::new_scale_color() +
+  ggnewscale::new_scale_fill() +
+  ggnewscale::new_scale("alpha") +
+  
+  geom_line(aes(color = Temperature, linetype = Treatment), 
+            size = 4.5,
+            position = position_dodge2(width = 5), show.legend = F) +
+  scale_color_manual(values = c("white", "white", "white"), name = "Treatment", guide = "none") +
+  scale_linetype_manual(values = c("solid", "solid")) +
+  ggnewscale::new_scale_color() +
+  ggnewscale::new_scale("linetype") +
+  geom_line(aes(color = Temperature, linetype = Treatment), 
+            size = 2,
+            position = position_dodge2(width = 5), show.legend = F) +
+  
+  scale_color_manual(values = c(col.Temp), name = "Treatment", guide = "none") +
+  ggnewscale::new_scale_color() +
+  ggnewscale::new_scale("alpha") +
+  
+  geom_point(aes(shape = Treatment,
+                 group = interaction(Treatment, Temperature, DPE)), 
+             color = "white",
+             fill = "white",
+             size = 7,
+             show.legend = F,
+    position = position_dodge2(width = 5),
+           na.rm = T) +
+  ggnewscale::new_scale_color() +
+  ggnewscale::new_scale("alpha") +
+  
+  geom_point(aes(color = Temperature,
+                 fill = ifelse(Treatment == "Control", Temperature, "white"),
+                 # stroke = ifelse(Treatment == "Control", NA, 2),
+                 # size = ifelse(Treatment == "Control", 4, 5),
+                 shape = Treatment,
+                 alpha = Treatment),
+             size = 3,
+             stroke = 2,
+             show.legend = T,
+    position = position_dodge2(width = 5),
+           na.rm = T) +
+
+  scale_fill_manual(values = c(col.Temp, "white"), name = "Temp (°C)", guide = "none") +
+  scale_color_manual(values = col.Temp, name = "Temp (°C)") +
+  scale_shape_manual(values = c(16, 23), name = "Treatment") +
+  scale_alpha_manual(values = c(1, 1), guide = "none") +
+  
+  ggnewscale::new_scale_color() +
+  ggnewscale::new_scale_fill() +
+  ggnewscale::new_scale("alpha") +
+
+      geom_text(aes(label = stars, y = -0.075),
+            # nudge_x = 1.5,
+            # nudge_y = -.0175,
+            # color = "white",
+            size = 15,
+            position = position_dodge2(width = 5),
+             fontface = "bold") +
+  
+  # scale_fill_manual(values = c("white", pal.Set1[c(8,5)]), name = "Cluster" ) +
+  
+  facet_grid(Temperature ~ .) +
+  scale_x_continuous(limits = c(-5, 47), breaks = c(0, 7, 14, 21, 28, 35, 42)) +
+  scale_y_continuous(limits = c(-0.075, 1), breaks = seq(0, 1, by = .25)) +
+  labs(title = "Alpha Diversity Scores across Temperature and Time", #caption = "Alpha; All",
+       x = "Time (Days Post Exposure (DPE))",
+       y = "Alpha Score (Normalized)"
+       ) +
+  theme(legend.position = "right",
+        legend.justification = "center",
+        legend.direction = "vertical",
+        panel.grid.minor.y = element_blank(),
+        panel.grid.major.x = element_blank()) +
+    theme_minimal()
+  
+  ggsave(filename = paste0(path.results, "/Figures/PDF/", tmp.resSubSection, "plot_", dpe, "_DPE.pdf"), plot = plot, height = 6.5, width = 8.5, units = "in")
+  print(plot)
+})
+
+```
+
+
+
+```{r fig.height=6.5, fig.width=8.5, message=F, warning=FALSE}
+
+plot_data_ctrl_beta %>%  
+  # filter(Treatment == "Control") %>%
+  dplyr::mutate(DPE = as.numeric(levels(DPE)[DPE])) %>%
+  ggplot(aes(x = DPE, y = Beta.Score_norm)) +
+
+  
+  ## Background Points ##
+  
+  geom_violin(data = data.points_ctrl_beta, aes(color = Temperature,
+                      fill = Temperature,
+                      group = interaction(Temperature, DPE)),
+                  position = position_dodge(width = 5),
+                  width = 4,
+                  size = 1.25,
+                  alpha = .75,
+                  scale = "width",
+            show.legend = F,
+           na.rm = T) +
+  scale_fill_manual(values = c(col.Temp, "white"), name = "Temp (°C)", guide = "none") +
+    # scale_alpha_manual(values = c(.75, .1), guide = "none") +
+    ggnewscale::new_scale_fill() +
+
+
+  scale_color_manual(values = col.Temp, name = "Temp (°C)", guide = "none") +
+  # # # scale_shape_manual(values = c(21, 23), name = "Treatment ", guide = "none") +
+  # # scale_linetype_manual(values = c("solid", "dashed"), guide = "none") +
+  # # scale_alpha_manual(values = c(1, 1), guide = "none") +
+  ggnewscale::new_scale_color() +
+  ggnewscale::new_scale_fill() +
+  # ggnewscale::new_scale("alpha") +
+
+  geom_line(aes(color = Temperature),
+            size = 3.5,
+            linetype = "solid",
+            position = position_dodge2(width = 5), show.legend = F) +
+  scale_color_manual(values = c("white", "white", "white"), name = "Treatment", guide = "none") +
+  scale_linetype_manual(values = c("solid", "solid")) +
+  ggnewscale::new_scale_color() +
+  ggnewscale::new_scale("linetype") +
+  geom_line(aes(color = Temperature),
+            size = 1.75,
+            linetype = "solid",
+            position = position_dodge2(width = 5), 
+            show.legend = T) +
+
+  scale_linetype_manual(values = c("solid"), guide = "none") +
+  scale_color_manual(values = c(col.Temp), name = "Treatment", guide = "none") +
+  ggnewscale::new_scale_color() +
+
+  geom_point(aes(group = interaction(Temperature, DPE)),
+             color = "white",
+             fill = "white",
+             size = 6,
+             shape = 21,
+             show.legend = F,
+    position = position_dodge2(width = 5),
+           na.rm = T) +
+  ggnewscale::new_scale_color() +
+  # ggnewscale::new_scale("alpha") +
+
+  geom_point(aes(color = Temperature,
+                 fill = Temperature),
+             size = 2.5,
+             shape = 21,
+             stroke = 1.5,
+             show.legend = T,
+    position = position_dodge2(width = 5),
+           na.rm = T) +
+
+  scale_fill_manual(values = c(col.Temp, "white"), name = "Temp (°C)", guide = "none") +
+  scale_color_manual(values = col.Temp, name = "Temp (°C)", guide = "none") +
+
+    geom_text(aes(label = stars, y = -.05),
+            # nudge_x = 1.5,
+            # nudge_y = -.0175,
+            size = 12,
+            position = position_dodge2(width = 5),
+             fontface = "bold") +
+  # 
+  # # scale_fill_manual(values = c("white", pal.Set1[c(8,5)]), name = "Cluster" ) +
+  # 
+  # facet_grid(. ~ Temperature) +
+  scale_x_continuous(limits = c(-5, 47), breaks = c(0, 7, 14, 21, 28, 35, 42)) +
+  scale_y_continuous(limits = c(-0.05, 1), breaks = seq(0, 1, by = .25)) +
+  labs(title = "Beta Personalization Scores across Temperature and Time", #caption = "Alpha; All",
+       x = "Time (Days Post Exposure (DPE))",
+       y = "Beta Score"
+       ) +
+  guides(
+    color = guide_legend(order = 1, title = "Temp (°C)",
+                            override.aes = list(shape = 16, size = 5, linetype = NA))
+  ) +
+  theme(legend.position = "right",
+        legend.justification = "center",
+        legend.direction = "vertical",
+        panel.grid.minor.y = element_blank(),
+        panel.grid.major.x = element_blank())
+  
+  
+  
+  
+  
+```
+
+
+#### Control and Exposed (Temp)
+
+##### Stats
+
+###### Tests
+
+```{r}
+run_dunn_test_beta <- function(data) {
+  dunn <- rstatix::dunn_test(Beta.Score_norm ~ Treatment, data = data, p.adjust.method = "BH") 
+  return(dunn)
+}
+```
+
+
+```{r}
+data.pair_beta_temp <-
+  data.dynamics[["Beta"]][["Metadata"]] %>%
+      cutCellNames(col = "Beta.Metric") %>%
+      filter(Beta.Metric == "Bray-Curtis") %>%
+     # Convert DPE (time) into a factor for pairwise comparison
+      # dplyr::mutate(DPE = as.factor(DPE)) %>%
+    # Group by DPE
+      group_by(Temperature) %>%
+    # Nest the data for looping with map()
+      nest(data = -c(Temperature)) %>%
+  
+  # GLM
+    # Create a column called test to store the results of the GLM, emmeans, contrasts, and tidy
+      # dplyr::mutate(test = map(.x=data, 
+      #                          ~ glm(formula = Beta.Score_norm ~ -1 + Treatment, data = .x, family = "quasibinomial") %>% 
+      #                            emmeans::emmeans( ~ Treatment ) %>%
+      #                            emmeans::contrast(method = "pairwise", adjust = "tukey") %>% 
+      #                            tidy() )) %>%
+  # Dunn
+      mutate(test = map(data, ~ run_dunn_test_beta(.x) )) %>%
+    # Unnest the test column into a tibble
+      unnest(test) %>%
+    # Remove any of the following columns if they exist
+      dplyr::select(-any_of(c("null.value", "data"))) %>%
+ 
+  # GLM 
+    # # Separate out the contrast column for later significance bar plotting
+    #   tidyr::separate(contrast, c('group1', 'group2'), sep = " - ") %>% # GLM
+    # # Add a column ".y." for plotting worm counts
+    #   dplyr::mutate(`.y.` = "Beta.Score_norm", .before = 1) %>%
+    # Clean up cell values under the group1 and 2 columns to get rid of the prefix
+      # dplyr::mutate(group1 = (str_remove(group1, term)),
+      #               group2 = (str_remove(group2, term))) %>%
+  
+    # Ungroup
+      dplyr::ungroup() %>%
+      # SigStars(pval.var = "p.value")
+  SigStars(pval.var = "p.adj.signif")
+    
+```
+
+
+###### Plot
+
+```{r}
+plot_data_beta_temp <- data.dynamics[["Beta"]][["Metadata"]] %>%
+      cutCellNames(col = "Beta.Metric") %>%
+      filter(Beta.Metric == "Bray-Curtis") %>%
+      # mutate(DPE = as.factor(DPE)) %>%
+      group_by(Temperature, Treatment, Beta.Metric) %>%
+    summarize(
+      Beta.Score_norm = median(Beta.Score_norm),
+      CI_lower = boot::boot(Beta.Score_norm, median_func, R = 1000, 
+                            parallel = "multicore")$t0 - 1.96 * sd(boot::boot(Beta.Score_norm, median_func, R = 1000, 
+                                                                              parallel = "multicore")$t),
+      CI_upper = boot::boot(Beta.Score_norm, median_func, R = 1000, 
+                            parallel = "multicore")$t0 + 1.96 * sd(boot::boot(Beta.Score_norm, median_func, R = 1000, 
+                                                                              parallel = "multicore")$t)
+    ) %>%
+      left_join(data.pair_beta_temp, by = c("Temperature", "Treatment" = "group2")) %>%
+      mutate(stars = ifelse(p.adj.sig == "ns", NA, "*"))
+```
+
+
+```{r}
+data.points_beta_temp <-
+  data.dynamics[["Beta"]][["Metadata"]] %>%
+      cutCellNames(col = "Beta.Metric") %>%
+      filter(Beta.Metric == "Bray-Curtis") %>%
+      # mutate(DPE = as.factor(DPE)) %>%
+      mutate(Cluster = case_when(
+    ((Treatment == "Exposed") & (Beta.Score_norm >= quantile(Beta.Score_norm, .75)) & (Total.Worm.Count > quantile(Total.Worm.Count, 0.75))) ~ "High",
+    ((Treatment == "Exposed") & (Beta.Score_norm <= quantile(Beta.Score_norm, .25)) & (Total.Worm.Count > quantile(Total.Worm.Count, 0.75))) ~ "Low",
+    .default = "Other"
+  ), .after = "Treatment") %>%
+  mutate(Cluster = fct_relevel(factor(Cluster, levels = c("Other", "Low", "High")))) 
+```
+
+
+
+
+
+
+```{r fig.height=6.5, fig.width=8.5, message=F, warning=FALSE}
+
+plot_data_beta_temp %>%  
+  # dplyr::mutate(DPE = as.numeric(levels(DPE)[DPE])) %>%
+  ggplot(aes(x = Treatment, y = Beta.Score_norm)) +
+
+  
+  ## Background Points ##
+  
+  geom_violin(data = data.points_beta_temp, aes(color = Temperature,
+                      fill = Temperature,
+                      alpha = Treatment,
+                      group = interaction(Temperature, Treatment)),
+                  # position = position_dodge(width = 5),
+                  # width = 4,
+                  size = 1.25,
+                  scale = "width", 
+            show.legend = F,
+           na.rm = T) +
+  scale_fill_manual(values = c(col.Temp, "white"), name = "Temp (°C)", guide = "none") +
+    scale_alpha_manual(values = c(.75, .1), guide = "none") +
+    ggnewscale::new_scale_fill() +
+    ggnewscale::new_scale("alpha") +
+
+  scale_color_manual(values = col.Temp, name = "Temp (°C)", guide = "none") +
+  # # scale_shape_manual(values = c(21, 23), name = "Treatment ", guide = "none") +
+  # scale_linetype_manual(values = c("solid", "dashed"), guide = "none") +
+  # scale_alpha_manual(values = c(1, 1), guide = "none") +
+  ggnewscale::new_scale_color() +
+  ggnewscale::new_scale_fill() +
+  ggnewscale::new_scale("alpha") +
+  
+  geom_line(aes(color = Temperature, linetype = Treatment), 
+            size = 4.5,
+            # position = position_dodge2(width = 5), 
+            show.legend = F) +
+  scale_color_manual(values = c("white", "white", "white"), name = "Treatment", guide = "none") +
+  scale_linetype_manual(values = c("solid", "solid"), guide = "none") +
+  ggnewscale::new_scale_color() +
+  ggnewscale::new_scale("linetype") +
+  geom_line(aes(color = Temperature, linetype = Treatment),
+            size = 2,
+            # position = position_dodge2(width = 5),
+            show.legend = F) +
+
+  scale_color_manual(values = c(col.Temp), name = "Treatment", guide = "none") +
+  ggnewscale::new_scale_color() +
+  ggnewscale::new_scale("alpha") +
+  
+  geom_point(aes(shape = Treatment,
+                 group = interaction(Treatment, Temperature)), 
+             color = "white",
+             fill = "white",
+             size = 7,
+             show.legend = F,
+    # position = position_dodge2(width = 5),
+           na.rm = T) +
+  ggnewscale::new_scale_color() +
+  ggnewscale::new_scale("alpha") +
+  
+  geom_point(aes(color = Temperature,
+                 fill = ifelse(Treatment == "Control", Temperature, "white"),
+                 # stroke = ifelse(Treatment == "Control", NA, 2),
+                 # size = ifelse(Treatment == "Control", 4, 5),
+                 shape = Treatment,
+                 alpha = Treatment),
+             size = 3,
+             stroke = 2,
+             show.legend = T,
+    # position = position_dodge2(width = 5),
+           na.rm = T) +
+
+  scale_fill_manual(values = c(col.Temp, "white"), name = "Temp (°C)", guide = "none") +
+  scale_color_manual(values = col.Temp, name = "Temp (°C)") +
+  scale_alpha_manual(values = c(1, 1), guide = "none") +
+  
+  ggnewscale::new_scale_color() +
+  # ggnewscale::new_scale_fill() +
+  ggnewscale::new_scale("alpha") +
+  
+    geom_text(aes(label = stars, y = -0.075),
+            # nudge_x = 1.5,
+            # nudge_y = -.0175,
+            size = 15,
+            # position = position_dodge2(width = 5),
+             fontface = "bold") +
+    scale_shape_manual(values = c(16, 23), name = "Treatment") +
+  # scale_fill_manual(values = c("white", pal.Set1[c(8,5)]), name = "Cluster" ) +
+  
+  facet_grid(Temperature ~ .) +
+  # scale_x_continuous(limits = c(-5, 47), breaks = c(0, 7, 14, 21, 28, 35, 42)) +
+  scale_y_continuous(limits = c(-0.075, 1), breaks = seq(0, 1, by = .25)) +
+  labs(title = "Beta Personalization Scores across Temperature and Time", #caption = "Alpha; All",
+       x = "Treatment",
+       y = "Beta Score"
+       ) +
+  theme(legend.position = "right",
+        legend.justification = "center",
+        legend.direction = "vertical",
+        panel.grid.minor.y = element_blank(),
+        panel.grid.major.x = element_blank())  +
+  guides(color = guide_legend(override.aes = list(size = 6, 
+                                                  shape = c(16, 16, 16), 
+                                                  color = c(col.Temp)
+                                                  )),
+         shape = guide_legend(override.aes = list(size = 4,
+                                                  fill = c("black", "white")))) 
+  
+  
+  
+  
+  
+```
+
+
+
+
+#### Control and Exposed (Temp:Time)
+
+##### Stats
+
+###### Tests
+
+```{r}
+run_dunn_test_beta <- function(data) {
+  dunn <- rstatix::dunn_test(Beta.Score_norm ~ Treatment, data = data, p.adjust.method = "BH") 
+  return(dunn)
+}
+```
+
+
+```{r}
+data.pair_beta <-
+  data.dynamics[["Beta"]][["Metadata"]] %>%
+      cutCellNames(col = "Beta.Metric") %>%
+      filter(Beta.Metric == "Bray-Curtis") %>%
+     # Convert DPE (time) into a factor for pairwise comparison
+      dplyr::mutate(DPE = as.factor(DPE)) %>%
+    # Group by DPE
+      group_by(DPE, Temperature) %>%
+    # Nest the data for looping with map()
+      nest(data = -c(DPE, Temperature)) %>%
+  
+  # GLM
+    # Create a column called test to store the results of the GLM, emmeans, contrasts, and tidy
+      # dplyr::mutate(test = map(.x=data, 
+      #                          ~ glm(formula = Beta.Score_norm ~ -1 + Treatment, data = .x, family = "quasibinomial") %>% 
+      #                            emmeans::emmeans( ~ Treatment ) %>%
+      #                            emmeans::contrast(method = "pairwise", adjust = "tukey") %>% 
+      #                            tidy() )) %>%
+  # Dunn
+      mutate(test = map(data, ~ run_dunn_test_beta(.x) )) %>%
+    # Unnest the test column into a tibble
+      unnest(test) %>%
+    # Remove any of the following columns if they exist
+      dplyr::select(-any_of(c("null.value", "data"))) %>%
+ 
+  # GLM 
+    # # Separate out the contrast column for later significance bar plotting
+    #   tidyr::separate(contrast, c('group1', 'group2'), sep = " - ") %>% # GLM
+    # # Add a column ".y." for plotting worm counts
+    #   dplyr::mutate(`.y.` = "Beta.Score_norm", .before = 1) %>%
+    # Clean up cell values under the group1 and 2 columns to get rid of the prefix
+      # dplyr::mutate(group1 = (str_remove(group1, term)),
+      #               group2 = (str_remove(group2, term))) %>%
+  
+    # Ungroup
+      dplyr::ungroup() %>%
+      # SigStars(pval.var = "p.value")
+  SigStars(pval.var = "p.adj.signif")
+    
+```
+
+
+###### Plot
+
+```{r}
+plot_data_beta <- data.dynamics[["Beta"]][["Metadata"]] %>%
+      cutCellNames(col = "Beta.Metric") %>%
+      filter(Beta.Metric == "Bray-Curtis") %>%
+      mutate(DPE = as.factor(DPE)) %>%
+      group_by(Temperature, Treatment, DPE, Beta.Metric) %>%
+    summarize(
+      Beta.Score_norm = median(Beta.Score_norm),
+      CI_lower = boot::boot(Beta.Score_norm, median_func, R = 1000, 
+                            parallel = "multicore")$t0 - 1.96 * sd(boot::boot(Beta.Score_norm, median_func, R = 1000, 
+                                                                              parallel = "multicore")$t),
+      CI_upper = boot::boot(Beta.Score_norm, median_func, R = 1000, 
+                            parallel = "multicore")$t0 + 1.96 * sd(boot::boot(Beta.Score_norm, median_func, R = 1000, 
+                                                                              parallel = "multicore")$t)
+    ) %>%
+      left_join(data.pair_beta, by = c("Temperature", "DPE", "Treatment" = "group2")) %>%
+      mutate(stars = ifelse(p.adj.sig == "ns", NA, "*"))
+```
+
+
+```{r}
+data.points_beta <-
+  data.dynamics[["Beta"]][["Metadata"]] %>%
+      cutCellNames(col = "Beta.Metric") %>%
+      filter(Beta.Metric == "Bray-Curtis") %>%
+      left_join(., ps.list[["All"]] %>% samdat_tbl() %>% select(Sample, Simpson__Genus_norm), by = "Sample") %>%
+  group_by(Treatment) %>%
+  mutate(Cluster = if_else(
+    Treatment == "Exposed",
+    case_when(
+      Total.Worm.Count > 0 & Simpson__Genus_norm %in% head(sort(Simpson__Genus_norm), 10) ~ "Low",
+      Total.Worm.Count > 0 & Simpson__Genus_norm %in% tail(sort(Simpson__Genus_norm), 10) ~ "High",
+      TRUE ~ "Other"
+    ),
+    "Other"
+  )) %>%
+  ungroup() %>%
+  mutate(Cluster = fct_relevel(factor(Cluster, levels = c("Other", "Low", "High"))))
+```
+
+```{r}
+test %>%
+  group_by(Treatment) %>%
+  mutate(Cluster = if_else(
+    Treatment == "Exposed",
+    case_when(
+      Simpson__Genus_norm %in% head(sort(Simpson__Genus_norm), 10) ~ "Low",
+      Simpson__Genus_norm %in% tail(sort(Simpson__Genus_norm), 10) ~ "High",
+      TRUE ~ "Other"
+    ),
+    NA
+  )) %>%
+  ungroup() %>%
+  mutate(Cluster = fct_relevel(factor(Cluster, levels = c("Other", "Low", "High"))))
+```
+
+
+
+```{r}
+test <- ps.list[["All"]] %>% samdat_tbl() %>% select(Sample, Treatment, Total.Worm.Count, Simpson__Genus_norm) 
+
+test
+  
+  
+  # filter(Treatment == "Exposed") %>%
+  mutate(Cluster = case_when(
+    (Simpson__Genus_norm >= quantile(Simpson__Genus_norm, .75) & 
+       (Total.Worm.Count > 0 & Total.Worm.Count > quantile(Total.Worm.Count, 0.75))) ~ "High",
+    (Simpson__Genus_norm <= quantile(Simpson__Genus_norm, .25) & 
+       (Total.Worm.Count > 0 & Total.Worm.Count > quantile(Total.Worm.Count, 0.75))) ~ "Low",
+    .default = "Other"
+  ), .after = "Treatment")
+
+```
+
+
+
+
+```{r fig.height=4, fig.width=15, message=F, warning=FALSE}
+
+plot_data_beta %>%  
+  dplyr::mutate(DPE = as.numeric(levels(DPE)[DPE])) %>%
+  ggplot(aes(x = DPE, y = Beta.Score_norm)) +
+
+  
+  ## Background Points ##
+  
+  geom_violin(data = data.points_beta, aes(color = Temperature,
+                      fill = Temperature,
+                      alpha = Treatment,
+                      group = interaction(Temperature, Treatment, DPE)),
+                  position = position_dodge(width = 5),
+                  width = 4,
+                  size = 1.25,
+                  scale = "width", 
+            show.legend = F,
+           na.rm = T) +
+  scale_fill_manual(values = c(col.Temp, "white"), name = "Temp (°C)", guide = "none") +
+    scale_alpha_manual(values = c(.75, .1), guide = "none") +
+    ggnewscale::new_scale_fill() +
+    ggnewscale::new_scale("alpha") +
+
+  scale_color_manual(values = col.Temp, name = "Temp (°C)", guide = "none") +
+  # # scale_shape_manual(values = c(21, 23), name = "Treatment ", guide = "none") +
+  # scale_linetype_manual(values = c("solid", "dashed"), guide = "none") +
+  # scale_alpha_manual(values = c(1, 1), guide = "none") +
+  ggnewscale::new_scale_color() +
+  ggnewscale::new_scale_fill() +
+  ggnewscale::new_scale("alpha") +
+  
+  geom_line(aes(color = Temperature, linetype = Treatment), 
+            size = 4.5,
+            position = position_dodge2(width = 5), show.legend = F) +
+  scale_color_manual(values = c("white", "white", "white"), name = "Treatment", guide = "none") +
+  scale_linetype_manual(values = c("solid", "solid")) +
+  ggnewscale::new_scale_color() +
+  ggnewscale::new_scale("linetype") +
+  geom_line(aes(color = Temperature, linetype = Treatment), 
+            size = 2,
+            position = position_dodge2(width = 5), show.legend = F) +
+  
+  scale_color_manual(values = c(col.Temp), name = "Treatment", guide = "none") +
+  ggnewscale::new_scale_color() +
+  ggnewscale::new_scale("alpha") +
+  
+  geom_point(aes(shape = Treatment,
+                 group = interaction(Treatment, Temperature, DPE)), 
+             color = "white",
+             fill = "white",
+             size = 7,
+             show.legend = F,
+    position = position_dodge2(width = 5),
+           na.rm = T) +
+  ggnewscale::new_scale_color() +
+  ggnewscale::new_scale("alpha") +
+  
+  geom_point(aes(color = Temperature,
+                 fill = ifelse(Treatment == "Control", Temperature, "white"),
+                 # stroke = ifelse(Treatment == "Control", NA, 2),
+                 # size = ifelse(Treatment == "Control", 4, 5),
+                 shape = Treatment,
+                 alpha = Treatment),
+             size = 3,
+             stroke = 2,
+             show.legend = F,
+    position = position_dodge2(width = 5),
+           na.rm = T) +
+
+  scale_fill_manual(values = c(col.Temp, "white"), name = "Temp (°C)", guide = "none") +
+  scale_color_manual(values = col.Temp, name = "Temp (°C)") +
+  scale_shape_manual(values = c(21, 23), name = "Treatment ") +
+  scale_alpha_manual(values = c(1, 1), guide = "none") +
+  
+  ggnewscale::new_scale_color() +
+  ggnewscale::new_scale_fill() +
+  ggnewscale::new_scale("alpha") +
+  geom_point(aes(
+    # fill = ifelse(Cluster == "Other", "white", Cluster),
+    shape = ifelse(Treatment == "Exposed", Treatment, NA),
+                 group = interaction(Treatment, Temperature, DPE)), 
+             color = "white",
+    fill = "white",
+             size = 1.5,
+             show.legend = F,
+    position = position_dodge2(width = 5),
+           na.rm = T) +
+  
+    geom_text(aes(label = stars, y = -0.075),
+            # nudge_x = 1.5,
+            # nudge_y = -.0175,
+            size = 15,
+            position = position_dodge2(width = 5),
+             fontface = "bold") +
+  
+  # scale_fill_manual(values = c("white", pal.Set1[c(8,5)]), name = "Cluster" ) +
+  
+  facet_grid(. ~ Temperature) +
+  scale_x_continuous(limits = c(-5, 47), breaks = c(0, 7, 14, 21, 28, 35, 42)) +
+  scale_y_continuous(limits = c(-0.075, 1), breaks = seq(0, 1, by = .25)) +
+  labs(title = "Beta Personalization Scores across Temperature and Time", #caption = "Alpha; All",
+       x = "Time (Days Post Exposure (DPE))",
+       y = "Beta Score"
+       ) +
+  theme(legend.position = "bottom",
+        legend.justification = "center",
+        legend.direction = "horizontal",
+        panel.grid.major.x = element_blank())
+  
+  
+  
+  
+  
+```
+
+
+```{r fig.height=6.5, fig.width=8.5, message=F, warning=FALSE}
+
+plot_data_beta %>%  
+  dplyr::mutate(DPE = as.numeric(levels(DPE)[DPE])) %>%
+  ggplot(aes(x = DPE, y = Beta.Score_norm)) +
+
+  
+  ## Background Points ##
+  
+  geom_violin(data = data.points_beta, aes(color = Temperature,
+                      fill = Temperature,
+                      alpha = Treatment,
+                      group = interaction(Temperature, Treatment, DPE)),
+                  position = position_dodge(width = 5),
+                  width = 4,
+                  size = 1.25,
+                  scale = "width", 
+            show.legend = F,
+           na.rm = T) +
+  scale_fill_manual(values = c(col.Temp, "white"), name = "Temp (°C)", guide = "none") +
+    scale_alpha_manual(values = c(.75, .1), guide = "none") +
+    ggnewscale::new_scale_fill() +
+    ggnewscale::new_scale("alpha") +
+
+  scale_color_manual(values = col.Temp, name = "Temp (°C)", guide = "none") +
+  # # scale_shape_manual(values = c(21, 23), name = "Treatment ", guide = "none") +
+  # scale_linetype_manual(values = c("solid", "dashed"), guide = "none") +
+  # scale_alpha_manual(values = c(1, 1), guide = "none") +
+  ggnewscale::new_scale_color() +
+  ggnewscale::new_scale_fill() +
+  ggnewscale::new_scale("alpha") +
+  
+  geom_line(aes(color = Temperature, linetype = Treatment), 
+            size = 4.5,
+            position = position_dodge2(width = 5), show.legend = F) +
+  scale_color_manual(values = c("white", "white", "white"), name = "Treatment", guide = "none") +
+  scale_linetype_manual(values = c("solid", "solid")) +
+  ggnewscale::new_scale_color() +
+  ggnewscale::new_scale("linetype") +
+  geom_line(aes(color = Temperature, linetype = Treatment), 
+            size = 2,
+            position = position_dodge2(width = 5), show.legend = F) +
+  
+  scale_color_manual(values = c(col.Temp), name = "Treatment", guide = "none") +
+  ggnewscale::new_scale_color() +
+  ggnewscale::new_scale("alpha") +
+  
+  geom_point(aes(shape = Treatment,
+                 group = interaction(Treatment, Temperature, DPE)), 
+             color = "white",
+             fill = "white",
+             size = 7,
+             show.legend = F,
+    position = position_dodge2(width = 5),
+           na.rm = T) +
+  ggnewscale::new_scale_color() +
+  ggnewscale::new_scale("alpha") +
+  
+  geom_point(aes(color = Temperature,
+                 fill = ifelse(Treatment == "Control", Temperature, "white"),
+                 # stroke = ifelse(Treatment == "Control", NA, 2),
+                 # size = ifelse(Treatment == "Control", 4, 5),
+                 shape = Treatment,
+                 alpha = Treatment),
+             size = 3,
+             stroke = 2,
+             show.legend = T,
+    position = position_dodge2(width = 5),
+           na.rm = T) +
+
+  scale_fill_manual(values = c(col.Temp, "white"), name = "Temp (°C)", guide = "none") +
+  scale_color_manual(values = col.Temp, name = "Temp (°C)") +
+  scale_shape_manual(values = c(16, 23), name = "Treatment") +
+  scale_alpha_manual(values = c(1, 1), guide = "none") +
+  
+  ggnewscale::new_scale_color() +
+  ggnewscale::new_scale_fill() +
+  ggnewscale::new_scale("alpha") +
+  # geom_point(aes(
+  #   # fill = ifelse(Cluster == "Other", "white", Cluster),
+  #   shape = ifelse(Treatment == "Exposed", Treatment, NA),
+  #                group = interaction(Treatment, Temperature, DPE)), 
+  #            color = "white",
+  #   fill = "white",
+  #            size = 1.5,
+  #            show.legend = F,
+  #   position = position_dodge2(width = 5),
+  #          na.rm = T) +
+  
+    geom_text(aes(label = stars, y = -0.075),
+            # nudge_x = 1.5,
+            # nudge_y = -.0175,
+            size = 15,
+            position = position_dodge2(width = 5),
+             fontface = "bold") +
+  
+  # scale_fill_manual(values = c("white", pal.Set1[c(8,5)]), name = "Cluster" ) +
+  
+  # facet_grid(. ~ Treatment) +
+facet_grid(Temperature ~ .) +
+  scale_x_continuous(limits = c(-5, 47), breaks = c(0, 7, 14, 21, 28, 35, 42)) +
+  scale_y_continuous(limits = c(-0.075, 1), breaks = seq(0, 1, by = .25)) +
+  labs(title = "Beta Personalization Scores across Temperature and Time", #caption = "Alpha; All",
+       x = "Time (Days Post Exposure (DPE))",
+       y = "Beta Score"
+       ) +
+  theme(legend.position = "right",
+        legend.justification = "center",
+        legend.direction = "vertical",
+        panel.grid.minor.y = element_blank(),
+        panel.grid.major.x = element_blank()) +
+  guides(color = guide_legend(override.aes = list(size = 6)),
+         shape = guide_legend(override.aes = list(size = 4,
+                                                  color = c("black", "white"))))
+  
+  
+  
+  
+  
+```
+
+
+###### *** High v. Low
+
+```{r fig.height=6.5, fig.width=4.5, message=F, warning=FALSE}
+
+plot_data_beta %>%  
+  dplyr::mutate(DPE = as.numeric(levels(DPE)[DPE])) %>%
+  ggplot(aes(x = DPE, y = Beta.Score_norm)) +
+
+  
+  ## Background Points ##
+  
+  ggbeeswarm::geom_quasirandom(data = data.points_beta, aes(
+                      fill = Cluster,
+                      color = Temperature,
+                      shape = Treatment,
+                      alpha = ifelse(Cluster != "Other", "Other", "H v L"),
+                      group = interaction(Cluster)),
+                  dodge.width = 7, varwidth = T,
+                  width = 1,
+                  size = 3,
+                  stroke = 1.5,
+            show.legend = T,
+           na.rm = T) +
+  
+  # ggrepel::geom_label_repel(data = data.points_beta, aes(label = ifelse(Cluster != "Other", Sample, NA)), na.rm = T) +
+  
+    scale_fill_manual(values = c("white", "orange", "purple"), name = "Cluster") +
+    scale_color_manual(values = c(col.Temp, "white"), name = "Temp (°C)") +
+    scale_alpha_manual(values = c(.1, 1), guide = "none") +
+    # ggnewscale::new_scale_fill() +
+#     ggnewscale::new_scale("alpha") +
+# 
+#   scale_color_manual(values = col.Temp, name = "Temp (°C)", guide = "none") +
+  scale_shape_manual(values = c(16, 23), name = "Treatment ", guide = "none") +
+#   # scale_linetype_manual(values = c("solid", "dashed"), guide = "none") +
+#   # scale_alpha_manual(values = c(1, 1), guide = "none") +
+#   ggnewscale::new_scale_color() +
+#   ggnewscale::new_scale_fill() +
+#   ggnewscale::new_scale("alpha") +
+#   
+#   geom_line(aes(color = Temperature, linetype = Treatment), 
+#             size = 4.5,
+#             position = position_dodge2(width = 5), show.legend = F) +
+#   scale_color_manual(values = c("white", "white", "white"), name = "Treatment", guide = "none") +
+#   scale_linetype_manual(values = c("solid", "solid")) +
+#   ggnewscale::new_scale_color() +
+#   ggnewscale::new_scale("linetype") +
+#   geom_line(aes(color = Temperature, linetype = Treatment), 
+#             size = 2,
+#             position = position_dodge2(width = 5), show.legend = F) +
+#   
+#   scale_color_manual(values = c(col.Temp), name = "Treatment", guide = "none") +
+#   ggnewscale::new_scale_color() +
+#   ggnewscale::new_scale("alpha") +
+#   
+#   geom_point(aes(shape = Treatment,
+#                  group = interaction(Treatment, Temperature, DPE)), 
+#              color = "white",
+#              fill = "white",
+#              size = 7,
+#              show.legend = F,
+#     position = position_dodge2(width = 5),
+#            na.rm = T) +
+#   ggnewscale::new_scale_color() +
+#   ggnewscale::new_scale("alpha") +
+#   
+#   geom_point(aes(color = Temperature,
+#                  fill = ifelse(Treatment == "Control", Temperature, "white"),
+#                  # stroke = ifelse(Treatment == "Control", NA, 2),
+#                  # size = ifelse(Treatment == "Control", 4, 5),
+#                  shape = Treatment,
+#                  alpha = Treatment),
+#              size = 3,
+#              stroke = 2,
+#              show.legend = T,
+#     position = position_dodge2(width = 5),
+#            na.rm = T) +
+# 
+#   scale_fill_manual(values = c(col.Temp, "white"), name = "Temp (°C)", guide = "none") +
+#   scale_color_manual(values = col.Temp, name = "Temp (°C)") +
+#   scale_shape_manual(values = c(16, 23), name = "Treatment") +
+#   scale_alpha_manual(values = c(1, 1), guide = "none") +
+#   
+#   ggnewscale::new_scale_color() +
+#   ggnewscale::new_scale_fill() +
+#   ggnewscale::new_scale("alpha") +
+#   # geom_point(aes(
+#   #   # fill = ifelse(Cluster == "Other", "white", Cluster),
+#   #   shape = ifelse(Treatment == "Exposed", Treatment, NA),
+#   #                group = interaction(Treatment, Temperature, DPE)), 
+#   #            color = "white",
+#   #   fill = "white",
+#   #            size = 1.5,
+#   #            show.legend = F,
+#   #   position = position_dodge2(width = 5),
+#   #          na.rm = T) +
+#   
+#     geom_text(aes(label = stars, y = -0.075),
+#             # nudge_x = 1.5,
+#             # nudge_y = -.0175,
+#             size = 15,
+#             position = position_dodge2(width = 5),
+#              fontface = "bold") +
+#   
+#   # scale_fill_manual(values = c("white", pal.Set1[c(8,5)]), name = "Cluster" ) +
+#   
+#   facet_grid(Treatment ~ Cluster) +
+# # facet_grid(Temperature ~ .) +
+  scale_x_continuous(limits = c(-5, 47), breaks = c(0, 7, 14, 21, 28, 35, 42)) +
+#   scale_y_continuous(limits = c(-0.075, 1), breaks = seq(0, 1, by = .25)) +
+  labs(title = "Beta Personalization Scores across Temperature and Time", #caption = "Alpha; All",
+       x = "Time (Days Post Exposure (DPE))",
+       y = "Beta Score"
+       ) +
+  theme(legend.position = "bottom",
+        legend.justification = "center",
+        legend.direction = "horizontal",
+        panel.grid.minor.y = element_blank(),
+        panel.grid.major.x = element_blank()) +
+  guides(color = guide_legend(override.aes = list(size = 6)),
+         fill = guide_legend(override.aes = list(size = 6,
+                                                 shape = c(23,23,23),
+                                                 color = "black",
+                                                 fill = c("white", "orange", "purple"))),
+         shape = guide_legend(override.aes = list(size = 4,
+                                                  color = c("black", "black"))))
+
+  
+  
+  
+  
+  
+```
+
+
+###### Loop
+
+```{r fig.height=6.5, fig.width=8.5, message=F, warning=FALSE}
+
+dpe_values <- c(0, 14, 21, 28, 42)
+
+tmp.resSubSection <- "All__BetaDisp__"
+
+# Loop through the DPE values
+furrr::future_map(dpe_values, function(dpe){
+  
+  plot <- 
+  plot_data_beta %>%  
+  plyr::mutate(DPE = as.numeric(levels(DPE)[DPE])) %>%
+        filter(DPE <= dpe) %>%
+  ggplot(aes(x = DPE, y = Beta.Score_norm)) +
+
+  
+  ## Background Points ##
+  
+  geom_violin(data = subset(data.points_beta, DPE <= dpe), aes(color = Temperature,
+                      fill = Temperature,
+                      alpha = Treatment,
+                      group = interaction(Temperature, Treatment, DPE)),
+                  position = position_dodge(width = 5),
+                  width = 4,
+                  size = 1.25,
+                  scale = "width", 
+            show.legend = F,
+           na.rm = T) +
+  scale_fill_manual(values = c(col.Temp, "white"), name = "Temp (°C)", guide = "none") +
+    scale_alpha_manual(values = c(.75, .1), guide = "none") +
+    ggnewscale::new_scale_fill() +
+    ggnewscale::new_scale("alpha") +
+
+  scale_color_manual(values = col.Temp, name = "Temp (°C)", guide = "none") +
+  ggnewscale::new_scale_color() +
+  ggnewscale::new_scale_fill() +
+  ggnewscale::new_scale("alpha") +
+  
+  geom_line(aes(color = Temperature, linetype = Treatment), 
+            size = 4.5,
+            position = position_dodge2(width = 5), show.legend = F) +
+  scale_color_manual(values = c("white", "white", "white"), name = "Treatment", guide = "none") +
+  scale_linetype_manual(values = c("solid", "solid")) +
+  ggnewscale::new_scale_color() +
+  ggnewscale::new_scale("linetype") +
+  geom_line(aes(color = Temperature, linetype = Treatment), 
+            size = 2,
+            position = position_dodge2(width = 5), show.legend = F) +
+  
+  scale_color_manual(values = c(col.Temp), name = "Treatment", guide = "none") +
+  ggnewscale::new_scale_color() +
+  ggnewscale::new_scale("alpha") +
+  
+  geom_point(aes(shape = Treatment,
+                 group = interaction(Treatment, Temperature, DPE)), 
+             color = "white",
+             fill = "white",
+             size = 7,
+             show.legend = F,
+    position = position_dodge2(width = 5),
+           na.rm = T) +
+  ggnewscale::new_scale_color() +
+  ggnewscale::new_scale("alpha") +
+  
+  geom_point(aes(color = Temperature,
+                 fill = ifelse(Treatment == "Control", Temperature, "white"),
+                 shape = Treatment,
+                 alpha = Treatment),
+             size = 3,
+             stroke = 2,
+             show.legend = T,
+    position = position_dodge2(width = 5),
+           na.rm = T) +
+
+  scale_fill_manual(values = c(col.Temp, "white"), name = "Temp (°C)", guide = "none") +
+  scale_color_manual(values = col.Temp, name = "Temp (°C)") +
+  scale_shape_manual(values = c(16, 23), name = "Treatment") +
+  scale_alpha_manual(values = c(1, 1), guide = "none") +
+  
+  ggnewscale::new_scale_color() +
+  ggnewscale::new_scale_fill() +
+  ggnewscale::new_scale("alpha") +
+
+    geom_text(aes(label = stars, y = -0.075),
+            # nudge_x = 1.5,
+            # nudge_y = -.0175,
+            size = 15,
+            position = position_dodge2(width = 5),
+             fontface = "bold") +
+
+facet_grid(Temperature ~ .) +
+  scale_x_continuous(limits = c(-5, 47), breaks = c(0, 7, 14, 21, 28, 35, 42)) +
+  scale_y_continuous(limits = c(-0.075, 1), breaks = seq(0, 1, by = .25)) +
+  labs(title = "Beta Personalization Scores across Temperature and Time", #caption = "Alpha; All",
+       x = "Time (Days Post Exposure (DPE))",
+       y = "Beta Score"
+       ) +
+  theme(legend.position = "right",
+        legend.justification = "center",
+        legend.direction = "vertical",
+        panel.grid.minor.y = element_blank(),
+        panel.grid.major.x = element_blank()) +
+  guides(color = guide_legend(override.aes = list(size = 6)),
+         shape = guide_legend(override.aes = list(size = 4,
+                                                  color = c("black", "white"))))
+  
+    
+    # ggsave(filename = paste0(path.results, "/Figures/PDF/", tmp.resSubSection, "plot_", dpe, "_DPE.pdf"), plot = plot, height = 6.5, width = 8.5, units = "in")
+  print(plot)
+  
+  })
+  
+  
+  
+  
+```
+
+
+```{r fig.height=6.5, fig.width=8.5, message=F, warning=FALSE}
+
+dpe_values <- c(0, 14, 21, 28, 42)
+
+tmp.resSubSection <- "Unexposed__BetaDisp__"
+
+# Loop through the DPE values
+furrr::future_map(dpe_values, function(dpe){
+  
+  plot <-
+  plot_data_ctrl_beta %>%
+    dplyr::mutate(DPE = as.numeric(levels(DPE)[DPE])) %>%
+        filter(DPE <= dpe) %>%  
+  ggplot(aes(x = DPE, y = Beta.Score_norm)) +
+
+  
+  ## Background Points ##
+  
+  geom_violin(data = subset(data.points_ctrl_beta, DPE <= dpe), aes(color = Temperature, 
+                      fill = Temperature,
+                      group = interaction(Temperature, DPE)),
+                  position = position_dodge(width = 5),
+                  width = 4,
+                  size = 1.25,
+                  alpha = .75,
+                  scale = "width",
+            show.legend = F,
+           na.rm = T) +
+  scale_fill_manual(values = c(col.Temp, "white"), name = "Temp (°C)", guide = "none") +
+
+    ggnewscale::new_scale_fill() +
+
+
+  scale_color_manual(values = col.Temp, name = "Temp (°C)", guide = "none") +
+
+  ggnewscale::new_scale_color() +
+  ggnewscale::new_scale_fill() +
+
+  geom_line(aes(color = Temperature),
+            size = 4.5,
+            linetype = "solid",
+            position = position_dodge2(width = 5), show.legend = F) +
+  scale_color_manual(values = c("white", "white", "white"), name = "Treatment", guide = "none") +
+  scale_linetype_manual(values = c("solid", "solid")) +
+  ggnewscale::new_scale_color() +
+  ggnewscale::new_scale("linetype") +
+  geom_line(aes(color = Temperature),
+            size = 2,
+            linetype = "solid",
+            position = position_dodge2(width = 5), 
+            show.legend = T) +
+
+  scale_linetype_manual(values = c("solid"), guide = "none") +
+  scale_color_manual(values = c(col.Temp), name = "Treatment", guide = "none") +
+  ggnewscale::new_scale_color() +
+
+  geom_point(aes(group = interaction(Temperature, DPE)),
+             color = "white",
+             fill = "white",
+             size = 8,
+             shape = 21,
+             show.legend = F,
+    position = position_dodge2(width = 5),
+           na.rm = T) +
+  ggnewscale::new_scale_color() +
+
+
+  geom_point(aes(color = Temperature,
+                 fill = Temperature),
+             size = 3,
+             shape = 21,
+             stroke = 2,
+             show.legend = T,
+    position = position_dodge2(width = 5),
+           na.rm = T) +
+
+  scale_fill_manual(values = c(col.Temp, "white"), name = "Temp (°C)", guide = "none") +
+  scale_color_manual(values = col.Temp, name = "Temp (°C)", guide = "none") +
+
+    geom_text(aes(label = stars, y = -.05),
+            # nudge_x = 1.5,
+            # nudge_y = -.0175,
+            size = 15,
+            position = position_dodge2(width = 5),
+             fontface = "bold") +
+
+  scale_x_continuous(limits = c(-5, 47), breaks = c(0, 7, 14, 21, 28, 35, 42)) +
+  scale_y_continuous(limits = c(-0.05, 1), breaks = seq(0, 1, by = .25)) +
+  labs(title = "Beta Personalization Scores across Temperature and Time", #caption = "Alpha; All",
+       x = "Time (Days Post Exposure (DPE))",
+       y = "Beta Score"
+       ) +
+  guides(
+    color = guide_legend(order = 1, title = "Temp (°C)",
+                            override.aes = list(shape = 16, size = 5, linetype = NA))
+  ) +
+  theme(legend.position = "right",
+        legend.justification = "center",
+        legend.direction = "vertical",
+        panel.grid.minor.y = element_blank(),
+        panel.grid.major.x = element_blank())
+  
+  
+    # ggsave(filename = paste0(path.results, "/Figures/PDF/", tmp.resSubSection, "plot_", dpe, "_DPE.pdf"), plot = plot, height = 6.5, width = 8.5, units = "in")
+  print(plot)
+  
+  })
+  
+  
+  
+  
+  
+```
+
+
+

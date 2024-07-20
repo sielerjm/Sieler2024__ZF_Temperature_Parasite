@@ -1,5 +1,5 @@
 
-# 04__Temp_Exposed__Stats_Plots --------------------------------------------------
+# 04__Temp_Exposed__Stats --------------------------------------------------
 
 tmp.psOBJ <- ps.list[["Exposed"]]
 tmp.resSubSection <- "Exposed"

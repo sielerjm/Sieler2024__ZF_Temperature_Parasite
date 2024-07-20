@@ -1,0 +1,358 @@
+---
+title: "Untitled"
+author: "Michael Sieler"
+date: "2024-07-17"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## beta
+
+### PCOA
+
+#### 0 DPE
+
+```{r r fig.height=6.5, fig.width=18, message=FALSE, warning=FALSE}
+ps.list[["All"]] %>%
+  # ps_filter(Temperature == temp) %>%
+    ps_filter(DPE == 0) %>%
+  ps_mutate(Cluster = if_else(
+    Treatment == "Exposed" & Total.Worm.Count > 0,
+    case_when(
+      Simpson__Genus_norm %in% head(sort(Simpson__Genus_norm), 16) ~ "Low",
+      Simpson__Genus_norm %in% tail(sort(Simpson__Genus_norm), 16) ~ "High",
+      TRUE ~ "Other"
+    ),
+    "Other"
+  )) %>%
+  # ungroup()  %>%
+  ps_mutate(Cluster = fct_relevel(factor(Cluster, levels = c("Other", "Low", "High")))) %>%
+  # samdat_tbl()
+  tax_agg("Genus") %>%
+  dist_calc("bray") %>%
+  dist_permanova(
+    seed = 1,
+    variables = c("Treatment"),
+    n_processes = 8,
+    n_perms = 999 # only 99 perms used in examples for speed (use 9999+!)
+  ) %>% ord_calc(method = "PCoA") %>%
+  ord_plot(color = "Temperature", shape = "Treatment",
+           fill = ifelse("Treatment" == "Control", "Temperature", "white"),
+           size = 3) +
+  stat_ellipse(aes(color = Temperature, linetype = Treatment)) +
+  
+  facet_grid(.~Temperature, labeller = labeller(Temperature = c("28" = "28°C", "32" = "32°C", "35" = "35°C"))) +
+  
+  scale_shape_manual(values = c(16, 23)) +
+  scale_color_manual(values = col.Temp) +
+  scale_fill_manual(values = c(col.Temp, "white"))  +
+  
+  theme(legend.position = "bottom",
+        legend.direction = "horizontal",
+        strip.text = element_text(size = 14))
+  
+  
+```
+
+
+#### 42 DPE
+
+```{r r fig.height=6.5, fig.width=18, message=FALSE, warning=FALSE}
+ps.list[["All"]] %>%
+  # ps_filter(Temperature == temp) %>%
+    ps_filter(DPE == 42) %>%
+  ps_mutate(Cluster = if_else(
+    Treatment == "Exposed" & Total.Worm.Count > 0,
+    case_when(
+      Simpson__Genus_norm %in% head(sort(Simpson__Genus_norm), 16) ~ "Low",
+      Simpson__Genus_norm %in% tail(sort(Simpson__Genus_norm), 16) ~ "High",
+      TRUE ~ "Other"
+    ),
+    "Other"
+  )) %>%
+  # ungroup()  %>%
+  ps_mutate(Cluster = fct_relevel(factor(Cluster, levels = c("Other", "Low", "High")))) %>%
+  # samdat_tbl()
+  tax_agg("Genus") %>%
+  dist_calc("bray") %>%
+  dist_permanova(
+    seed = 1,
+    variables = c("Treatment"),
+    n_processes = 8,
+    n_perms = 999 # only 99 perms used in examples for speed (use 9999+!)
+  ) %>% ord_calc(method = "PCoA") %>%
+  ord_plot(color = "Temperature", shape = "Treatment",
+           fill = ifelse("Treatment" == "Control", "Temperature", "white"),
+           size = 3) +
+  stat_ellipse(aes(color = Temperature, linetype = Treatment)) +
+  
+  facet_grid(.~Temperature, labeller = labeller(Temperature = c("28" = "28°C", "32" = "32°C", "35" = "35°C"))) +
+  
+  # facet_grid(.~Temperature) +
+  scale_shape_manual(values = c(16, 23)) +
+  scale_color_manual(values = col.Temp) +
+  scale_fill_manual(values = c(col.Temp, "white"))  +
+  
+  theme(legend.position = "bottom",
+        legend.direction = "horizontal",
+        strip.text = element_text(size = 14))
+  
+  
+```
+
+#### All
+
+```{r r fig.height=6.5, fig.width=18, message=FALSE, warning=FALSE}
+ps.list[["All"]] %>%
+  ps_filter(Treatment == "Exposed") %>%
+    # ps_filter(DPE == 42) %>%
+  ps_mutate(Cluster = if_else(
+    Treatment == "Exposed" & Total.Worm.Count > 0,
+    case_when(
+      Simpson__Genus_norm %in% head(sort(Simpson__Genus_norm), 16) ~ "Low",
+      Simpson__Genus_norm %in% tail(sort(Simpson__Genus_norm), 16) ~ "High",
+      TRUE ~ "Other"
+    ),
+    "Other"
+  )) %>%
+  # ungroup()  %>%
+  ps_mutate(Cluster = fct_relevel(factor(Cluster, levels = c("Other", "Low", "High")))) %>%
+  # samdat_tbl()
+  tax_agg("Genus") %>%
+  dist_calc("bray") %>%
+  dist_permanova(
+    seed = 1,
+    variables = c("Temperature"),
+    n_processes = 8,
+    n_perms = 999 # only 99 perms used in examples for speed (use 9999+!)
+  ) %>% ord_calc(method = "PCoA") %>%
+  ord_plot(color = "Temperature", shape = "Treatment",
+           fill = "Total.Worm.Count", #ifelse("Treatment" == "Control", "Temperature", "white"),
+           size = 3) +
+  # stat_ellipse(aes(color = Temperature, linetype = Treatment)) +
+  
+  # facet_grid(.~Temperature, labeller = labeller(Temperature = c("28" = "28°C", "32" = "32°C", "35" = "35°C"))) +
+  
+  # facet_grid(.~Temperature) +
+  scale_shape_manual(values = c(23)) +
+  scale_color_manual(values = col.Temp) +
+  scale_fill_gradient2(low = "white", mid = "grey", high = "black", midpoint = 8, guide = "none") +
+  # scale_fill_manual(values = c(col.Temp, "white"))  +
+  
+  theme(legend.position = "bottom",
+        legend.direction = "horizontal",
+        strip.text = element_text(size = 14))
+  
+  
+```
+
+
+### Capscale
+
+```{r}
+
+tmp.psOBJ <- ps.list[["All"]] %>%
+  ps_filter(Temperature == "32") %>%
+    ps_filter(DPE == 0) %>%
+  ps_mutate(Cluster = if_else(
+    Treatment == "Exposed" & Total.Worm.Count > 0,
+    case_when(
+      Simpson__Genus_norm %in% head(sort(Simpson__Genus_norm), 16) ~ "Low",
+      Simpson__Genus_norm %in% tail(sort(Simpson__Genus_norm), 16) ~ "High",
+      TRUE ~ "Other"
+    ),
+    "Other"
+  )) %>%
+  # ungroup()  %>%
+  ps_mutate(Cluster = fct_relevel(factor(Cluster, levels = c("Other", "Low", "High"))))
+
+tmp.dist.mat <- list()
+tmp.dist.mat[["bray"]] <- tmp.psOBJ %>%
+  dist_calc("bray") 
+
+test <-  run_capscale(ps.OBJ = tmp.psOBJ, 
+               dist.matrix = tmp.dist.mat, 
+               beta_metric_col = "bray",
+               formula_str = "dist ~ Treatment")
+
+test$bray %>% anova(by = "onedf")
+
+```
+
+
+### Permanova
+
+#### DPE 0
+
+```{r}
+
+tmp.temp <- list("28", "32", "35")
+
+furrr::future_map(tmp.temp, function(temp){
+ps.list[["All"]] %>%
+  ps_filter(Temperature == temp) %>%
+    ps_filter(DPE == 0) %>%
+  ps_mutate(Cluster = if_else(
+    Treatment == "Exposed" & Total.Worm.Count > 0,
+    case_when(
+      Simpson__Genus_norm %in% head(sort(Simpson__Genus_norm), 16) ~ "Low",
+      Simpson__Genus_norm %in% tail(sort(Simpson__Genus_norm), 16) ~ "High",
+      TRUE ~ "Other"
+    ),
+    "Other"
+  )) %>%
+  # ungroup()  %>%
+  ps_mutate(Cluster = fct_relevel(factor(Cluster, levels = c("Other", "Low", "High")))) %>%
+  # samdat_tbl()
+  tax_agg("Genus") %>%
+  dist_calc("bray") %>%
+  dist_permanova(
+    seed = 1,
+    variables = c("Treatment"),
+    n_processes = 8,
+    n_perms = 999 # only 99 perms used in examples for speed (use 9999+!)
+  )
+  
+})
+```
+
+#### DPE 42
+
+```{r}
+
+tmp.temp <- list("28", "32", "35")
+
+furrr::future_map(tmp.temp, function(temp){
+ps.list[["PostExposed"]] %>%
+  ps_filter(Temperature == temp) %>%
+    ps_filter(DPE == 42) %>%
+  ps_mutate(Cluster = if_else(
+    Treatment == "Exposed" & Total.Worm.Count > 0,
+    case_when(
+      Simpson__Genus_norm %in% head(sort(Simpson__Genus_norm), 16) ~ "Low",
+      Simpson__Genus_norm %in% tail(sort(Simpson__Genus_norm), 16) ~ "High",
+      TRUE ~ "Other"
+    ),
+    "Other"
+  )) %>%
+  # ungroup()  %>%
+  ps_mutate(Cluster = fct_relevel(factor(Cluster, levels = c("Other", "Low", "High")))) %>%
+  # samdat_tbl()
+  tax_agg("Genus") %>%
+  dist_calc("bray") %>%
+  dist_permanova(
+    seed = 1,
+    variables = c("Treatment"),
+    n_processes = 8,
+    n_perms = 999 # only 99 perms used in examples for speed (use 9999+!)
+  )
+  
+})
+```
+
+
+#### Worm
+
+```{r}
+
+tmp.temp <- list("28", "32", "35")
+
+# furrr::future_map(tmp.temp, function(temp){
+ps.list[["Exposed"]] %>%
+  # ps_filter(Temperature == temp) %>%
+    ps_filter(DPE == 42) %>%
+
+  # samdat_tbl()
+  tax_agg("Genus") %>%
+  dist_calc("bray") %>%
+  dist_permanova(
+    seed = 1,
+    variables = c("Pathology.Results"),
+    n_processes = 8,
+    n_perms = 999 # only 99 perms used in examples for speed (use 9999+!)
+  ) %>% perm_get()
+  
+# })
+```
+
+
+### Beta disper
+
+#### DPE 0
+
+```{r}
+furrr::future_map(tmp.temp, function(temp){
+ps.list[["All"]] %>%
+  ps_filter(Temperature == temp) %>%
+    ps_filter(DPE == 0) %>%
+  ps_mutate(Cluster = if_else(
+    Treatment == "Exposed" & Total.Worm.Count > 0,
+    case_when(
+      Simpson__Genus_norm %in% head(sort(Simpson__Genus_norm), 16) ~ "Low",
+      Simpson__Genus_norm %in% tail(sort(Simpson__Genus_norm), 16) ~ "High",
+      TRUE ~ "Other"
+    ),
+    "Other"
+  )) %>%
+  # ungroup()  %>%
+  ps_mutate(Cluster = fct_relevel(factor(Cluster, levels = c("Other", "Low", "High")))) %>%
+  # samdat_tbl()
+  tax_agg("Genus") %>%
+  dist_calc("bray") %>%
+  # dist_get() %>%
+  microViz::dist_bdisp(variables = "Treatment") %>%
+  microViz::bdisp_get()  
+  
+})
+```
+
+#### DPE 42
+
+```{r}
+furrr::future_map(tmp.temp, function(temp){
+ps.list[["PostExposed"]] %>%
+  ps_filter(Temperature == temp) %>%
+    ps_filter(DPE == 42) %>%
+  ps_mutate(Cluster = if_else(
+    Treatment == "Exposed" & Total.Worm.Count > 0,
+    case_when(
+      Simpson__Genus_norm %in% head(sort(Simpson__Genus_norm), 16) ~ "Low",
+      Simpson__Genus_norm %in% tail(sort(Simpson__Genus_norm), 16) ~ "High",
+      TRUE ~ "Other"
+    ),
+    "Other"
+  )) %>%
+  # ungroup()  %>%
+  ps_mutate(Cluster = fct_relevel(factor(Cluster, levels = c("Other", "Low", "High")))) %>%
+  # samdat_tbl()
+  tax_agg("Genus") %>%
+  dist_calc("bray") %>%
+  # dist_get() %>%
+  microViz::dist_bdisp(variables = "Treatment") %>%
+  microViz::bdisp_get()  
+  
+})
+```
+
+
+
+#### Worm
+
+```{r}
+# furrr::future_map(tmp.temp, function(temp){
+ps.list[["Exposed"]] %>%
+  # ps_filter(Temperature == temp) %>%
+    ps_filter(DPE == 42) %>%
+  
+  # samdat_tbl()
+  tax_agg("Genus") %>%
+  dist_calc("bray") %>%
+  # dist_get() %>%
+  microViz::dist_bdisp(variables = "Pathology.Results") %>%
+  microViz::bdisp_get()  
+  
+# })
+```

@@ -1,0 +1,977 @@
+---
+title: "Untitled"
+author: "Michael Sieler"
+date: "2024-07-17"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Worm X Alpha
+
+```{r fig.height=6.5, fig.width=7, message=F, warning=FALSE}
+
+ps.list[["All"]] %>%
+  ps_filter(Treatment == "Exposed") %>%
+  ps_mutate(Cluster = if_else(
+    Treatment == "Exposed" & Total.Worm.Count > 0,
+    case_when(
+      Simpson__Genus_norm %in% head(sort(Simpson__Genus_norm), 16) ~ "Low",
+      Simpson__Genus_norm %in% tail(sort(Simpson__Genus_norm), 16) ~ "High",
+      TRUE ~ "Other"
+    ),
+    "Other"
+  )) %>%
+  # ungroup()  %>%
+  ps_mutate(Cluster = fct_relevel(factor(Cluster, levels = c("Other", "Low", "High")))) %>%
+  microViz::samdat_tbl() %>% {
+    
+        ggplot(data = ., aes(x = Simpson__Genus_norm, y = Total.Worm.Count)) +
+          # geom_smooth(aes(color = Temperature, fill = Temperature), 
+          #             alpha = .15,
+          #             size = 2,
+          #             show.legend = F) +
+          scale_color_manual(values = c("white", "white", "white")) +
+          scale_fill_manual(values = c(col.Temp, "white")) +
+          new_scale_color() +
+          new_scale_fill() +
+          # geom_smooth(aes(color = Temperature), linetype = "dashed", size = 1, se = F) +
+          geom_point(aes(color = Temperature, 
+                         # fill = Cluster,
+                         # fill = Total.Worm.Count,
+                         # alpha = ifelse(Total.Worm.Count > 0, 1, .1)
+                         ),
+            fill = "white",
+            size = 4,
+            stroke = 2,
+            shape = 23) +
+          
+          # ggrepel::geom_label_repel(aes(label = ifelse(Total.Worm.Count > 0, paste0(DPE, " DPE"),NA),
+          #                               color = Temperature),
+          #          size = 2, show.legend = F) +
+          # facet_grid(.~DPE) + # There doesn't appear to be a time effect when I check the facet by DPE
+          
+          scale_alpha(guide = "none") +
+      scale_linetype(guide = "none") +
+        # scale_fill_gradient2(low = "white", mid = "grey", high = "black", midpoint = 8, guide = "none") +
+
+          scale_color_manual(values = c(col.Temp, "white"), name = "Temp (°C)") +
+          # scale_fill_manual(values = c("white", "orange", "purple"), name = "Cluster") +
+      
+          scale_y_continuous(limits = c(-5,18), breaks = seq(0,16,2)) +
+          labs(#title = "Diversity (ALPHA (Exposed); ref = Relative 28°C)", #caption = "Alpha; Exposed",
+               x = "Alpha Score (Normalized)",
+               y = "Worm Counts (per fish)"
+               ) +
+      guides(color = guide_legend(override.aes = list(size = 5, stroke = 2, linetype = NA))) +
+      theme(panel.grid.minor.y = element_blank())
+      }
+  
+
+```
+
+
+```{r fig.height=5.5, fig.width=7, message=F, warning=FALSE}
+
+ps.list[["All"]] %>%
+  ps_filter(Treatment == "Exposed") %>%
+  ps_mutate(Cluster = if_else(
+    Treatment == "Exposed" & Total.Worm.Count > 0,
+    case_when(
+      Simpson__Genus_norm %in% head(sort(Simpson__Genus_norm), 16) ~ "Low",
+      Simpson__Genus_norm %in% tail(sort(Simpson__Genus_norm), 16) ~ "High",
+      TRUE ~ "Other"
+    ),
+    "Other"
+  )) %>%
+  # ungroup()  %>%
+  ps_mutate(Cluster = fct_relevel(factor(Cluster, levels = c("Other", "Low", "High")))) %>%
+  microViz::samdat_tbl() %>% {
+    
+        ggplot(data = ., aes(x = Simpson__Genus_norm, y = Total.Worm.Count)) +
+          # geom_smooth(color = "white", 
+          #             alpha = .15,
+          #             method = "lm",
+          #             size = 2,
+          #             show.legend = F) +
+          scale_color_manual(values = c("white", "white", "white")) +
+          scale_fill_manual(values = c(col.Temp, "white")) +
+          new_scale_color() +
+          new_scale_fill() +
+          # geom_smooth(color = "black", linetype = "dashed", size = 1, se = F) +
+          geom_point(aes(fill = Total.Worm.Count), 
+            color = "black",
+            
+            size = 4,
+            stroke = 2,
+            shape = 23) +
+          
+          # ggrepel::geom_label_repel(aes(label = ifelse(Total.Worm.Count > 0, paste0(DPE, " DPE"),NA),
+          #                               color = Temperature),
+          #          size = 2, show.legend = F) +
+          # facet_grid(.~DPE) + # There doesn't appear to be a time effect when I check the facet by DPE
+          
+          scale_alpha(guide = "none") +
+      scale_linetype(guide = "none") +
+          # scale_color_manual(values = c(col.Temp, "white"), name = "Temp (°C)") +
+          # scale_fill_manual(values = c("white", "orange", "purple"), name = "Cluster") +
+        scale_fill_gradient2(low = "white", mid = "grey", high = "black", midpoint = 8, guide = "none") +
+          scale_y_continuous(limits = c(-5,18), breaks = seq(0,16,2)) +
+          labs(#title = "Diversity (ALPHA (Exposed); ref = Relative 28°C)", #caption = "Alpha; Exposed",
+               x = "Alpha Score (Normalized)",
+               y = "Worm Counts (per fish)"
+               ) +
+      guides(color = guide_legend(override.aes = list(size = 5, stroke = 2, linetype = NA))) +
+      theme(panel.grid.minor.y = element_blank())
+      }
+  
+
+```
+
+
+```{r}
+ps.list[["All"]] %>%
+  ps_filter(Treatment == "Exposed") %>%
+  ps_mutate(Cluster = if_else(
+    Treatment == "Exposed" & Total.Worm.Count > 0,
+    case_when(
+      Simpson__Genus_norm %in% head(sort(Simpson__Genus_norm), 16) ~ "Low",
+      Simpson__Genus_norm %in% tail(sort(Simpson__Genus_norm), 16) ~ "High",
+      TRUE ~ "Other"
+    ),
+    "Other"
+  )) %>%
+  # ungroup()  %>%
+  ps_mutate(Cluster = fct_relevel(factor(Cluster, levels = c("Other", "Low", "High")))) %>%
+  microViz::samdat_tbl() %>%
+  lm(formula = Total.Worm.Count ~ Simpson__Genus_norm) %>% anova() %>% tidy()
+```
+
+
+
+```{r fig.height=6.5, fig.width=7, message=F, warning=FALSE}
+
+ps.list[["All"]] %>%
+  ps_filter(Treatment == "Exposed") %>%
+  ps_mutate(Cluster = if_else(
+    Treatment == "Exposed" & Total.Worm.Count > 0,
+    case_when(
+      Simpson__Genus_norm %in% head(sort(Simpson__Genus_norm), 16) ~ "Low",
+      Simpson__Genus_norm %in% tail(sort(Simpson__Genus_norm), 16) ~ "High",
+      TRUE ~ "Other"
+    ),
+    "Other"
+  )) %>%
+  # ungroup()  %>%
+  ps_mutate(Cluster = fct_relevel(factor(Cluster, levels = c("Other", "Low", "High")))) %>%
+  microViz::samdat_tbl() %>% {
+    
+        ggplot(data = ., aes(x = Simpson__Genus_norm, y = Total.Worm.Count)) +
+          geom_smooth(aes(fill = Total.Worm.Count),
+                      color = "black",
+                      alpha = .15,
+                      method = "lm",
+                      size = 2,
+                      show.legend = F) +
+          scale_color_manual(values = "black") +
+          scale_fill_manual(values = c(col.Temp, "white")) +
+          new_scale_color() +
+          new_scale_fill() +
+          # geom_smooth(color = "black", linetype = "dashed", size = 1, se = F) +
+          geom_point(aes(fill = Total.Worm.Count), 
+            color = "black",
+            
+            size = 4,
+            stroke = 2,
+            shape = 23) +
+          
+          # ggrepel::geom_label_repel(aes(label = ifelse(Total.Worm.Count > 0, paste0(DPE, " DPE"),NA),
+          #                               color = Temperature),
+          #          size = 2, show.legend = F) +
+          # facet_grid(.~DPE) + # There doesn't appear to be a time effect when I check the facet by DPE
+          
+          scale_alpha(guide = "none") +
+      scale_linetype(guide = "none") +
+          # scale_color_manual(values = c(col.Temp, "white"), name = "Temp (°C)") +
+          # scale_fill_manual(values = c("white", "orange", "purple"), name = "Cluster") +
+        scale_fill_gradient2(low = "white", mid = "grey", high = "black", midpoint = 8, guide = "none") +
+          # scale_y_continuous(limits = c(-5,18), breaks = seq(0,16,2)) +
+          labs(#title = "Diversity (ALPHA (Exposed); ref = Relative 28°C)", #caption = "Alpha; Exposed",
+               x = "Alpha Score (Normalized)",
+               y = "Worm Counts (per fish)"
+               ) +
+      guides(color = guide_legend(override.aes = list(size = 5, stroke = 2, linetype = NA))) +
+      theme(panel.grid.minor.y = element_blank())
+      }
+  
+
+```
+
+```{r fig.height=6.5, fig.width=7, message=F, warning=FALSE}
+
+ps.list[["All"]] %>%
+  ps_filter(Treatment == "Exposed") %>%
+  ps_mutate(Cluster = if_else(
+    Treatment == "Exposed" & Total.Worm.Count > 0,
+    case_when(
+      Simpson__Genus_norm %in% head(sort(Simpson__Genus_norm), 16) ~ "Low",
+      Simpson__Genus_norm %in% tail(sort(Simpson__Genus_norm), 16) ~ "High",
+      TRUE ~ "Other"
+    ),
+    "Other"
+  )) %>%
+  # ungroup()  %>%
+  ps_mutate(Cluster = fct_relevel(factor(Cluster, levels = c("Other", "Low", "High")))) %>%
+  microViz::samdat_tbl() %>% {
+    
+        ggplot(data = ., aes(x = Simpson__Genus_norm, y = Total.Worm.Count)) +
+          geom_smooth(aes(color = Temperature, fill = Temperature), 
+                      alpha = .15,
+                      size = 2,
+                      show.legend = F) +
+          scale_color_manual(values = c("white", "white", "white")) +
+          scale_fill_manual(values = c(col.Temp, "white")) +
+          new_scale_color() +
+          new_scale_fill() +
+          geom_smooth(aes(color = Temperature), linetype = "dashed", size = 1, se = F) +
+          geom_point(aes(color = Temperature, 
+                         # fill = Cluster,
+                         fill = Total.Worm.Count,
+                         alpha = ifelse(Total.Worm.Count > 0, 1, .1)
+                         ),
+            # fill = "white",
+            size = 4,
+            stroke = 2,
+            shape = 23) +
+          
+          # ggrepel::geom_label_repel(aes(label = ifelse(Total.Worm.Count > 0, paste0(DPE, " DPE"),NA),
+          #                               color = Temperature),
+          #          size = 2, show.legend = F) +
+          # facet_grid(.~DPE) + # There doesn't appear to be a time effect when I check the facet by DPE
+          
+          scale_alpha(guide = "none") +
+      scale_linetype(guide = "none") +
+        scale_fill_gradient2(low = "white", mid = "grey", high = "black", midpoint = 8, guide = "none") +
+
+          scale_color_manual(values = c(col.Temp, "white"), name = "Temp (°C)") +
+          # scale_fill_manual(values = c("white", "orange", "purple"), name = "Cluster") +
+      
+          scale_y_continuous(limits = c(-5,18), breaks = seq(0,16,2)) +
+          labs(#title = "Diversity (ALPHA (Exposed); ref = Relative 28°C)", #caption = "Alpha; Exposed",
+               x = "Alpha Score (Normalized)",
+               y = "Worm Counts (per fish)"
+               ) +
+      guides(color = guide_legend(override.aes = list(size = 5, stroke = 2, linetype = NA))) +
+      theme(panel.grid.minor.y = element_blank())
+      }
+  
+
+```
+
+#### High_v_Low
+
+```{r fig.height=6.5, fig.width=7, message=F, warning=FALSE}
+
+ps.list[["All"]] %>%
+  ps_filter(Treatment == "Exposed") %>%
+  ps_mutate(Cluster = if_else(
+    Treatment == "Exposed" & Total.Worm.Count > 0,
+    case_when(
+      Simpson__Genus_norm %in% head(sort(Simpson__Genus_norm), 16) ~ "Low",
+      Simpson__Genus_norm %in% tail(sort(Simpson__Genus_norm), 16) ~ "High",
+      TRUE ~ "Other"
+    ),
+    "Other"
+  )) %>%
+  # ungroup()  %>%
+  ps_mutate(Cluster = fct_relevel(factor(Cluster, levels = c("Other", "Low", "High")))) %>%
+  
+  ps_mutate(High_v_Low = if_else(
+    Treatment == "Exposed" & Total.Worm.Count > 0,
+    case_when(
+      Simpson__Genus_norm <= 0.5 ~ "Low",
+      Simpson__Genus_norm > 0.5 ~ "High",
+      TRUE ~ "Other"
+    ),
+    "Other"
+  ), .after = Treatment) %>%
+  ps_mutate(High_v_Low = fct_relevel(factor(High_v_Low, levels = c("Other", "Low", "High")))) %>%
+  ps_mutate(High_v_Low. = as.numeric(High_v_Low)) %>%
+  
+  microViz::samdat_tbl() %>% {
+    
+        ggplot(data = ., aes(x = Simpson__Genus_norm, y = Total.Worm.Count)) +
+          geom_smooth(aes(color = High_v_Low, fill = High_v_Low),
+                      alpha = .15,
+                      size = 3.5,
+                      method = "lm",
+                      show.legend = F) +
+          scale_color_manual(values = c("white", "white", "white")) +
+          # scale_fill_manual(values = c(col.Temp, "white")) +
+      scale_fill_manual(values = c("Other" = "white", "Low" = "orange", "High" = "purple")) +
+      new_scale_color() +
+      new_scale_fill() +
+
+          geom_smooth(aes(color = High_v_Low), linetype = "solid", method = "lm", size = 2, se = F) +
+          
+          scale_color_manual(values = c("Other" = "white", "Low" = "orange", "High" = "purple")) +
+          new_scale_color() +
+      
+          geom_point(aes(color = Temperature, 
+                         fill = High_v_Low,
+                         # fill = Total.Worm.Count,
+                         alpha = ifelse(Total.Worm.Count > 0, 1, .1)
+                         ),
+            # fill = "white",
+            size = 4,
+            stroke = 2,
+            shape = 23) +
+          scale_color_manual(values = c(col.Temp, "white"), name = "Temp (°C)") +
+          scale_fill_manual(values = c("Other" = "white", "Low" = "orange", "High" = "purple")) +
+          
+          scale_alpha(guide = "none") +
+          scale_linetype(guide = "none") +
+      
+                  new_scale_color() +
+          new_scale_fill() +
+        # scale_fill_gradient2(low = "white", mid = "grey", high = "black", midpoint = 8, guide = "none") +
+
+          # scale_color_manual(values = c(col.Temp, "white"), name = "Temp (°C)") +
+          scale_color_manual(values = c("Other" = "white", "Low" = "orange", "High" = "purple")) +
+
+      
+          scale_y_continuous(limits = c(-5,18), breaks = seq(0,16,2)) +
+          labs(#title = "Diversity (ALPHA (Exposed); ref = Relative 28°C)", #caption = "Alpha; Exposed",
+               x = "Alpha Score (Normalized)",
+               y = "Worm Counts (per fish)"
+               ) +
+      guides(color = guide_legend(override.aes = list(size = 5, stroke = 2, linetype = NA))) +
+      theme(panel.grid.minor.y = element_blank())
+      }
+  
+
+```
+
+
+```{r}
+ps.list[["All"]] %>%
+  ps_filter(Treatment == "Exposed") %>%
+  ps_mutate(Cluster = if_else(
+    Treatment == "Exposed" & Total.Worm.Count > 0,
+    case_when(
+      Simpson__Genus_norm %in% head(sort(Simpson__Genus_norm), 16) ~ "Low",
+      Simpson__Genus_norm %in% tail(sort(Simpson__Genus_norm), 16) ~ "High",
+      TRUE ~ "Other"
+    ),
+    "Other"
+  )) %>%
+  # ungroup()  %>%
+  ps_mutate(Cluster = fct_relevel(factor(Cluster, levels = c("Other", "Low", "High")))) %>%
+  
+  ps_mutate(High_v_Low = if_else(
+    Treatment == "Exposed" & Total.Worm.Count > 0,
+    case_when(
+      Simpson__Genus_norm <= 0.5 ~ "Low",
+      Simpson__Genus_norm > 0.5 ~ "High",
+      TRUE ~ "Other"
+    ),
+    "Other"
+  ), .after = Treatment) %>%
+  ps_mutate(High_v_Low = fct_relevel(factor(High_v_Low, levels = c("Other", "Low", "High")))) %>%
+  ps_mutate(High_v_Low. = as.numeric(High_v_Low)) %>%
+  
+  microViz::samdat_tbl() %>%
+  filter(Total.Worm.Count >0) %>%
+  group_by(High_v_Low, Temperature) %>%
+  count() %>%
+  ungroup() %>%
+  group_by(High_v_Low) %>%
+  mutate(Proportion = n / sum(n))
+```
+
+
+
+## Worm X Beta
+
+### All
+
+```{r, fig.height=6.5, fig.width=7}
+ps.list[["All"]] %>%
+  # group_by(Treatment) %>%
+  ps_filter(Treatment == "Exposed") %>%
+  ps_mutate(Cluster = if_else(
+    Treatment == "Exposed",
+    case_when(
+      Simpson__Genus_norm %in% head(sort(Simpson__Genus_norm), 16) ~ "Low",
+      Simpson__Genus_norm %in% tail(sort(Simpson__Genus_norm), 16) ~ "High",
+      TRUE ~ "Other"
+    ),
+    "Other"
+  )) %>%
+  # ungroup()  %>%
+  ps_mutate(Cluster = fct_relevel(factor(Cluster, levels = c("Other", "Low", "High")))) %>%
+  # samdat_tbl()
+  tax_agg("Genus") %>%
+  dist_calc("bray") %>%
+  ord_calc() %>%
+  microViz::ord_plot(fill = NA, 
+                         color = NA,
+                         alpha = 0,
+                         shape = "Treatment", size = 3,
+                         constraint_vec_style = vec_constraint(colour = "black",
+                                                               size = 2,
+                                                               alpha = 1,
+                                                               arrow = grid::arrow(length = grid::unit(0.05, units = "npc"))),
+                         constraint_lab_style = constraint_lab_style(
+                           type = "label", 
+                           justify = "side",
+                           colour = "black",
+                           max_angle = 90, perpendicular = TRUE, size = 4,
+                           check_overlap = TRUE
+                         ), show.legend = F
+      ) +
+      
+      geom_point(aes(color = Temperature,
+                     # fill = Cluster,
+                     # alpha = ifelse(Cluster != "Other", "Other", "H v L"),
+                     # alpha = ifelse(Total.Worm.Count > 0, 1, .1)
+                     ),
+                 fill = "white",
+                 size = 4,
+                 shape = 23,
+                 stroke = 1.5) +
+  # scale_fill_manual(values = c("white", "orange", "purple")) +
+  # scale_shape_manual(values = c(21, 23)) +
+  scale_color_manual(values = col.Temp) +
+  scale_alpha(guide = "none") +
+  # scale_alpha(guide = "none") +
+  
+  # ggnewscale::new_scale_color() +
+  # stat_ellipse(aes(color = Cluster),
+  #              level = 0.95,
+  #              size = 1.5) +
+  # scale_color_manual(values = c("white", "orange", "purple"), name = "Cluster") +
+  
+      scale_x_continuous(limits = c(-.75, 1.75)) +
+    scale_y_continuous(limits = c(-2, 1.75)) +
+  
+    # guides(color = guide_legend(override.aes = list(size = 6, 
+    #                                                 linetype = NA,
+    #                                               shape = c(23, 23, 23), 
+    #                                               fill = c("white", "orange", "purple")
+    #                                               )),
+    #        fill = guide_legend(override.aes = list(size = 5, stroke = 1, 
+    #                                                 linetype = NA,
+    #                                               shape = c(23, 23, 23), 
+    #                                               fill = c("white", "orange", "purple")
+           #                                        ))
+           # ) +
+  theme(legend.position = "none")
+```
+
+
+```{r, fig.height=6.5, fig.width=7}
+ps.list[["All"]] %>%
+  # group_by(Treatment) %>%
+  ps_filter(Treatment == "Exposed") %>%
+  ps_mutate(Cluster = if_else(
+    Treatment == "Exposed",
+    case_when(
+      Simpson__Genus_norm %in% head(sort(Simpson__Genus_norm), 16) ~ "Low",
+      Simpson__Genus_norm %in% tail(sort(Simpson__Genus_norm), 16) ~ "High",
+      TRUE ~ "Other"
+    ),
+    "Other"
+  )) %>%
+  # ungroup()  %>%
+  ps_mutate(Cluster = fct_relevel(factor(Cluster, levels = c("Other", "Low", "High")))) %>%
+  # samdat_tbl()
+  tax_agg("Genus") %>%
+  dist_calc("bray") %>%
+  ord_calc() %>%
+  microViz::ord_plot(fill = NA, 
+                         color = NA,
+                         alpha = 0,
+                         shape = "Treatment", size = 3,
+                         constraint_vec_style = vec_constraint(colour = "black",
+                                                               size = 2,
+                                                               alpha = 1,
+                                                               arrow = grid::arrow(length = grid::unit(0.05, units = "npc"))),
+                         constraint_lab_style = constraint_lab_style(
+                           type = "label", 
+                           justify = "side",
+                           colour = "black",
+                           max_angle = 90, perpendicular = TRUE, size = 4,
+                           check_overlap = TRUE
+                         ), show.legend = F
+      ) +
+      
+      geom_point(aes(color = Temperature,
+                     # fill = Cluster,
+                     # alpha = ifelse(Cluster != "Other", "Other", "H v L"),
+                     # alpha = ifelse(Total.Worm.Count > 0, 1, .1)
+                     fill = Total.Worm.Count
+                     ),
+                 # fill = "white",
+                 size = 4,
+                 shape = 23,
+                 stroke = 1.5) +
+  # scale_fill_manual(values = c("white", "orange", "purple")) +
+  # scale_shape_manual(values = c(21, 23)) +
+  scale_fill_gradient2(low = "white", mid = "grey", high = "black", midpoint = 8) +
+  scale_color_manual(values = col.Temp) +
+  scale_alpha(guide = "none") +
+  # scale_alpha(guide = "none") +
+  
+  # ggnewscale::new_scale_color() +
+  # stat_ellipse(aes(color = Cluster),
+  #              level = 0.95,
+  #              size = 1.5) +
+  # scale_color_manual(values = c("white", "orange", "purple"), name = "Cluster") +
+  
+      scale_x_continuous(limits = c(-.75, 1.75)) +
+    scale_y_continuous(limits = c(-2, 1.75)) +
+  
+    # guides(color = guide_legend(override.aes = list(size = 6, 
+    #                                                 linetype = NA,
+    #                                               shape = c(23, 23, 23), 
+    #                                               fill = c("white", "orange", "purple")
+    #                                               )),
+    #        fill = guide_legend(override.aes = list(size = 5, stroke = 1, 
+    #                                                 linetype = NA,
+    #                                               shape = c(23, 23, 23), 
+    #                                               fill = c("white", "orange", "purple")
+           #                                        ))
+           # ) +
+  theme(legend.position = "none")
+```
+
+### Worm > 0
+
+```{r, fig.height=6.5, fig.width=7}
+ps.list[["All"]] %>%
+  # group_by(Treatment) %>%
+  ps_filter(Treatment == "Exposed") %>%
+  ps_mutate(Cluster = if_else(
+    Treatment == "Exposed",
+    case_when(
+      Simpson__Genus_norm %in% head(sort(Simpson__Genus_norm), 16) ~ "Low",
+      Simpson__Genus_norm %in% tail(sort(Simpson__Genus_norm), 16) ~ "High",
+      TRUE ~ "Other"
+    ),
+    "Other"
+  )) %>%
+  # ungroup()  %>%
+  ps_mutate(Cluster = fct_relevel(factor(Cluster, levels = c("Other", "Low", "High")))) %>%
+  # samdat_tbl()
+  tax_agg("Genus") %>%
+  dist_calc("bray") %>%
+  ord_calc() %>%
+  microViz::ord_plot(fill = NA, 
+                         color = NA,
+                         alpha = 0,
+                         shape = "Treatment", size = 3,
+                         constraint_vec_style = vec_constraint(colour = "black",
+                                                               size = 2,
+                                                               alpha = 1,
+                                                               arrow = grid::arrow(length = grid::unit(0.05, units = "npc"))),
+                         constraint_lab_style = constraint_lab_style(
+                           type = "label", 
+                           justify = "side",
+                           colour = "black",
+                           max_angle = 90, perpendicular = TRUE, size = 4,
+                           check_overlap = TRUE
+                         ), show.legend = F
+      ) +
+      
+      geom_point(aes(color = Temperature,
+                     # fill = Cluster,
+                     # alpha = ifelse(Cluster != "Other", "Other", "H v L"),
+                     fill = Total.Worm.Count,
+                     alpha = ifelse(Total.Worm.Count > 0, 1, .1)),
+                 # fill = "white",
+                 size = 4,
+                 shape = 23,
+                 stroke = 1.5) +
+  # scale_fill_manual(values = c("white", "orange", "purple")) +
+  # scale_shape_manual(values = c(21, 23)) +
+  scale_fill_gradient2(low = "white", mid = "grey", high = "black", midpoint = 8) +
+  scale_color_manual(values = col.Temp) +
+  scale_alpha(guide = "none") +
+  # scale_alpha(guide = "none") +
+  
+  # ggnewscale::new_scale_color() +
+  # stat_ellipse(aes(color = Cluster),
+  #              level = 0.95,
+  #              size = 1.5) +
+  # scale_color_manual(values = c("white", "orange", "purple"), name = "Cluster") +
+  
+      scale_x_continuous(limits = c(-.75, 1.75)) +
+    scale_y_continuous(limits = c(-2, 1.75)) +
+  
+    # guides(color = guide_legend(override.aes = list(size = 6, 
+    #                                                 linetype = NA,
+    #                                               shape = c(23, 23, 23), 
+    #                                               fill = c("white", "orange", "purple")
+    #                                               )),
+    #        fill = guide_legend(override.aes = list(size = 5, stroke = 1, 
+    #                                                 linetype = NA,
+    #                                               shape = c(23, 23, 23), 
+    #                                               fill = c("white", "orange", "purple")
+           #                                        ))
+           # ) +
+  theme(legend.position = "none")
+```
+
+
+
+```{r, fig.height=6.5, fig.width=7}
+ps.list[["All"]] %>%
+  # group_by(Treatment) %>%
+  ps_filter(Treatment == "Exposed") %>%
+  ps_mutate(Cluster = if_else(
+    Treatment == "Exposed" & Total.Worm.Count > 0,
+    case_when(
+      Simpson__Genus_norm %in% head(sort(Simpson__Genus_norm), 16) ~ "Low",
+      Simpson__Genus_norm %in% tail(sort(Simpson__Genus_norm), 16) ~ "High",
+      TRUE ~ "Other"
+    ),
+    "Other"
+  )) %>%
+  ps_mutate(Cluster = fct_relevel(factor(Cluster, levels = c("Other", "Low", "High")))) %>%
+  # samdat_tbl()
+  tax_agg("Genus") %>%
+  dist_calc("bray") %>%
+  ord_calc() %>%
+  microViz::ord_plot(fill = NA, 
+                         color = NA,
+                         alpha = 0,
+                         shape = "Treatment", size = 3,
+                         constraint_vec_style = vec_constraint(colour = "black",
+                                                               size = 2,
+                                                               alpha = 1,
+                                                               arrow = grid::arrow(length = grid::unit(0.05, units = "npc"))),
+                         constraint_lab_style = constraint_lab_style(
+                           type = "label", 
+                           justify = "side",
+                           colour = "black",
+                           max_angle = 90, perpendicular = TRUE, size = 4,
+                           check_overlap = TRUE
+                         ), show.legend = F
+      ) +
+      
+      geom_point(aes(color = Temperature,
+                     fill = Cluster,
+                     # alpha = ifelse(Cluster != "Other", "Other", "H v L"),
+                     alpha = ifelse(Total.Worm.Count > 0, 1, .1),
+                     shape = Treatment),
+                 size = 4,
+                 stroke = 1.5) +
+  scale_fill_manual(values = c("white", "orange", "purple")) +
+  scale_shape_manual(values = c(23)) +
+  scale_color_manual(values = col.Temp) +
+  scale_alpha(guide = "none") +
+  # scale_alpha(guide = "none") +
+  
+  ggnewscale::new_scale_color() +
+  # stat_ellipse(aes(color = Cluster),
+  #              level = 0.95,
+  #              size = 1.5) +
+  scale_color_manual(values = c("white", "orange", "purple"), name = "Cluster") +
+  
+      scale_x_continuous(limits = c(-.75, 1.75)) +
+    scale_y_continuous(limits = c(-2, 1.75)) +
+  
+    guides(color = guide_legend(override.aes = list(size = 6, 
+                                                    linetype = NA,
+                                                  shape = c(23, 23, 23), 
+                                                  fill = c("white", "orange", "purple")
+                                                  )),
+           fill = guide_legend(override.aes = list(size = 5, stroke = 1, 
+                                                    linetype = NA,
+                                                  shape = c(23, 23, 23), 
+                                                  fill = c("white", "orange", "purple")
+                                                  ))
+           ) +
+  theme(legend.position = "none")
+```
+
+```{r}
+ps.list[["All"]] %>%
+  # group_by(Treatment) %>%
+  ps_filter(Treatment == "Exposed") %>%
+  ps_mutate(Cluster = if_else(
+    Treatment == "Exposed",
+    case_when(
+      Simpson__Genus_norm %in% head(sort(Simpson__Genus_norm), 16) ~ "Low",
+      Simpson__Genus_norm %in% tail(sort(Simpson__Genus_norm), 16) ~ "High",
+      TRUE ~ "Other"
+    ),
+    "Other"
+  )) %>%
+  # ungroup()  %>%
+  ps_mutate(Cluster = fct_relevel(factor(Cluster, levels = c("Other", "Low", "High")))) %>%
+  samdat_tbl() %>%
+  filter(Temperature != "35",
+         Cluster != "Other") %>%
+  group_by(Temperature, Cluster) %>%
+  count() %>%
+  ungroup() %>%
+  group_by(Cluster) %>%
+  mutate(round((Proportion = n / sum(n) * 100), digits = 1)) %>%
+  ungroup() %>% 
+  arrange(Cluster)
+```
+
+
+
+
+```{r, fig.height=6.5, fig.width=7}
+ps.list[["All"]] %>%
+  # group_by(Treatment) %>%
+  ps_filter(Treatment == "Exposed") %>%
+  ps_mutate(Cluster = if_else(
+    Treatment == "Exposed",
+    case_when(
+      Simpson__Genus_norm %in% head(sort(Simpson__Genus_norm), 16) ~ "Low",
+      Simpson__Genus_norm %in% tail(sort(Simpson__Genus_norm), 16) ~ "High",
+      TRUE ~ "Other"
+    ),
+    "Other"
+  )) %>%
+  # ungroup()  %>%
+  ps_mutate(Cluster = fct_relevel(factor(Cluster, levels = c("Other", "Low", "High")))) %>%
+  # samdat_tbl()
+  tax_agg("Genus") %>%
+  dist_calc("bray") %>%
+  ord_calc() %>%
+  microViz::ord_plot(fill = NA, 
+                         color = NA,
+                         alpha = 0,
+                         shape = "Treatment", size = 3,
+                         constraint_vec_style = vec_constraint(colour = "black",
+                                                               size = 2,
+                                                               alpha = 1,
+                                                               arrow = grid::arrow(length = grid::unit(0.05, units = "npc"))),
+                         constraint_lab_style = constraint_lab_style(
+                           type = "label", 
+                           justify = "side",
+                           colour = "black",
+                           max_angle = 90, perpendicular = TRUE, size = 4,
+                           check_overlap = TRUE
+                         ), show.legend = F
+      ) +
+      
+      geom_point(aes(fill = Total.Worm.Count),
+        color = "black",
+                                 size = 4,
+                 shape = 23,
+                 stroke = 1.5) +
+  # scale_fill_manual(values = c("white", "orange", "purple")) +
+  # scale_shape_manual(values = c(21, 23)) +
+  scale_color_manual(values = col.Temp) +
+  scale_alpha(guide = "none") +
+  # scale_alpha(guide = "none") +
+  
+  ggnewscale::new_scale_color() +
+  stat_ellipse(aes(color = Pathology.Results, linetype = Pathology.Results),
+               level = 0.95,
+               size = 1.5) +
+  scale_color_manual(values = c("grey", "black"), name = "Cluster") +
+  scale_fill_gradient2(low = "white", mid = "grey", high = "black", midpoint = 8, guide = "none") +
+    #   scale_x_continuous(limits = c(-.75, 1.75)) +
+    # scale_y_continuous(limits = c(-2, 1.75)) +
+  
+    # guides(color = guide_legend(override.aes = list(size = 6, 
+    #                                                 linetype = NA,
+    #                                               shape = c(23, 23, 23), 
+    #                                               fill = c("white", "orange", "purple")
+    #                                               )),
+    #        fill = guide_legend(override.aes = list(size = 5, stroke = 1, 
+    #                                                 linetype = NA,
+    #                                               shape = c(23, 23, 23), 
+    #                                               fill = c("white", "orange", "purple")
+           #                                        ))
+           # ) +
+  theme(legend.position = "none")
+```
+
+
+#### High v Low
+
+##### PCoA
+
+```{r, fig.height=6.5, fig.width=7}
+ps.list[["All"]] %>%
+  # group_by(Treatment) %>%
+  ps_filter(Treatment == "Exposed") %>%
+  ps_mutate(Cluster = if_else(
+    Treatment == "Exposed" & Total.Worm.Count > 0,
+    case_when(
+      Simpson__Genus_norm %in% head(sort(Simpson__Genus_norm), 16) ~ "Low",
+      Simpson__Genus_norm %in% tail(sort(Simpson__Genus_norm), 16) ~ "High",
+      TRUE ~ "Other"
+    ),
+    "Other"
+  )) %>%
+  ps_mutate(Cluster = fct_relevel(factor(Cluster, levels = c("Other", "Low", "High")))) %>%
+  
+  ps_mutate(High_v_Low = if_else(
+    Treatment == "Exposed" & Total.Worm.Count > 0,
+    case_when(
+      Simpson__Genus_norm <= 0.5 ~ "Low",
+      Simpson__Genus_norm > 0.5 ~ "High",
+      TRUE ~ "Other"
+    ),
+    "Other"
+  ), .after = Treatment) %>%
+  ps_mutate(High_v_Low = fct_relevel(factor(High_v_Low, levels = c("Other", "Low", "High")))) %>%
+  ps_mutate(High_v_Low. = as.numeric(High_v_Low)) %>%
+  
+  # samdat_tbl()
+  tax_agg("Genus") %>%
+  dist_calc("bray") %>%
+  ord_calc() %>%
+  # ord_calc(constraints = c("Temperature.", "Total.Worm.Count")) %>%
+  microViz::ord_plot(fill = NA, 
+                         color = NA,
+                         alpha = 0,
+                         shape = "Treatment", size = 3,
+                         constraint_vec_style = vec_constraint(colour = "black",
+                                                               size = 2,
+                                                               alpha = 1,
+                                                               arrow = grid::arrow(length = grid::unit(0.05, units = "npc"))),
+                         constraint_lab_style = constraint_lab_style(
+                           type = "label", 
+                           justify = "side",
+                           colour = "black",
+                           max_angle = 90, perpendicular = TRUE, size = 4,
+                           check_overlap = TRUE
+                         ), show.legend = F
+      ) +
+      
+      geom_point(aes(color = Temperature,
+                     fill = High_v_Low,
+                     # alpha = ifelse(Cluster != "Other", "Other", "H v L"),
+                     alpha = ifelse(Total.Worm.Count > 0, 1, .1),
+                     shape = Treatment),
+                 size = 4,
+                 stroke = 1.5) +
+  scale_fill_manual(values = c("Other" = "white", "Low" = "orange", "High" = "purple"), name = "High vs. Low") +
+  scale_shape_manual(values = c(23)) +
+  scale_color_manual(values = col.Temp) +
+  scale_alpha(guide = "none") +
+  # scale_alpha(guide = "none") +
+  
+  ggnewscale::new_scale_color() +
+  stat_ellipse(aes(color = High_v_Low),
+               level = 0.95,
+               size = 1.5) +
+  scale_color_manual(values = c("white", "orange", "purple"), name = "High vs. Low") +
+  
+      scale_x_continuous(limits = c(-.75, 1.75)) +
+    scale_y_continuous(limits = c(-2, 1.75)) +
+  
+    guides(color = guide_legend(override.aes = list(size = 6, 
+                                                    linetype = NA,
+                                                  shape = c(23, 23, 23), 
+                                                  fill = c("white", "orange", "purple")
+                                                  )),
+           fill = guide_legend(override.aes = list(size = 5, stroke = 1, 
+                                                    linetype = NA,
+                                                  shape = c(23, 23, 23), 
+                                                  fill = c("white", "orange", "purple")
+                                                  ))
+           ) +
+  theme(legend.position = "none")
+```
+
+
+##### Cap
+
+```{r, fig.height=6.5, fig.width=7}
+ps.list[["All"]] %>%
+  # group_by(Treatment) %>%
+  ps_filter(Treatment == "Exposed") %>%
+  ps_mutate(Cluster = if_else(
+    Treatment == "Exposed" & Total.Worm.Count > 0,
+    case_when(
+      Simpson__Genus_norm %in% head(sort(Simpson__Genus_norm), 16) ~ "Low",
+      Simpson__Genus_norm %in% tail(sort(Simpson__Genus_norm), 16) ~ "High",
+      TRUE ~ "Other"
+    ),
+    "Other"
+  )) %>%
+  ps_mutate(Cluster = fct_relevel(factor(Cluster, levels = c("Other", "Low", "High")))) %>%
+  
+  ps_mutate(High_v_Low = if_else(
+    Treatment == "Exposed" & Total.Worm.Count > 0,
+    case_when(
+      Simpson__Genus_norm <= 0.5 ~ "Low",
+      Simpson__Genus_norm > 0.5 ~ "High",
+      TRUE ~ "Other"
+    ),
+    "Other"
+  ), .after = Treatment) %>%
+  ps_mutate(High_v_Low = fct_relevel(factor(High_v_Low, levels = c("Other", "Low", "High")))) %>%
+  ps_mutate(High_v_Low. = as.numeric(High_v_Low)) %>%
+  
+  # samdat_tbl()
+  tax_agg("Genus") %>%
+  dist_calc("bray") %>%
+  # ord_calc() %>%
+  ord_calc(constraints = c("Temperature.", "Total.Worm.Count")) %>%
+  microViz::ord_plot(fill = NA, 
+                         color = NA,
+                         alpha = 0,
+                         shape = "Treatment", size = 3,
+                         constraint_vec_style = vec_constraint(colour = "black",
+                                                               size = 2,
+                                                               alpha = 1,
+                                                               arrow = grid::arrow(length = grid::unit(0.05, units = "npc"))),
+                         constraint_lab_style = constraint_lab_style(
+                           type = "label", 
+                           justify = "side",
+                           colour = "black",
+                           max_angle = 90, perpendicular = TRUE, size = 4,
+                           check_overlap = TRUE
+                         ), show.legend = F
+      ) +
+      
+      geom_point(aes(color = Temperature,
+                     fill = High_v_Low,
+                     # alpha = ifelse(Cluster != "Other", "Other", "H v L"),
+                     alpha = ifelse(Total.Worm.Count > 0, 1, .1),
+                     shape = Treatment),
+                 size = 4,
+                 stroke = 1.5) +
+  scale_fill_manual(values = c("Other" = "white", "Low" = "orange", "High" = "purple")) +
+  scale_shape_manual(values = c(23)) +
+  scale_color_manual(values = col.Temp) +
+  scale_alpha(guide = "none") +
+  # scale_alpha(guide = "none") +
+  
+  ggnewscale::new_scale_color() +
+  # stat_ellipse(aes(color = Cluster),
+  #              level = 0.95,
+  #              size = 1.5) +
+  scale_color_manual(values = c("white", "orange", "purple"), name = "Cluster") +
+  
+    #   scale_x_continuous(limits = c(-.75, 1.75)) +
+    # scale_y_continuous(limits = c(-2, 1.75)) +
+  
+    guides(color = guide_legend(override.aes = list(size = 6, 
+                                                    linetype = NA,
+                                                  shape = c(23, 23, 23), 
+                                                  fill = c("white", "orange", "purple")
+                                                  )),
+           fill = guide_legend(override.aes = list(size = 5, stroke = 1, 
+                                                    linetype = NA,
+                                                  shape = c(23, 23, 23), 
+                                                  fill = c("white", "orange", "purple")
+                                                  ))
+           ) +
+  theme(legend.position = "right")
+```

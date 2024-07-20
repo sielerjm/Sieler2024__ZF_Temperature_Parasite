@@ -1,0 +1,1157 @@
+---
+title: "test"
+author: "Michael Sieler"
+date: "2024-07-08"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+
+# Convert the list of Phyloseq objects to a nested tidy object
+test <-
+ps.list %>%
+  enframe(name = "PhyloseqID", value = "PhyloseqObj") 
+
+test$PhyloseqObj[[1]] %>% samdat_tbl()
+```
+
+## Alpha
+
+###  alpha functions
+
+
+```{r}
+test.ps <-
+  ps.list[["All"]] %>% # phyloseq object we'll be using
+  ps_calc_diversity( # calculates various alpha diversity metrics
+    rank = "Genus", # What taxonomic rank do you want to calculate diversity metrics at
+    index = "shannon", # What diversity metric to use
+    varname = "Shannon__Genus", # Column name in sample data
+    exp = T # exponentiate the result or not
+  ) %>%
+  ps_calc_diversity(
+    rank = "Genus",
+    index = "inverse_simpson",
+    varname = "Simpson_Genus" # Column name in sample data
+  ) %>%
+  ps_calc_richness( # related to ps_calc_diversity, this calculates richness or "observed" values
+    rank = "Genus",
+    varname = "Richness__Genus"
+  ) %>%
+  ps_calc_diversity.phy(
+    varname = "Phylogenetic__Genus"
+  ) %>% # Note: This is a helper function I made. You need to adjust function manually to change taxon rank (See: microViz_Helper.R)
+  ps_mutate(across(contains("__Genus"), norm_scores, .names = "{.col}_norm")) # Runs normalization func over each diversity metric and creates new columns for each
+
+
+```
+
+```{r}
+test.ps %>%   
+  samdat_tbl() %>%
+  select(-c(2:28)) 
+```
+
+### Tukey test
+
+```{r}
+
+ps.list$All %>%
+  # samdat_tbl()
+  psObjToDfAlphaLong() %>%
+  cutCellNames(col = "Alpha.Metric", sep = "__") %>%
+  run_tukey_glm(., "Alpha.Score", "Alpha.Metric", c("Temperature", "DPE"), group_by_var = "DPE") 
+  
+ps.list$All %>%
+  # samdat_tbl()
+  psObjToDfAlphaLong() %>%
+  cutCellNames(col = "Alpha.Metric", sep = "__") %>%
+  run_tukey_glm(., "Alpha.Score", "Alpha.Metric", c("Temperature")) 
+
+```
+
+
+
+```{r}
+
+# Define the function
+run_tukey_glm <- function(data, alpha_score_col, alpha_metric_col, variables, group_by_var = NULL) {
+  
+  # Helper function to run GLM and Tukey test
+  run_glm_tukey <- function(metric_data, var, alpha_score_col, group_var = NULL) {
+    if (!is.null(group_var)) {
+      results <- metric_data %>%
+        group_by(.data[[group_var]]) %>%
+        group_modify(~ {
+          .x[[var]] <- as.factor(.x[[var]])  # Convert to factor if not already
+          formula <- as.formula(paste(alpha_score_col, "~", var))
+          glm_fit <- glm(formula, data = .x, family = quasibinomial)
+          mcp_arg <- eval(parse(text = paste0("mcp(", var, " = \"Tukey\")")))
+          tukey_test <- glht(glm_fit, linfct = mcp_arg)
+          tidy(tukey_test) %>%
+            mutate(Variable = var, Group = .y[[group_var]])
+        }) %>%
+        ungroup() 
+    } else {
+      metric_data[[var]] <- as.factor(metric_data[[var]])  # Convert to factor if not already
+      formula <- as.formula(paste(alpha_score_col, "~", var))
+      glm_fit <- glm(formula, data = metric_data, family = quasibinomial)
+      mcp_arg <- eval(parse(text = paste0("mcp(", var, " = \"Tukey\")")))
+      tukey_test <- glht(glm_fit, linfct = mcp_arg)
+      results <- tidy(tukey_test) %>%
+        mutate(Variable = var)
+    }
+    return(results) 
+  }
+  
+  # Get unique alpha metrics
+  unique_metrics <- unique(data[[alpha_metric_col]])
+  
+  results <- unique_metrics %>%
+    set_names() %>%
+    map_df(~ {
+      metric_data <- filter(data, .data[[alpha_metric_col]] == .x)
+      other_vars <- setdiff(variables, group_by_var)
+      other_vars %>%
+        set_names() %>%
+        map_df(~ run_glm_tukey(metric_data, .x, alpha_score_col, group_by_var)) %>%
+        mutate(Alpha.Metric = .x) %>%
+        select(-c(null.value))
+    })
+  
+  return(results) 
+}
+
+
+```
+
+```{r}
+alpha.stats[["Unexposed"]][["Temperature"]][["Tukey"]] %>%
+  
+  # Combine the different alpha diversity metrics into one dataframe
+  dplyr::bind_rows() %>%
+  
+  # Create the table
+  dplyr::group_by(Alpha.Metric, term) %>%
+  set_GT(var = "adj.p.value", group.by = "Alpha.Metric")
+```
+
+
+
+### GLM test
+
+```{r}
+ps.list$All %>%
+  psObjToDfAlphaLong() %>%
+  cutCellNames(col = "Alpha.Metric", sep = "__") %>%
+  run_glm_models(formula_str = "Alpha.Score ~ Temperature")
+
+```
+
+
+```{r}
+
+
+run_glm_models <- function(data, alpha_metric_col = "Alpha.Metric", alpha_score_col = "Alpha.Score", formula_str, family_str = "quasibinomial") {
+  # Extract unique alpha metrics
+  unique_metrics <- data %>% select(all_of(alpha_metric_col)) %>% distinct() %>% pull()
+  
+  # Run GLM models for each unique alpha metric
+  glm_models <- purrr::map(unique_metrics, function(x){
+    glm( formula = as.formula(formula_str),
+         data = subset(data, Alpha.Metric == x),
+         family = "quasibinomial")
+  }) %>% setNames(unique_metrics) 
+  
+  return(glm_models)
+}
+
+# Example usage:
+# Assuming `tmp.data.alpha` is your tibble and it contains columns "Alpha.Score", "Alpha.Metric", and other variables.
+# result <- run_glm_models(tmp.data.alpha, "Alpha.Score", "Alpha.Metric", "Alpha.Score ~ Temperature")
+
+```
+
+### Anova
+
+```{r}
+alpha.stats[["Unexposed"]][["Temperature"]][["GLM"]] %>%
+  purrr::imap(., ~tidy(.x) %>% mutate(Alpha.Metric = .y)) %>%
+  # Combine the metric dataframes
+  dplyr::bind_rows() %>%
+  # Add significance indicators in a new column
+  SigStars() %>%
+  # Create GT Table
+  set_GT(var = "p.value", group.by = "Alpha.Metric")
+
+
+
+
+  # Add a column to add a star for statistical significance
+  dplyr::mutate(sig = case_when(
+    p.value <= 0.0001 ~ "****",
+    p.value <= 0.001 ~ "***",
+    p.value <= 0.01 ~ "**",
+    p.value < 0.05 ~ "*", 
+    p.value >= 0.05 ~ "ns")) %>%
+  
+  # Create the table
+  dplyr::group_by(metric) %>%
+  gt::gt() %>%
+  gt::fmt_number(
+    decimals = 3, # round to 3 decimal places
+    use_seps = FALSE
+  ) %>%
+  gt::sub_large_vals( # values above 0.25 will be simplified
+    columns = p.value,
+    threshold = 0.25) %>%
+  gt::sub_small_vals( # values below 0.001 will be simplified
+    columns = p.value,
+    threshold = 0.001) %>%
+  
+  # Title/caption
+  gt::tab_header(
+    title = "GLM Results",
+    subtitle = "Marginal effects: glm(Beta.Score ~ Temperature); Unexposed fish"
+  )
+
+```
+
+
+
+```{r}
+
+alpha.stats[["Unexposed"]][["Temperature"]][["GLM.Table"]]
+```
+
+### glm anova
+
+```{r}
+
+run_glm_anova(alpha.stats[["Unexposed"]][["Temperature"]][["GLM"]])
+
+alpha.stats[["Unexposed"]][["Temperature"]][["ANOVA"]] %>%
+  # Create GT Table
+  set_GT(var = "p.value", group.by = "Alpha.Metric") 
+
+
+```
+
+
+```{r}
+tmp.psOBJ %>%
+  
+  # Convert phyloseq object into a dataframe and pivot longer by Alpha Metric and Score
+  psObjToDfLong(div.score = "Alpha.Score", div.metric = "Alpha.Metric") %>%
+  
+  # Clean up cell value names by removing any strings including and after "__"
+  cutCellNames(col = "Alpha.Metric", sep = "__") %>%
+  
+  # Run Tukey test on GLM models
+  run_tukey_glm(., "Alpha.Score", "Alpha.Metric", c("Temperature", "DPE"), 
+                group_by_var = "Temperature") 
+```
+
+
+```{r}
+
+beta.dist.mat[["All"]][["bray"]] %>%
+  dist_permanova(
+    seed = 1,
+    variables = c("Temperature", "DPE"),
+    n_processes = 1,
+    by = "margin",
+    n_perms = 99 # only 99 perms used in examples for speed (use 9999+!)
+  )
+
+```
+
+```{r}
+beta.dist.mat[["All"]][["bray"]] %>%
+  dist_permanova(
+    seed = 1,
+    variables = c("Temperature", "DPE"),
+    n_processes = 1,
+    by = "terms",
+    n_perms = 99 # only 99 perms used in examples for speed (use 9999+!)
+  )
+```
+
+
+```{r}
+beta.dist.mat[["All"]][["bray"]] %>%
+  dist_permanova(
+    seed = 1,
+    variables = c("Temperature"),
+    n_processes = 1,
+    by = "onedf",
+    n_perms = 99 # only 99 perms used in examples for speed (use 9999+!)
+  )
+```
+
+
+## Beta
+
+### Capscale
+
+```{r}
+ps.list[["Unexposed"]] %>%
+microViz::samdat_tbl()
+
+test <- run_capscale(ps.list[["Unexposed"]], dist.matrix = beta.dist.mat[["Unexposed"]], formula_str = "dist ~ Temperature")
+
+```
+
+### Cap adonis
+
+```{r}
+
+run_cap_adonis(ps.list[[tmp.resSubSection]],
+               dist.matrix = beta.dist.mat[[tmp.resSubSection]], 
+               formula_str = "dist ~ Temperature",
+               by.method = "terms") 
+
+```
+
+```{r}
+beta.stats[[tmp.resSubSection]][["Temperature"]][["CAP.ADONIS"]] %>%
+  set_GT(var = "p.value", group.by = "Beta.Metric")
+  
+```
+
+
+
+```{r}
+
+test <- beta.stats[[tmp.resSubSection]][["Temperature"]][["CAP.mod"]]$bray %>% eigenvals()
+
+test[c(1, 2)]/sum(test) * 100
+
+```
+
+```{r, fig.width=6, fig.height=6}
+
+tmp.p.val <- beta.stats[["PostExposed"]][["TEMP:TREAT"]][["CAP.ADONIS"]] %>%
+  filter(Beta.Metric == "bray", term == "Temperature:Treatment") %>%
+  pull(p.value)
+
+tmp.p.val.terms <- beta.stats[["PostExposed"]][["TEMP:TREAT"]][["CAP.ADONIS"]] %>%
+  filter(Beta.Metric == "bray", term == "Temperature:Treatment") %>%
+  pull(term)
+
+p.val.label <- paste0("Capscale(dist ~ ", tmp.p.val.terms, "); P < ", tmp.p.val)
+
+p <-
+ps.list[["PostExposed"]] %>%# samdat_tbl() %>% view()
+  tax_agg("Genus") %>%
+  dist_calc("bray") %>%
+  ord_calc(constraints = c("Temperature.", "Treatment."), method = "CAP") %>%
+  microViz::ord_plot(fill = NA, 
+                         color = NA,
+                         shape = "Treatment", size = 3,
+                         constraint_vec_style = vec_constraint(colour = "black",
+                                                               size = 2,
+                                                               alpha = 1,
+                                                               arrow = grid::arrow(length = grid::unit(0.05, units = "npc"))),
+                         constraint_lab_style = constraint_lab_style(
+                           type = "label", 
+                           justify = "side",
+                           colour = "black",
+                           max_angle = 90, perpendicular = TRUE, size = 4,
+                           check_overlap = TRUE
+                         )
+      ) +
+      
+      geom_point(aes(fill = ifelse(Treatment == "Control", Temperature, "white"),
+                     color = ifelse(Treatment != "Control", Temperature, "black"),
+                     shape = Treatment), 
+                 size = 3,
+                 stroke = 1) +
+      
+      scale_fill_manual(values = c(col.Temp, "white"), name = "Temp (°C)") +
+      scale_color_manual(values = c(col.Temp, "black"), name = "Temp (°C)") +
+      scale_shape_manual(values = c(21, 23)) +
+      
+      ## Ellipses
+      ggnewscale::new_scale_color() +
+      stat_ellipse(aes(color = Temperature, 
+                       linetype = Treatment), 
+                   size = 1,
+                   alpha = .667,
+                   show.legend = F) + 
+      scale_linetype_manual(values = c("solid", "dashed")) +
+      scale_color_manual(values = c(col.Temp)) +
+      
+      labs(title = paste0("Dissimilarity (Beta; Post-Exposed fish)", "\n", p.val.label)) +
+      theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
+            axis.text = element_text(size = 12),
+            axis.title = element_text(size = 16),
+            plot.caption = element_text(hjust = 0, size = 10),
+            legend.position = "none") +
+  scale_x_continuous(limits = c(-1.25, 2.25), breaks = seq(-2, 3, by = 1)) 
+  
+p
+```
+
+```{r}
+p$ <-
+  # furrr::future_map(c(1,2,3), function(BETA){
+    
+  new.layer <- p[["layers"]]
+  
+  new.layer[[2]] <- p[["layers"]][[4]]
+  new.layer[[3]] <- p[["layers"]][[5]]
+  new.layer[[4]] <- p[["layers"]][[2]]
+  new.layer[[5]] <- p[["layers"]][[3]]
+  
+  p[["layers"]] <- new.layer
+  
+  p
+    
+  # })
+```
+
+
+
+```{r, fig.width=6, fig.height=6}
+ps.list[["PostExposed"]] %>% #samdat_tbl() %>% view()
+
+  # ps_filter(DPE == 42) %>%
+  tax_agg("Genus") %>%
+  dist_calc("bray") %>%
+  ord_calc() %>%
+  microViz::ord_plot(fill = NA, 
+                         color = NA,
+                         alpha = 0,
+                         shape = "Treatment", size = 3,
+                         constraint_vec_style = vec_constraint(colour = "black",
+                                                               size = 2,
+                                                               alpha = 1,
+                                                               arrow = grid::arrow(length = grid::unit(0.05, units = "npc"))),
+                         constraint_lab_style = constraint_lab_style(
+                           type = "label", 
+                           justify = "side",
+                           colour = "black",
+                           max_angle = 90, perpendicular = TRUE, size = 4,
+                           check_overlap = TRUE
+                         )
+      ) +
+      
+        ## Ellipses
+      ggnewscale::new_scale_color() +
+      stat_ellipse(aes(color = Temperature, 
+                       linetype = Treatment), 
+                   size = 1,
+                   alpha = .667,
+                   show.legend = F) + 
+      scale_linetype_manual(values = c("solid", "dashed")) +
+      scale_color_manual(values = c(col.Temp)) +
+  
+      ggnewscale::new_scale_color() +
+    
+      geom_point(aes(fill = ifelse(Treatment == "Control", Temperature, "white"),
+                     color = ifelse(Treatment != "Control", Temperature, "black"),
+                     alpha = ifelse(DPE == 42, 1, .99),
+                     shape = Treatment), 
+                 size = 3,
+                 stroke = 1) +
+      
+      scale_fill_manual(values = c(col.Temp, "white"), name = "Temp (°C)") +
+      scale_color_manual(values = c(col.Temp, "black"), name = "Temp (°C)") +
+      scale_shape_manual(values = c(21, 23)) +
+      
+
+      
+      labs(title = paste0("Dissimilarity (Beta; Post-Exposed fish)", "\n", p.val.label)) +
+      theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
+            axis.text = element_text(size = 12),
+            axis.title = element_text(size = 16),
+            plot.caption = element_text(hjust = 0, size = 10),
+            legend.position = "none")
+```
+
+
+```{r, fig.width=6, fig.height=6}
+ps.list[["PostExposed"]] %>% #samdat_tbl() %>% view()
+  ps_mutate(Cluster = case_when(
+    ((Simpson__Genus_norm >= quantile(Simpson__Genus_norm, .75)) & (Total.Worm.Count > quantile(Total.Worm.Count, 0.75))) ~ "High",
+    ((Simpson__Genus_norm <= quantile(Simpson__Genus_norm, .25)) & (Total.Worm.Count > quantile(Total.Worm.Count, 0.75))) ~ "Low",
+    .default = "Other"
+  )) %>%
+  ps_mutate(Cluster = fct_relevel(factor(Cluster, levels = c("Other", "Low", "High")))) %>%
+  # ps_filter(DPE == 42) %>%
+  tax_agg("Genus") %>%
+  dist_calc("bray") %>%
+  ord_calc() %>%
+  microViz::ord_plot(fill = NA, 
+                         color = NA,
+                         shape = "Treatment", size = 3,
+                         constraint_vec_style = vec_constraint(colour = "black",
+                                                               size = 2,
+                                                               alpha = 1,
+                                                               arrow = grid::arrow(length = grid::unit(0.05, units = "npc"))),
+                         constraint_lab_style = constraint_lab_style(
+                           type = "label", 
+                           justify = "side",
+                           colour = "black",
+                           max_angle = 90, perpendicular = TRUE, size = 4,
+                           check_overlap = TRUE
+                         )
+      ) +
+      
+      geom_point(aes(fill = ifelse(Treatment == "Control", Temperature, "white"),
+                     color = ifelse(Treatment != "Control", Temperature, "black"),
+                     shape = Treatment), 
+                 size = 3,
+                 stroke = 1) +
+      
+      scale_fill_manual(values = c(col.Temp, "white"), name = "Temp (°C)") +
+      scale_color_manual(values = c(col.Temp, "black"), name = "Temp (°C)") +
+      scale_shape_manual(values = c(21, 23)) +
+      
+      ## Ellipses
+      ggnewscale::new_scale_color() +
+      stat_ellipse(aes(color = Temperature, 
+                       linetype = Treatment), 
+                   size = 1,
+                   alpha = .667,
+                   show.legend = F) + 
+      scale_linetype_manual(values = c("solid", "dashed")) +
+      scale_color_manual(values = c(col.Temp)) +
+    
+      ## Ellipses
+      ggnewscale::new_scale_color() +
+      stat_ellipse(aes(color = Cluster),
+                   size = 1,
+                   level = .95,
+                   show.legend = F) + 
+      scale_color_manual(values = c("white", pal.Set1[c(8,5)])) +
+      
+      labs(title = paste0("Dissimilarity (Beta; Post-Exposed fish)", "\n", p.val.label)) +
+      theme(panel.border = element_rect(colour = "black", fill=NA, size=.5),
+            axis.text = element_text(size = 12),
+            axis.title = element_text(size = 16),
+            plot.caption = element_text(hjust = 0, size = 10),
+            legend.position = "none")
+```
+
+```{r}
+
+beta.stats[[tmp.resSubSection]][["TEMP:PATH"]][["HoD.model"]]$bray$Temp.DPE$tukeyHSD %>% 
+          broom::tidy() %>%
+          dplyr::mutate(Beta.Metric = "bray", 
+                        .before = 1) %>%
+          dplyr::mutate(term = "Temp.DPE") %>%
+          # dplyr::mutate(term = dplyr::case_when(
+          #   term == "Groups" ~ y,
+          #   .default =  "Residual"
+          # )) %>%
+          dplyr::mutate(sig = case_when(
+            !!p.val.var <= 0.0001 ~ "****",
+            !!p.val.var <= 0.001 ~ "***",
+            !!p.val.var <= 0.01 ~ "**",
+            !!p.val.var < 0.05 ~ "*", 
+            !!p.val.var >= 0.05 ~ "ns")) 
+
+
+```
+
+
+
+### HoD
+
+```{r}
+test <- run_BetaDispersion(dist.matrix = beta.dist.mat[[tmp.resSubSection]], 
+                   beta_metric_col = diversity.method[["beta"]], 
+                   var = c("Temperature"))
+
+
+beta.dist.mat[[tmp.resSubSection]][["bray"]] %>%
+      microViz::dist_bdisp(variables = c("Temperature")) %>% 
+  microViz::bdisp_get()
+```
+
+
+```{r}
+test <- beta.dist.mat[[tmp.resSubSection]][["bray"]]
+
+betadisper(beta.dist.mat[[tmp.resSubSection]][["bray"]] %>% dist_get(), test2$Temperature) %>% permutest()
+```
+
+
+
+```{r}
+
+get_HoD_anova(betaDisper = beta.stats[["Exposed"]][["Temperature"]][["HoD.model"]],
+              var = c("Temperature"))
+  
+```
+
+```{r}
+beta.stats[[tmp.resSubSection]][["Temperature"]][["HoD.model"]]
+beta.stats[["Unexposed"]][["Temperature"]][["HoD.ANOVA"]]
+
+  beta.stats[["Unexposed"]][["Temperature"]][["HoD.ANOVA"]] %>%
+  
+  # Create the table
+  dplyr::group_by(Beta.Metric) %>%
+  set_GT(var = "p.value", group.by = "Beta.Metric")
+```
+
+
+
+```{r}
+
+get_HoD_tukey(betaDisper = beta.stats[["Unexposed"]][["Temperature"]][["HoD.model"]],
+              var = c("Temperature")) 
+
+  beta.stats[[tmp.resSubSection]][["Temperature"]][["HoD.Tukey"]] %>%
+  
+  # Create the table
+  dplyr::group_by(Beta.Metric) %>%
+  set_GT(var = "adj.p.value", group.by = "Beta.Metric")  %>%
+  
+  # Title/caption
+  gt::tab_header(
+    title = "Tukey: Homogeneity of Dispersion",
+    subtitle = "Tukey(Disperson ~ Temperature); Unexposed fish"
+  )
+
+```
+
+```{r}
+beta.stats[["Unexposed"]][["Temperature"]][["HoD.model"]]$bray$Temperature$tukeyHSD %>% tidy()
+```
+
+```{r}
+beta.stats[[tmp.resSubSection]][["TEMP:TREAT"]][["HoD.model"]]$bray$Temp.DPE$tukeyHSD %>% tidy()
+```
+
+
+```{r}
+beta.stats[[tmp.resSubSection]][["TEMP:TREAT"]][["HoD.model"]] 
+```
+
+```{r}
+
+
+# Example call to the function assuming your nested list is called 'alpha.stats'
+print_tables(alpha.stats)
+```
+
+
+```{r}
+print_tables(beta.stats)
+```
+
+```{r}
+
+save_tables_as_pdf <- function(x, parent_name = "", output_dir = "output", counter = 1) {
+  if (!dir.exists(output_dir)) {
+    dir.create(output_dir)
+  }
+  
+  if (is.list(x)) {
+    for (name in names(x)) {
+      new_parent_name <- paste0(parent_name, if (parent_name != "") "::", name)
+      if (grepl("Table", name)) {
+        file_name <- gsub("[::\\.]", "-", new_parent_name)  # Replace "::" and "." with "-"
+        file_path <- file.path(output_dir, paste0(counter, "-", file_name, ".pdf"))
+        cat("Saving Table:", file_path, "\n")
+        
+        # Save the gt table as PDF
+        gt_table <- x[[name]]
+        gtsave(data = gt_table, filename = file_path)
+        
+        counter <- counter + 1  # Increment the counter for the next table
+      } else {
+        counter <- save_tables_as_pdf(x[[name]], new_parent_name, output_dir, counter)
+      }
+    }
+  }
+  
+  return(counter)
+}
+
+```
+
+
+
+```{r}
+
+table.path <- "/Users/michaelsieler/Dropbox/Mac (2)/Documents/Sharpton_Lab/Projects_Repository/Rules_of_Life/Sieler2024__ZF_Temperature_Parasite/Results/Tables"
+
+
+save_tables_as_files(alpha.stats, 
+                     output_dir = table.path, 
+                     suffix = "Alpha", 
+                     format = "pdf")
+save_tables_as_files(alpha.stats, 
+                     output_dir = table.path, 
+                     suffix = "Beta", 
+                     format = "pdf")
+save_tables_as_files(alpha.stats, 
+                     output_dir = table.path, 
+                     suffix = "Alpha", 
+                     format = "png")
+save_tables_as_files(alpha.stats, 
+                     output_dir = table.path, 
+                     suffix = "Beta", 
+                     format = "png")
+
+
+
+```
+
+
+
+```{r}
+
+ps.list[["PostExposed"]] %>%# samdat_tbl() %>% view()
+  tax_agg("Genus")
+
+```
+
+
+
+## Infection
+
+```{r}
+
+tmp.psOBJ <- ps.list[["Exposed"]]
+tmp.resSubSection <- "Exposed"
+
+```
+
+
+### Stats
+
+#### nb.glm
+
+```{r}
+
+tmp.psOBJ %>%
+  microViz::samdat_tbl() %>%
+  MASS::glm.nb(Total.Worm.Count ~ Temperature, data = .) %>%
+  tidy()
+
+
+```
+
+#### Tukey
+
+```{r}
+
+tmp.psOBJ %>%
+  microViz::samdat_tbl() %>%
+  MASS::glm.nb(Total.Worm.Count ~ Temperature, data = .) %>%
+  emmeans(~Temperature) %>%
+  pairs(adjust = "tukey") %>%
+  tidy() %>%
+  tidyr::separate(contrast, c('group1', 'group2'), sep = " - ") %>%
+  dplyr::mutate(`.y.` = term, .after = 1)
+
+
+```
+
+
+
+
+
+### Plots
+
+```{r}
+
+tmp.psOBJ %>%
+  microViz::samdat_tbl() %>%
+  ggplot(aes(x = Temperature, y = Total.Worm.Count)) +
+  
+          geom_violin(aes(color = Temperature,
+                          group = interaction(Temperature)),
+                      fill = "white",
+                      draw_quantiles = c(0.5),
+                      # dodge.width = 1, varwidth = TRUE,
+                      alpha = 1,
+                      size = 1.25,
+                      # adjust = .75,
+                      scale = "width") +
+  geom_quasirandom(aes(color = Temperature),
+                           fill = "white",
+                           shape = 23,
+                           stroke = 2,
+                   size = 2) +
+  scale_color_manual(values = c(col.Temp, "white")) +
+          scale_fill_manual(values = c(col.Temp, "white")) +
+          
+          # scale_x_continuous(limits = c(-5, 47), breaks = seq(0, 42, by = 7)) +
+          scale_y_continuous(limits = c(0, 16), breaks = seq(0, 16, by = 2))
+  
+
+```
+
+
+
+```{r}
+
+formula_str.glmNB = as.formula("Total.Worm.Count ~ -1 + DPE")
+formula_str.tukey = as.formula("~ Temperature | DPE")
+
+sig.labels <-
+  tmp.psOBJ %>%
+    microViz::samdat_tbl() %>%
+    dplyr::mutate(DPE = as.factor(DPE)) %>%
+    group_by(DPE) %>%
+    nest(data = -DPE) %>%
+    dplyr::mutate(test = map(.x=data, 
+                        ~ MASS::glm.nb(formula = Total.Worm.Count ~ -1 + Temperature, data = .x) %>% 
+                          emmeans::emmeans( ~ Temperature ) %>%
+                          emmeans::contrast(method = "pairwise", adjust = "tukey") %>% 
+                          tidy() )) %>%
+    unnest(test) %>%
+    dplyr::select(-any_of(c("null.value", "data"))) %>%
+    tidyr::separate(contrast, c('group1', 'group2'), sep = " - ") %>%
+    dplyr::mutate(`.y.` = "Total.Worm.Count", .after = 1) %>%
+    dplyr::ungroup() %>%
+    dplyr::mutate(group1 = (str_remove(group1, term)),
+                  group2 = (str_remove(group2, term))) %>%
+    dplyr::mutate(DPE = (as.character(DPE))) %>%
+    SigStars(pval.var = "adj.p.value") %>%
+    dplyr::filter(p.value < 0.05 )
+
+sig.labels
+```
+
+```{r fig.height=6.5, fig.width=7, message=F, warning=FALSE}
+worm.plots[["TEMP"]][["TUKEY_GLM.NB"]][["Plot"]]
+```
+
+
+```{r fig.height=6.5, fig.width=14, message=F, warning=FALSE}
+
+worm.plots[["TEMP:DPE"]][["TUKEY_GLM.NB"]][["Plot"]] +
+  # facet_grid(.~DPE, labeller = c(14 = "14 dpe", 21 = "21 dpe", 28 = "28 dpe", 42 = "42 dpe")) +
+  # guides(color = guide_legend(override.aes = list(size = 5, stroke = 4))) +
+  theme(
+    legend.key.height = unit(1, "cm"),  # Increase height of legend keys
+    legend.key.width = unit(1, "cm")  # Increase width of legend keys (optional)
+  )
+
+```
+
+
+```{r}
+fit_glm_nb <- function(data) {
+  tryCatch({
+    model <- MASS::glm.nb(formula = Total.Worm.Count ~ -1 + Temperature, data = data, na.action = na.omit)
+    emmeans_result <- emmeans::emmeans(model, ~ Temperature)
+    contrasts <- emmeans::contrast(emmeans_result, method = "pairwise", adjust = "tukey")
+    tidy(contrasts)
+  }, error = function(e) {
+    message("Error in GLM fitting or emmeans contrast: ", e)
+    return(NULL)
+  })
+}
+```
+
+```{r}
+worm.stats[["TEMP:DPE"]][["TUKEY_GLM.NB"]] <-
+  tmp.psOBJ %>%
+  # Convert phyloseq object into a tibble
+  microViz::samdat_tbl() %>%
+  # Convert DPE (time) into a factor for pairwise comparison
+  dplyr::mutate(DPE = as.factor(DPE)) %>%
+  # Group by DPE
+  group_by(DPE) %>%
+  # Nest the data for looping with map()
+  nest(data = -DPE) %>%
+  # Create a column called test to store the results of the GLM, emmeans, contrasts, and tidy
+  dplyr::mutate(test = map(.x = data, fit_glm_nb)) %>%
+  # Remove rows where test is NULL
+  dplyr::filter(!map_lgl(test, is.null)) %>%
+  # Unnest the test column into a tibble
+  unnest(test) %>%
+  # Remove any of the following columns if they exist
+  dplyr::select(-any_of(c("null.value", "data"))) %>%
+  # Separate out the contrast column for later significance bar plotting
+  tidyr::separate(contrast, c('group1', 'group2'), sep = " - ") %>%
+  # Add a column ".y." for plotting worm counts
+  dplyr::mutate(`.y.` = "Total.Worm.Count", .after = 1) %>%
+  # Clean up cell values under the group1 and 2 columns to get rid of the prefix
+  dplyr::mutate(group1 = (str_remove(group1, term)),
+                group2 = (str_remove(group2, term))) %>%
+  # Ungroup
+  dplyr::ungroup() %>%
+  # Add rows for DPE 0 with empty data in specified columns
+  add_row(DPE = "0", `.y.` = "Total.Worm.Count", term = "Temperature", group1 = "28", group2 = "32", .before = 1) %>%
+  add_row(DPE = "0", `.y.` = "Total.Worm.Count", term = "Temperature", group1 = "28", group2 = "35", .before = 2) %>%
+  add_row(DPE = "0", `.y.` = "Total.Worm.Count", term = "Temperature", group1 = "32", group2 = "35", .before = 3)
+```
+
+
+
+```{r fig.height=6.5, fig.width=14, message=F, warning=FALSE}
+ps.list[["All"]] %>%
+  microViz::ps_filter(Treatment == "Exposed") %>%
+  microViz::samdat_tbl() %>%
+  
+  ggplot(aes(x = Temperature, y = Total.Worm.Count)) +
+  
+  geom_violin(aes(color = Temperature,
+                  fill = Temperature
+                  ),
+              draw_quantiles = c(0.5),
+              alpha = .25,
+              size = .75,
+              show.legend = F,
+              scale = "width") +
+  geom_quasirandom(aes(color = Temperature),
+                   fill = "white",
+                   shape = 23,
+                   stroke = 2,
+                   size = 2) +
+  
+  scale_color_manual(values = c(col.Temp, "white"), name = "Temp (°C)") +
+  scale_fill_manual(values = c(col.Temp, "white"), name = "Temp (°C)") +
+  scale_y_continuous(
+    sec.axis = sec_axis(~ ., name = "", 
+                        breaks = seq(0, 16, by = 2)),
+    limits = c(0, 16), breaks = seq(0, 16, by = 2)
+  ) +
+  
+facet_grid(.~DPE, labeller = labeller(DPE = c("0" = "0 dpe", "14" = "14 dpe", "21" = "21 dpe", "28" = "28 dpe", "42" = "42 dpe"))) +
+  # facet_grid(.~DPE) +
+  
+  labs(title = "Infection Burden by Temperature and Time",
+       x = "Temperature (°C)",
+       y = "Total worm counts per sample",
+       caption = "dpe = days post exposure")  +
+  
+  theme(legend.position = "right",
+        legend.direction = "vertical",
+        panel.grid.major.x = element_blank()) +
+  
+  ggpubr::stat_pvalue_manual(worm.plots[["TEMP:DPE"]][["TUKEY_GLM.NB"]][["Sig.Labels"]],
+                             label = "p.adj.sig",
+                             y.position = c(14,13),
+                             size = 6,
+                             bracket.size = 1,
+                             hide.ns = T) +
+  guides(color = guide_legend(override.aes = list(size = 5, stroke = 4))) +
+  theme(
+    legend.key.height = unit(1, "cm"),  # Increase height of legend keys
+    legend.key.width = unit(1, "cm")  # Increase width of legend keys (optional)
+  )
+    
+
+```
+
+
+
+```{r}
+
+formula_str.glmNB = as.formula("Total.Worm.Count ~ Temperature")
+formula_str.tukey = as.formula("~ Temperature")
+
+sig.labels <-
+  tmp.psOBJ %>%
+    microViz::samdat_tbl() %>%
+    dplyr::mutate(DPE = as.factor(DPE)) %>%
+    MASS::glm.nb(formula = Total.Worm.Count ~ -1 + Temperature) %>% 
+                          emmeans::emmeans( ~ Temperature ) %>%
+                          emmeans::contrast(method = "pairwise", adjust = "tukey") %>% 
+                          tidy() %>%
+    # unnest(test) %>%
+    dplyr::select(-any_of(c("null.value", "data"))) %>%
+    tidyr::separate(contrast, c('group1', 'group2'), sep = " - ") %>%
+    dplyr::mutate(`.y.` = "Total.Worm.Count", .after = 1) %>%
+    dplyr::ungroup() %>%
+    dplyr::mutate(group1 = (str_remove(group1, term)),
+                  group2 = (str_remove(group2, term))) %>%
+    # dplyr::mutate(DPE = (as.character(DPE))) %>%
+    SigStars(pval.var = "adj.p.value") %>%
+    dplyr::filter(p.value < 0.05 )
+
+sig.labels
+```
+
+```{r}
+worm.plots[["TEMP"]][["TUKEY_GLM.NB"]][["Sig.Labels"]]
+```
+
+
+
+```{r, fig.width=5.5, fig.height=5.5, warning=FALSE}
+
+
+worm.plots[["TEMP"]][["TUKEY_GLM.NB"]][["Plot"]]
+```
+
+
+```{r}
+worm.plots$TEMP$TUKEY_GLM.NB$Plot
+```
+
+
+#### Scatter Plot
+
+
+
+```{r fig.height=6.5, fig.width=14, message=F, warning=FALSE}
+
+
+
+furrr::future_map(dpe_values, function(dpe){
+
+ps.list[["All"]] %>%
+  ps_filter(Treatment == "Exposed") %>%
+    ps_filter(DPE <= dpe) %>%
+  microViz::samdat_tbl() %>%
+  
+  ggplot(aes(x = DPE, y = Total.Worm.Count)) +
+  
+    geom_violin(aes(
+      color = Temperature,
+                  fill = Temperature,
+                  group = interaction(Temperature, DPE)
+                  ),
+                width = 5,
+              # draw_quantiles = c(0.5),
+              alpha = .25,
+              size = .75,
+              show.legend = F,
+              scale = "width") +
+  
+    scale_fill_manual(values = c(col.Temp, "white"), guide = "none") +
+    scale_color_manual(values = c(col.Temp, "white"), name = "Temp (°C)") +
+
+  geom_point(aes(color = Temperature,
+                       group = interaction(Temperature, DPE)),
+                   fill = "white",
+                   shape = 23,
+                   stroke = 2,
+             position = position_dodge2(width = 5),
+                   size = 2) +
+                  
+  
+  scale_color_manual(values = c(col.Temp, "white"), name = "Temp (°C)") +
+  scale_fill_manual(values = c(col.Temp, "white"), guide = "none") +
+  scale_x_continuous(limits = c(-5, 47), breaks = c(0, 14, 21, 28, 35, 42)) +
+    scale_y_continuous(limits = c(0, 16, breaks = seq(0, 16, 2))) +
+  
+  labs(title = "Infection Burden by Temperature and Time",
+       x = "Time (Days Post Exposure (DPE))",
+       y = "Total Worm Counts")  +
+  
+  theme(legend.position = "right",
+        legend.direction = "vertical",
+        panel.grid.major.x = element_blank()) +
+  guides(color = guide_legend(override.aes = list(size = 5, stroke = 4))) +
+
+  #     geom_label(data = processed_glm, aes(x = 3, y = c(12, 9, 6), 
+  #                                      label = paste0(term, "\nEst: ", estimate, "; P: ", p.value),
+  #                                      color = Temperature),
+  #            fontface = "bold",
+  #            size = 5,
+  #            label.size = 0.5,
+  #            fill = "white",
+  #            show.legend = F) +
+  # geom_label(aes(x = 7, y = 15, label = paste0("glm.nb(Worm.Count ~ Temp:Time)",
+  #                                               "\n (Type II ANOVA: LR Chisq = 55.86, df = 3, p < 0.001)")),
+  #            fontface = "bold",
+  #            size = 5,
+  #            label.size = 0.33,
+  #            color = "black",
+  #            fill = "white",
+  #            show.legend = F) 
+  
+    theme(
+    legend.key.height = unit(1, "cm"),  # Increase height of legend keys
+    legend.key.width = unit(1, "cm")  # Increase width of legend keys (optional)
+  ) 
+})  
+
+```
+
+```{r}
+ps.list[["Exposed"]] %>%
+  # Convert phyloseq object into a tibble
+    microViz::samdat_tbl() %>%
+  # Run negative binomial GLM
+    MASS::glm.nb(formula = Total.Worm.Count ~ Temperature:DPE) %>%
+    car::Anova(type = 2) %>%
+    report::report_model()
+```
+
+```{r}
+process_infection_glm.nb_output <- function(glm_model) {
+  tidy(glm_model) %>%
+    filter(term != "(Intercept)") %>%
+    mutate(across(where(is.numeric), ~ round(., 3)))
+}
+
+
+```
+
+```{r fig.height=6.5, fig.width=9, message=F, warning=FALSE}
+processed_glm <- process_infection_glm.nb_output(
+  MASS::glm.nb(formula = Total.Worm.Count ~ Temperature:DPE, data = microViz::samdat_tbl(ps.list[["Exposed"]]))
+) %>%
+  mutate(Temperature = c("28", "32", "35"))
+
+ps.list[["Exposed"]] %>%
+  microViz::samdat_tbl() %>%
+  
+  ggplot(aes(x = DPE, y = Total.Worm.Count)) +
+  
+  # geom_point(aes(color = Temperature,
+  #                 fill = Temperature
+  #                 )) + 
+  geom_smooth(aes(color = Temperature,
+                  fill = Temperature), 
+              size = 1.5,
+              stroke = 1,
+              alpha = .1,
+              method = "glm.nb", se = T) +
+                  
+  geom_quasirandom(aes(color = Temperature),
+                   fill = "white",
+                   shape = 23,
+                   stroke = 2,
+                   size = 2) +
+  
+  scale_color_manual(values = c(col.Temp, "white"), name = "Temp (°C)") +
+  scale_fill_manual(values = c(col.Temp, "white"), guide = "none") +
+  scale_x_continuous(limits = c(14,52.5), breaks = c(14, 21, 28, 35, 42)) +
+  
+  labs(title = "Infection Burden by Temperature and Time",
+       x = "Time (Days Post Exposure (DPE))",
+       y = "Total Worm Counts",
+       caption = paste0("glm.nb(Worm.Count ~ Temp:Time); (Type II ANOVA: LR Chisq = 55.86, df = 3, p < 0.001)"))  +
+  
+  theme(legend.position = "bottom",
+        legend.direction = "horizontal",
+        panel.grid.minor.x = element_blank(),
+        plot.caption = element_text(hjust = 0, size = 10)) +
+  
+  geom_label(data = processed_glm, aes(x = 49, y = c(8, 5, 2), 
+                                       label = paste0(term, "\nEst: ", estimate, "; P: ", p.value),
+                                       color = Temperature),
+             fontface = "bold",
+             size = 4.5,
+             # color = "black",
+             fill = "white",
+             show.legend = F) #+
+  # geom_label(aes(x = 28, y = 15, label = paste0("glm.nb(Worm.Count ~ Temp:Time)",
+  #                                               "\n (Type II ANOVA: LR Chisq = 55.86, df = 3, p < 0.001)")),
+  #            fontface = "bold",
+  #            size = 5,
+  #            color = "black",
+  #            fill = "white",
+  #            show.legend = F)
+```
+

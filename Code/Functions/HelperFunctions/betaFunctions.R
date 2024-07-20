@@ -67,7 +67,7 @@ run_cap_adonis <- function(ps.OBJ, dist.matrix, beta_metric_col = diversity.meth
 }
 
 
-# Run Capscale -------------------------------------------------------------------------
+# Run Homogeneity of Dispersion -------------------------------------------------------------------------
 # Description: 
 # Input: 
 # Output: 

@@ -1,5 +1,5 @@
 
-# 06-1__Temp_PreExp__Stats_Plots --------------------------------------------------
+# 06-1__Temp_PreExp__Stats --------------------------------------------------
 
 tmp.psOBJ <- ps.list[["PreExposed"]]
 tmp.resSubSection <- "PreExposed"

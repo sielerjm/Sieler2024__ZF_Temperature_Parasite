@@ -122,23 +122,24 @@ my_theme <- theme_update(
   legend.position = "bottom",
   legend.box = "vertical",
   legend.box.just = "center",
-  legend.title = element_text(size = 13),
-  legend.text = element_text(size = 12),
+  legend.title = element_text(size = 20),
+  legend.text = element_text(size = 17),
   legend.key = element_rect(fill = "white"),
   legend.key.size = unit(1, "line"), # legend symbol size
   legend.spacing.y = unit(0, 'cm'),
   
-  strip.text = element_text(size = 12),
+  strip.text = element_text(size = 20),
   
-  plot.caption = element_text(hjust = 0, size = 12),
+  plot.caption = element_text(hjust = 0, size = 15),
   
-  axis.text = element_text(size = 12),
-  axis.title = element_text(size = 16),
+  axis.text = element_text(size = 20),
+  axis.title = element_text(size = 25),
   
   panel.border = element_rect(colour = "black", fill=NA, size=1),
   panel.background = element_rect(fill = pal.Greys[1]),
-  panel.grid.major = element_line(color = pal.Greys[3]),
-  panel.grid.minor = element_line(color = pal.Greys[3]),
+  panel.grid.major = element_line(color = pal.Greys[4]),
+  panel.grid.minor = element_line(color = pal.Greys[4]),
+  strip.background = element_rect(fill = "white", color = "black")
 ) 
 
 
