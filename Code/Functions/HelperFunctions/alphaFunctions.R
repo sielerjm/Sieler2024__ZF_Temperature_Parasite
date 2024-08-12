@@ -76,9 +76,7 @@ ps_calc_diversity.phy <- function(ps,
   df <- picante::pd(samp = otu.matrix(ps), tree = phyloseq::phy_tree(ps)) %>% 
     dplyr::rename(!!varname := PD) %>%
     dplyr::select(-SR)  # Remove richness column
-  
-  df %>%
-    dplyr::rename_with(~ gsub("phylogenetic", "Phylogenetic", .x), .cols = contains("phylogenetic"))
+
   
   # rename diversity variable
   # colnames(df)[colnames(df) == index] <- varname

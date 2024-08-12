@@ -26,6 +26,8 @@ ps.list[["All"]] <- # Saves to the phyloseq object
   ps_calc_diversity.phy(
     varname = "Phylogenetic__Genus"
   ) %>% # Note: This is a helper function I made. You need to adjust function manually to change taxon rank (See: microViz_Helper.R)
+  # ps_calc_diversity.phy() helper function does not properly name the column. Modify the following function as needed 
+  ps_rename("Phylogenetic__Genus" = "phylogenetic_Genus") %>% # Helper function (See: microViz_Helper.R)
   ps_mutate(across(contains("__Genus"), norm_scores, .names = "{.col}_norm")) # Runs normalization func over each diversity metric and creates new columns for each
 
 
@@ -53,6 +55,8 @@ ps.list[["Unexposed"]] <- # Saves to the phyloseq object
   ps_calc_diversity.phy(
     varname = "Phylogenetic__Genus"
   ) %>% # Note: This is a helper function I made. You need to adjust function manually to change taxon rank (See: microViz_Helper.R)
+  # ps_calc_diversity.phy() helper function does not properly name the column. Modify the following function as needed 
+  ps_rename("Phylogenetic__Genus" = "phylogenetic_Genus") %>% # Helper function (See: microViz_Helper.R)
   ps_mutate(across(contains("__Genus"), norm_scores, .names = "{.col}_norm")) # Runs normalization func over each diversity metric and creates new columns for each
 
 
@@ -80,6 +84,8 @@ ps.list[["Exposed"]] <- # Saves to the phyloseq object
   ps_calc_diversity.phy(
     varname = "Phylogenetic__Genus"
   ) %>% # Note: This is a helper function I made. You need to adjust function manually to change taxon rank (See: microViz_Helper.R)
+  # ps_calc_diversity.phy() helper function does not properly name the column. Modify the following function as needed 
+  ps_rename("Phylogenetic__Genus" = "phylogenetic_Genus") %>% # Helper function (See: microViz_Helper.R)
   ps_mutate(across(contains("__Genus"), norm_scores, .names = "{.col}_norm")) # Runs normalization func over each diversity metric and creates new columns for each
 
 
@@ -107,6 +113,8 @@ ps.list[["PreExposed"]] <- # Saves to the phyloseq object
   ps_calc_diversity.phy(
     varname = "Phylogenetic__Genus"
   ) %>% # Note: This is a helper function I made. You need to adjust function manually to change taxon rank (See: microViz_Helper.R)
+  # ps_calc_diversity.phy() helper function does not properly name the column. Modify the following function as needed 
+  ps_rename("Phylogenetic__Genus" = "phylogenetic_Genus") %>% # Helper function
   ps_mutate(across(contains("__Genus"), norm_scores, .names = "{.col}_norm")) # Runs normalization func over each diversity metric and creates new columns for each
 
 
@@ -135,6 +143,8 @@ ps.list[["PostExposed"]] <- # Saves to the phyloseq object
   ps_calc_diversity.phy(
     varname = "Phylogenetic__Genus"
   ) %>% # Note: This is a helper function I made. You need to adjust function manually to change taxon rank (See: microViz_Helper.R)
+  # ps_calc_diversity.phy() helper function does not properly name the column. Modify the following function as needed 
+  ps_rename("Phylogenetic__Genus" = "phylogenetic_Genus") %>% # Helper function (See: microViz_Helper.R)
   ps_mutate(across(contains("__Genus"), norm_scores, .names = "{.col}_norm")) # Runs normalization func over each diversity metric and creates new columns for each
 
 
@@ -162,6 +172,8 @@ ps.list[["TimeFinal"]] <- # Saves to the phyloseq object
   ps_calc_diversity.phy(
     varname = "Phylogenetic__Genus"
   ) %>% # Note: This is a helper function I made. You need to adjust function manually to change taxon rank (See: microViz_Helper.R)
+  # ps_calc_diversity.phy() helper function does not properly name the column. Modify the following function as needed 
+  ps_rename("Phylogenetic__Genus" = "phylogenetic_Genus") %>% # Helper function (See: microViz_Helper.R)
   ps_mutate(across(contains("__Genus"), norm_scores, .names = "{.col}_norm")) # Runs normalization func over each diversity metric and creates new columns for each
 
 ## InitialFinal ---------------------------------------------------------------------
@@ -188,5 +200,7 @@ ps.list[["InitialFinal"]] <- # Saves to the phyloseq object
   ps_calc_diversity.phy(
     varname = "Phylogenetic__Genus",
   ) %>% # Note: This is a helper function I made. You need to adjust function manually to change taxon rank (See: microViz_Helper.R)
+    # ps_calc_diversity.phy() helper function does not properly name the column. Modify the following function as needed 
+  ps_rename("Phylogenetic__Genus" = "phylogenetic_Genus") %>% # Helper function (See: microViz_Helper.R)
   microViz::ps_mutate(across(contains("__Genus"), norm_scores, .names = "{.col}_norm")) # Runs normalization func over each diversity metric and creates new columns for each
 
