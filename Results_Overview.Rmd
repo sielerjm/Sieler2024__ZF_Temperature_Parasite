@@ -2,6 +2,9 @@
 title: "Main Figures and Results"
 author: "Michael Sieler"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: 
+  github_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -1218,4 +1221,6 @@ Fig. 7 A heatmap of model coefficient values of the top 50 statistically signifi
 diffAbnd.plots[[tmp.subset]][["All__TEMP_DPE_TREAT_PATH_WORM_CLUSTER"]][["Maaslin2"]][["Top50"]]
 
 ```
+
+
 
