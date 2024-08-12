@@ -3,7 +3,6 @@ title: "Main Figures and Results"
 author: "Michael Sieler"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: 
-  github_document: default
   html_document: default
 ---
 

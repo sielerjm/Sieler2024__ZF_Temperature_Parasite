@@ -71,7 +71,7 @@ Run this code to:
 
 ```{r}
 # This function will run all the scripts within the folders contained in Analysis directory
-source(paste0(proj.path,"/MicrobiomeProcessing_2024-07-08.R"))
+source(paste0(proj.path,"/MicrobiomeProcessing_2024-08-12.R"))
 
 ```
 
