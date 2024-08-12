@@ -364,19 +364,68 @@ Fig. 3 Histological sections stained with ### stain in zebrafish exposed to Pseu
 
 ```{r include=FALSE}
 # creates a temporary variable to aid in automating knitted document
-
+tmp.subset <- "Exposed"
 tmp.variables <- "TEMP"
 
 ```
 
 ```{r plots-3B, fig.height=6.5, fig.width=6.5, message=F, warning=FALSE, echo=FALSE}
 
-worm.plots[[tmp.variables]][["TUKEY_GLM.NB"]][["Plot"]] + 
+worm.plots[[tmp.subset]][[tmp.variables]][["TUKEY_GLM.NB"]][["Plot"]] + 
   theme(legend.position = "none") +
   labs(title = NULL)
 
 ```
 
+##### Tables {.tabset}
+
+###### (hide)
+
+Press on tabs to display tables. Scroll to see additional rows.
+
+```{r empty-3A}
+
+```
+
+
+###### GLM
+
+```{r stats-3A-glm, echo=FALSE}
+
+worm.stats[[tmp.subset]][[tmp.variables]][["GLM.NB.Table"]] %>%
+  # Set the maximum height to 6.5 inches (6.5 * 96 pixels = 624 pixels)
+    gt::tab_options(
+      container.overflow.y = "auto",       # Enable vertical overflow
+      container.height = gt::px(624)           # Set the height to 624 pixels (6.5 inches)
+    )
+
+```
+
+###### ANOVA
+
+```{r stats-3A-anova, echo=FALSE}
+
+worm.stats[[tmp.subset]][[tmp.variables]][["ANOVA.Table"]] %>%
+  # Set the maximum height to 6.5 inches (6.5 * 96 pixels = 624 pixels)
+    gt::tab_options(
+      container.overflow.y = "auto",       # Enable vertical overflow
+      container.height = gt::px(624)           # Set the height to 624 pixels (6.5 inches)
+    )
+
+```
+
+###### Tukey
+
+```{r stats-3A-tukey, echo=FALSE}
+
+worm.stats[[tmp.subset]][[tmp.variables]][["TUKEY_GLM.NB.Table"]] %>%
+  # Set the maximum height to 6.5 inches (6.5 * 96 pixels = 624 pixels)
+    gt::tab_options(
+      container.overflow.y = "auto",       # Enable vertical overflow
+      container.height = gt::px(624)           # Set the height to 624 pixels (6.5 inches)
+    )
+
+```
 
 
 ### 4) Water temperature differentially stratifies gut microbiome communities of parasite exposed fish {.tabset}

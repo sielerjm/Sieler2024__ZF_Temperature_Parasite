@@ -1,6 +1,7 @@
 
 # 06__TempPathInf_Exposed__Plots -----------------------------------------------------
 
+cat("06__TempPathInf_Exposed__Plots \n")
 
 tmp.psOBJ <- ps.list[["Exposed"]]
 tmp.resSubSection <- "Exposed"

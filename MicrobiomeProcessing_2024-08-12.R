@@ -17,7 +17,7 @@
 
 ## Set Environmental Variables ---------------------------------------------
 
-cat("INITIALIZING ENVIRONMENT")
+cat("INITIALIZING ENVIRONMENT \n")
 
 ## Analysis ID
 analysis.ID <- paste0(
@@ -56,7 +56,7 @@ ps.list <- list()
 
 ### All ---------------------------------------------------------------------
 
-cat("CREATING PHYLOSEQ OBJECTS")
+cat("CREATING PHYLOSEQ OBJECTS \n")
 
 ps.list[["All"]] <- readRDS(file.path(path.data, 
                                       "R_objects", 
@@ -121,7 +121,7 @@ ps.list[["InitialFinal"]] <-
 
 ## Alpha -------------------------------------------------------------------
 
-cat("CALCULATING ALPHA SCORES")
+cat("CALCULATING ALPHA SCORES \n")
 
 ### Calculate Scores --------------------------------------------------------
 
@@ -130,7 +130,7 @@ source(paste0(proj.path,"/Code/Functions/AnalysisScripts/AlphaDiversity.R"))
 
 ## Beta -------------------------------------------------------------------
 
-cat("CALCULATING BETA SCORES")
+cat("CALCULATING BETA SCORES \n")
 
 ### Calculate Scores --------------------------------------------------------
 
@@ -143,13 +143,13 @@ source(paste0(proj.path,"/Code/Functions/AnalysisScripts/BetaDiversity.R"))
 
 ## Run stats ---------------------------------------------------------------
 
-cat("RUNNING STATS SCRIPTS")
+cat("RUNNING STATS SCRIPTS \n")
 
 sourceFolder(paste0(proj.path,"/Code/Analysis"), T)
 
 ## Make plots ---------------------------------------------------------------
 
-cat("RUNNING PLOT SCRIPTS")
+cat("RUNNING PLOT SCRIPTS \n")
 
 sourceFolder(paste0(proj.path,"/Code/Plots"), T)
 
@@ -157,7 +157,7 @@ sourceFolder(paste0(proj.path,"/Code/Plots"), T)
 
 ## Save Stats Objects ------------------------------------------------------
 
-cat("SAVING STATS OBJECTS")
+cat("SAVING STATS OBJECTS \n")
 
 saveRDS(alpha.stats, file = file.path(path.results, "Stats_Plots", "alpha_stats.rds"))
 saveRDS(beta.stats, file = file.path(path.results, "Stats_Plots", "beta_stats.rds"))
@@ -166,7 +166,7 @@ saveRDS(diffAbnd.stats, file = file.path(path.results, "Stats_Plots", "diffAbnd_
 
 ## Save Plot Objects -------------------------------------------------------
 
-cat("SAVING PLOT OBJECTS")
+cat("SAVING PLOT OBJECTS \n")
 
 saveRDS(alpha.plots, file = file.path(path.results, "Stats_Plots", "alpha_plots.rds"))
 saveRDS(beta.plots, file = file.path(path.results, "Stats_Plots", "beta_plots.rds"))
@@ -176,7 +176,7 @@ saveRDS(diffAbnd.plots, file = file.path(path.results, "Stats_Plots", "diffAbnd_
 
 # Save ENV ----------------------------------------------------------------
 
-cat("SAVING ENVIRONMENT")
+cat("SAVING ENVIRONMENT \n")
 
 sesh.info <- sessionInfo()
 

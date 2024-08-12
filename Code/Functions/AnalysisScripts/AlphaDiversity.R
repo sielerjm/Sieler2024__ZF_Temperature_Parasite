@@ -4,7 +4,7 @@
 
 ## All ---------------------------------------------------------------------
 
-cat("Calculating alpha diversity scores: all")
+cat("Calculating alpha diversity scores: all \n")
 
 ps.list[["All"]] <- # Saves to the phyloseq object
   ps.list[["All"]] %>% # phyloseq object we'll be using
@@ -33,7 +33,7 @@ ps.list[["All"]] <- # Saves to the phyloseq object
 
 ## Unexposed ---------------------------------------------------------------------
 
-cat("Calculating alpha diversity scores: unexposed")
+cat("Calculating alpha diversity scores: unexposed \n")
 
 ps.list[["Unexposed"]] <- # Saves to the phyloseq object
   ps.list[["Unexposed"]] %>% # phyloseq object we'll be using
@@ -62,7 +62,7 @@ ps.list[["Unexposed"]] <- # Saves to the phyloseq object
 
 ## Exposed ---------------------------------------------------------------------
 
-cat("Calculating alpha diversity scores: exposed")
+cat("Calculating alpha diversity scores: exposed \n")
 
 ps.list[["Exposed"]] <- # Saves to the phyloseq object
   ps.list[["Exposed"]] %>% # phyloseq object we'll be using
@@ -91,7 +91,7 @@ ps.list[["Exposed"]] <- # Saves to the phyloseq object
 
 ## Pre-Exposed ---------------------------------------------------------------------
 
-cat("Calculating alpha diversity scores: pre-exposed")
+cat("Calculating alpha diversity scores: pre-exposed \n")
 
 ps.list[["PreExposed"]] <- # Saves to the phyloseq object
   ps.list[["PreExposed"]] %>% # phyloseq object we'll be using
@@ -121,7 +121,7 @@ ps.list[["PreExposed"]] <- # Saves to the phyloseq object
 
 ## Post-Exposed ---------------------------------------------------------------------
 
-cat("Calculating alpha diversity scores: post-exposed")
+cat("Calculating alpha diversity scores: post-exposed \n")
 
 ps.list[["PostExposed"]] <- # Saves to the phyloseq object
   ps.list[["PostExposed"]] %>% # phyloseq object we'll be using
@@ -150,7 +150,7 @@ ps.list[["PostExposed"]] <- # Saves to the phyloseq object
 
 ## TimeFinal ---------------------------------------------------------------------
 
-cat("Calculating alpha diversity scores: final timepoint")
+cat("Calculating alpha diversity scores: final timepoint \n")
 
 ps.list[["TimeFinal"]] <- # Saves to the phyloseq object
   ps.list[["TimeFinal"]] %>% # phyloseq object we'll be using
@@ -178,7 +178,7 @@ ps.list[["TimeFinal"]] <- # Saves to the phyloseq object
 
 ## InitialFinal ---------------------------------------------------------------------
 
-cat("Calculating alpha diversity scores: initial vs final timepoint")
+cat("Calculating alpha diversity scores: initial vs final timepoint \n")
 
 ps.list[["InitialFinal"]] <- # Saves to the phyloseq object
   ps.list[["InitialFinal"]] %>% # phyloseq object we'll be using

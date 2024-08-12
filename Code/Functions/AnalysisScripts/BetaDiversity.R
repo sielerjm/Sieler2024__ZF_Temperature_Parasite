@@ -15,7 +15,7 @@ future::plan(future::multisession, workers = (detectCores()-1) )
 
 # All ---------------------------------------------------------------------
 
-cat("Calculating beta diversity scores: all")
+cat("Calculating beta diversity scores: all \n")
 
 ## Calc Distance Matrix ----------------------------------------------------
 
@@ -34,7 +34,7 @@ beta.dist.mat[["All"]] <- # saves the results of this loop to a list
 
 # Unexposed ---------------------------------------------------------------
 
-cat("Calculating beta diversity scores: unexposed")
+cat("Calculating beta diversity scores: unexposed \n")
 
 ## Calc Distance Matrix ----------------------------------------------------
 
@@ -52,7 +52,7 @@ beta.dist.mat[["Unexposed"]] <- # saves the results of this loop to a list
 
 # Exposed -----------------------------------------------------------------
 
-cat("Calculating beta diversity scores: exposed")
+cat("Calculating beta diversity scores: exposed \n")
 
 ## Calc Distance Matrix ----------------------------------------------------
 
@@ -69,7 +69,7 @@ beta.dist.mat[["Exposed"]] <- # saves the results of this loop to a list
 
 # Pre-Exposed -----------------------------------------------------------------
 
-cat("Calculating beta diversity scores: pre-exposed")
+cat("Calculating beta diversity scores: pre-exposed \n")
 
 ## Calc Distance Matrix ----------------------------------------------------
 
@@ -86,7 +86,7 @@ beta.dist.mat[["PreExposed"]] <- # saves the results of this loop to a list
 
 # Post-Exposed ---------------------------------------------------------------------
 
-cat("Calculating beta diversity scores: post-exposed")
+cat("Calculating beta diversity scores: post-exposed \n")
 
 ## Calc Distance Matrix ----------------------------------------------------
 
@@ -104,7 +104,7 @@ beta.dist.mat[["PostExposed"]] <- # saves the results of this loop to a list
 
 # TimeFinal ---------------------------------------------------------------
 
-cat("Calculating beta diversity scores: final timepoint")
+cat("Calculating beta diversity scores: final timepoint \n")
 
 ## Calc Distance Matrix ----------------------------------------------------
 
@@ -123,7 +123,7 @@ beta.dist.mat[["TimeFinal"]] <- # saves the results of this loop to a list
 # InitialFinal ------------------------------------------------------------
 
 
-cat("Calculating beta diversity scores: initial vs final timepoint")
+cat("Calculating beta diversity scores: initial vs final timepoint \n")
 
 ## Calc Distance Matrix ----------------------------------------------------
 

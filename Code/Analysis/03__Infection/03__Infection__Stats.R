@@ -12,12 +12,61 @@ tmp.resSubSection <- "Exposed"
 
 
 
-worm.stats[["TEMP"]][["TUKEY_GLM.NB"]] <-
+#### GLM ---------------------------------------------------------------------
+
+worm.stats[[tmp.resSubSection]][["TEMP"]][["GLM.NB"]] <-
   tmp.psOBJ %>%
   # Convert phyloseq object into a tibble
-    microViz::samdat_tbl() %>%
+  microViz::samdat_tbl() %>%
   # Run negative binomial GLM
-    MASS::glm.nb(formula = Total.Worm.Count ~ Temperature) %>% 
+  MASS::glm.nb(formula = Total.Worm.Count ~ Temperature)
+
+### Table
+
+worm.stats[[tmp.resSubSection]][["TEMP"]][["GLM.NB.Table"]] <-
+  worm.stats[[tmp.resSubSection]][["TEMP"]][["GLM.NB"]] %>%
+  
+  # Create tidy dataframe
+  tidy() %>%
+  
+  # Add significance indicators in a new column
+  SigStars() %>%
+  
+  # Create GT Table
+  set_GT(var = "p.value", group.by = "") %>%
+  
+  # Title/caption
+  gt::tab_header(
+    title = "GLM Results",
+    subtitle = "glm.nb(Total.Worm.Count ~ Temperature); Exposed fish"
+  )
+
+#### ANOVA -------------------------------------------------------------------
+
+worm.stats[[tmp.resSubSection]][["TEMP"]][["ANOVA"]] <-
+  Anova(worm.stats[[tmp.resSubSection]][["TEMP"]][["GLM.NB"]], type = 2)
+
+### Table
+
+worm.stats[[tmp.resSubSection]][["TEMP"]][["ANOVA.Table"]] <-
+  worm.stats[[tmp.resSubSection]][["TEMP"]][["ANOVA"]] %>%
+  
+  # Tidy
+  tidy() %>%
+  
+  # Create GT Table
+  set_GT(var = "p.value", group.by = "") %>%
+  
+  # Title/caption
+  gt::tab_header(
+    title = "ANOVA of GLM",
+    subtitle = "ANOVA(GLM.NB(Total.Worm.Count ~ Temperature), type = 2); Exposed fish"
+  )
+
+#### Tukey -------------------------------------------------------------------
+
+worm.stats[[tmp.resSubSection]][["TEMP"]][["TUKEY_GLM.NB"]] <-
+  worm.stats[[tmp.resSubSection]][["TEMP"]][["GLM.NB"]] %>% 
   # Estimated marginal means (Least-squares means)
     emmeans::emmeans( ~ Temperature ) %>%
   # Contrasts and linear functions of EMMs, Tukey test
@@ -35,6 +84,20 @@ worm.stats[["TEMP"]][["TUKEY_GLM.NB"]] <-
                   group2 = (str_remove(group2, term))) %>%
   # Ungroup
     dplyr::ungroup()
+
+
+### Table 
+
+worm.stats[[tmp.resSubSection]][["TEMP"]][["TUKEY_GLM.NB.Table"]] <-
+  worm.stats[[tmp.resSubSection]][["TEMP"]][["TUKEY_GLM.NB"]] %>% 
+    set_GT(var = "adj.p.value", group.by = "") %>%
+    
+    # Title/caption
+    gt::tab_header(
+      title = "ADONIS2",
+      subtitle = "adonis2(Total.Worm.Count ~ Temperature); Exposed fish"
+    )
+
 
 
 ### TEMP:DPE ----------------------------------------------------------------
