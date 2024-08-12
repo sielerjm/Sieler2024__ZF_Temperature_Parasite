@@ -17,6 +17,8 @@
 
 ## Set Environmental Variables ---------------------------------------------
 
+cat("INITIALIZING ENVIRONMENT")
+
 ## Analysis ID
 analysis.ID <- paste0(
   "Sieler2024__ZF_Temperature_Parasite__",  
@@ -53,6 +55,8 @@ ps.list <- list()
 
 
 ### All ---------------------------------------------------------------------
+
+cat("CREATING PHYLOSEQ OBJECTS")
 
 ps.list[["All"]] <- readRDS(file.path(path.data, 
                                       "R_objects", 
@@ -98,10 +102,26 @@ ps.list[["PostExposed"]] <-
   ps_filter(DPE != 0)
 
 
+### TimeFinal ---------------------------------------------------------------
+
+ps.list[["TimeFinal"]] <-
+  # Any sample after 0 dpe is post-exposed
+  ps.list[["All"]] %>%
+  ps_filter(DPE == 42)
+
+### InitialFinal ---------------------------------------------------------------
+
+ps.list[["InitialFinal"]] <-
+  # Any sample after 0 dpe is post-exposed
+  ps.list[["All"]] %>%
+  ps_filter(DPE == 0 | DPE == 42)
+
 # Diversity Scores --------------------------------------------------------
 
 
 ## Alpha -------------------------------------------------------------------
+
+cat("CALCULATING ALPHA SCORES")
 
 ### Calculate Scores --------------------------------------------------------
 
@@ -109,6 +129,8 @@ source(paste0(proj.path,"/Code/Functions/AnalysisScripts/AlphaDiversity.R"))
 
 
 ## Beta -------------------------------------------------------------------
+
+cat("CALCULATING BETA SCORES")
 
 ### Calculate Scores --------------------------------------------------------
 
@@ -121,17 +143,42 @@ source(paste0(proj.path,"/Code/Functions/AnalysisScripts/BetaDiversity.R"))
 
 ## Run stats ---------------------------------------------------------------
 
+cat("RUNNING STATS SCRIPTS")
+
 sourceFolder(paste0(proj.path,"/Code/Analysis"), T)
 
 ## Make plots ---------------------------------------------------------------
+
+cat("RUNNING PLOT SCRIPTS")
 
 sourceFolder(paste0(proj.path,"/Code/Plots"), T)
 
 # Save Environment --------------------------------------------------------
 
+## Save Stats Objects ------------------------------------------------------
+
+cat("SAVING STATS OBJECTS")
+
+saveRDS(alpha.stats, file = file.path(path.results, "Stats_Plots", "alpha_stats.rds"))
+saveRDS(beta.stats, file = file.path(path.results, "Stats_Plots", "beta_stats.rds"))
+saveRDS(worm.stats, file = file.path(path.results, "Stats_Plots", "worm_stats.rds"))
+saveRDS(diffAbnd.stats, file = file.path(path.results, "Stats_Plots", "diffAbnd_stats.rds"))
+
+## Save Plot Objects -------------------------------------------------------
+
+cat("SAVING PLOT OBJECTS")
+
+saveRDS(alpha.plots, file = file.path(path.results, "Stats_Plots", "alpha_plots.rds"))
+saveRDS(beta.plots, file = file.path(path.results, "Stats_Plots", "beta_plots.rds"))
+saveRDS(worm.plots, file = file.path(path.results, "Stats_Plots", "worm_plots.rds"))
+saveRDS(diffAbnd.plots, file = file.path(path.results, "Stats_Plots", "diffAbnd_plots.rds"))
 
 
 # Save ENV ----------------------------------------------------------------
+
+cat("SAVING ENVIRONMENT")
+
+sesh.info <- sessionInfo()
 
 # Save a snapshot of the environment and session info
 save_env(path.objects, ID = analysis.ID, extra_info = "microbiomeProcessing")

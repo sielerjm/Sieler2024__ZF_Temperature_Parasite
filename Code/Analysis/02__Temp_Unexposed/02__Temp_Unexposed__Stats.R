@@ -108,7 +108,7 @@ alpha.stats[[tmp.resSubSection]][["TEMP"]][["Tukey.Table"]] <-
 #### Capscale ----------------------------------------------------------------
 
 beta.stats[[tmp.resSubSection]][["TEMP"]][["CAP.mod"]] <-
-  run_capscale(ps.list[[tmp.resSubSection]], 
+  run_capscale(tmp.psOBJ, 
                dist.matrix = beta.dist.mat[[tmp.resSubSection]], 
                formula_str = "dist ~ Temperature")
 
@@ -117,7 +117,7 @@ beta.stats[[tmp.resSubSection]][["TEMP"]][["CAP.mod"]] <-
 ##### ADONIS ------------------------------------------------------------------
 
 beta.stats[[tmp.resSubSection]][["TEMP"]][["CAP.ADONIS"]] <-
-  run_cap_adonis(ps.list[[tmp.resSubSection]],
+  run_cap_adonis(tmp.psOBJ,
                  dist.matrix = beta.dist.mat[[tmp.resSubSection]], 
                  formula_str = "dist ~ Temperature",
                  by.method = "terms") 
@@ -286,7 +286,7 @@ alpha.stats[[tmp.resSubSection]][["TEMP:DPE"]][["Tukey.Table"]] <-
 #### Capscale ----------------------------------------------------------------
 
 beta.stats[[tmp.resSubSection]][["TEMP:DPE"]][["CAP.mod"]] <-
-  run_capscale(ps.list[[tmp.resSubSection]], 
+  run_capscale(tmp.psOBJ, 
                dist.matrix = beta.dist.mat[[tmp.resSubSection]], 
                formula_str = "dist ~ Temperature*DPE")
 
@@ -295,7 +295,7 @@ beta.stats[[tmp.resSubSection]][["TEMP:DPE"]][["CAP.mod"]] <-
 ##### ADONIS ------------------------------------------------------------------
 
 beta.stats[[tmp.resSubSection]][["TEMP:DPE"]][["CAP.ADONIS"]] <-
-  run_cap_adonis(ps.list[[tmp.resSubSection]],
+  run_cap_adonis(tmp.psOBJ,
                  dist.matrix = beta.dist.mat[[tmp.resSubSection]], 
                  formula_str = "dist ~ Temperature*DPE",
                  by.method = "terms") 

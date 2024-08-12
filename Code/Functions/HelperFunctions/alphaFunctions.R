@@ -66,15 +66,19 @@ norm_scores <- function(x) {
 
 
 ps_calc_diversity.phy <- function(ps,
-                              index = "phylogenetic",
+                              index = "Phylogenetic",
                               varname = index
                               ) {
+  
+  # Note, not possible to aggregate by Genus
+  #   - See this GitHub issue: https://github.com/david-barnett/microViz/issues/143#issuecomment-1999688881
   
   df <- picante::pd(samp = otu.matrix(ps), tree = phyloseq::phy_tree(ps)) %>% 
     dplyr::rename(!!varname := PD) %>%
     dplyr::select(-SR)  # Remove richness column
   
-  
+  df %>%
+    dplyr::rename_with(~ gsub("phylogenetic", "Phylogenetic", .x), .cols = contains("phylogenetic"))
   
   # rename diversity variable
   # colnames(df)[colnames(df) == index] <- varname
@@ -112,11 +116,13 @@ run_glm_models <- function(data, alpha_metric_col = "Alpha.Metric", alpha_score_
   glm_models <- purrr::map(unique_metrics, function(x){
     glm( formula = as.formula(formula_str),
          data = subset(data, Alpha.Metric == x),
-         family = "quasibinomial")
+         family = family_str)
   }) %>% setNames(unique_metrics) 
   
   return(glm_models)
 }
+
+
 
 # Run GLM ANOVA (Alpha) -------------------------------------------------------------------------
 # Description: 

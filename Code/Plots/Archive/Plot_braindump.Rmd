@@ -154,28 +154,6 @@ ps.list$All %>%
 ```
 
 
-```{r}
-
-
-run_glm_models <- function(data, alpha_metric_col = "Alpha.Metric", alpha_score_col = "Alpha.Score", formula_str, family_str = "quasibinomial") {
-  # Extract unique alpha metrics
-  unique_metrics <- data %>% select(all_of(alpha_metric_col)) %>% distinct() %>% pull()
-  
-  # Run GLM models for each unique alpha metric
-  glm_models <- purrr::map(unique_metrics, function(x){
-    glm( formula = as.formula(formula_str),
-         data = subset(data, Alpha.Metric == x),
-         family = "quasibinomial")
-  }) %>% setNames(unique_metrics) 
-  
-  return(glm_models)
-}
-
-# Example usage:
-# Assuming `tmp.data.alpha` is your tibble and it contains columns "Alpha.Score", "Alpha.Metric", and other variables.
-# result <- run_glm_models(tmp.data.alpha, "Alpha.Score", "Alpha.Metric", "Alpha.Score ~ Temperature")
-
-```
 
 ### Anova
 

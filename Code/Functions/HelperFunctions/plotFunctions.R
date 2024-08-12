@@ -446,19 +446,43 @@ seqStatSigComp <- function(tmp.data){
 }
 
 
-# -------------------------------------------------------------------------
+# Rearrange layers -------------------------------------------------------------------------
 # Description: 
 # Input: 
 # Output: 
 
+rearrange_layers <- function(plot) {
+  # Identify the index of the layer with stat_ellipse
+  stat_ellipse_index <- which(sapply(plot$layers, function(layer) inherits(layer$stat, "StatEllipse")))
+  
+  # If stat_ellipse layer is found, move it to the first position
+  if (length(stat_ellipse_index) > 0) {
+    stat_ellipse_layer <- plot$layers[[stat_ellipse_index]]
+    plot$layers <- plot$layers[-stat_ellipse_index]
+    plot$layers <- c(stat_ellipse_layer, plot$layers)
+  }
+  
+  return(plot)
+}
 
-
-# -------------------------------------------------------------------------
+# Move layers to top -------------------------------------------------------------------------
 # Description: 
 # Input: 
 # Output: 
 
-
+move_label_layer_to_top <- function(plot) {
+  # Identify the index of the layer with new_new_geom_label
+  label_layer_index <- which(sapply(plot$layers, function(layer) inherits(layer$geom, "GeomLabel")))
+  
+  # If new_new_geom_label layer is found, move it to the last position
+  if (length(label_layer_index) > 0) {
+    label_layer <- plot$layers[[label_layer_index]]
+    plot$layers <- plot$layers[-label_layer_index]
+    plot$layers <- c(plot$layers, label_layer)
+  }
+  
+  return(plot)
+}
 
 
 # -------------------------------------------------------------------------

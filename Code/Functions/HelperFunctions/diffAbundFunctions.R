@@ -61,7 +61,7 @@ run_maaslin2 <- function(tmp.PS,
   
   obj <- Maaslin2::Maaslin2(input_data = tmp.input.otu,
                             input_metadata = tmp.input.meta,
-                            output = file.path(path.results, "Maaslin", tmp.output), 
+                            output = file.path(path.results, "Tables/MaAsLin2", tmp.output), 
                             min_prevalence = 0,
                             normalization = norm, 
                             transform = tr,
@@ -70,7 +70,7 @@ run_maaslin2 <- function(tmp.PS,
                             standardize = F,
                             plot_heatmap = tmp.plot.heatmap, 
                             plot_scatter = tmp.plot.scatter,
-                            cores = 6)
+                            cores = 8)
   
   res <- obj$results %>%
     filter(metadata == 'group' & value == 'case') %>%
@@ -78,7 +78,7 @@ run_maaslin2 <- function(tmp.PS,
            method = paste0('MaAsLin2 (', tr, ', ', norm, ')')) %>%
     select(taxon = feature, est = coef, se = stderr, df, p = pval, method)
   
-  return(res %>% mutate(data_id = meta$data_id[1]))
+  return(res)
 }
 
 

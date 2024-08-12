@@ -1,7 +1,7 @@
 
 # 03__Infection_Stats -----------------------------------------------------------
 
-tmp.psOBJ <- ps.list[["All"]] %>% microViz::ps_filter(Treatment == "Exposed")
+tmp.psOBJ <- ps.list[["Exposed"]] 
 tmp.resSubSection <- "Exposed"
 
 
@@ -10,15 +10,14 @@ tmp.resSubSection <- "Exposed"
 
 ### TEMP --------------------------------------------------------------------
 
-formula_str.glmNB = as.formula("Total.Worm.Count ~ Temperature")
-formula_str.tukey = as.formula("~ Temperature")
+
 
 worm.stats[["TEMP"]][["TUKEY_GLM.NB"]] <-
   tmp.psOBJ %>%
   # Convert phyloseq object into a tibble
     microViz::samdat_tbl() %>%
   # Run negative binomial GLM
-    MASS::glm.nb(formula = Total.Worm.Count ~ -1 + Temperature) %>% 
+    MASS::glm.nb(formula = Total.Worm.Count ~ Temperature) %>% 
   # Estimated marginal means (Least-squares means)
     emmeans::emmeans( ~ Temperature ) %>%
   # Contrasts and linear functions of EMMs, Tukey test
@@ -40,13 +39,13 @@ worm.stats[["TEMP"]][["TUKEY_GLM.NB"]] <-
 
 ### TEMP:DPE ----------------------------------------------------------------
 
-formula_str.glmNB = as.formula("Total.Worm.Count ~ -1 + DPE")
-formula_str.tukey = as.formula("~ Temperature | DPE")
 
 worm.stats[["TEMP:DPE"]][["TUKEY_GLM.NB"]] <-
-  tmp.psOBJ %>%
+   tmp.psOBJ %>%
   # Convert phyloseq object into a tibble
     microViz::samdat_tbl() %>%
+  # Ignore 0 DPE since all have no detectable worms since parasites were not exposed yet
+    # dplyr::filter(DPE != 0) %>%
   # Convert DPE (time) into a factor for pairwise comparison
     dplyr::mutate(DPE = as.factor(DPE)) %>%
   # Group by DPE
@@ -55,7 +54,7 @@ worm.stats[["TEMP:DPE"]][["TUKEY_GLM.NB"]] <-
     nest(data = -DPE) %>%
   # Create a column called test to store the results of the GLM, emmeans, contrasts, and tidy
     dplyr::mutate(test = map(.x=data, 
-                             ~ MASS::glm.nb(formula = Total.Worm.Count ~ -1 + Temperature, data = .x, na.action = na.omit) %>% 
+                             ~ MASS::glm.nb(formula = Total.Worm.Count ~ -1 + Temperature, data = .x) %>% 
                                emmeans::emmeans( ~ Temperature ) %>%
                                emmeans::contrast(method = "pairwise", adjust = "tukey") %>% 
                                tidy() )) %>%
