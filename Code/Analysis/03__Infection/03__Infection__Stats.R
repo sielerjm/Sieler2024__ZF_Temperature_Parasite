@@ -94,8 +94,8 @@ worm.stats[[tmp.resSubSection]][["TEMP"]][["TUKEY_GLM.NB.Table"]] <-
     
     # Title/caption
     gt::tab_header(
-      title = "ADONIS2",
-      subtitle = "adonis2(Total.Worm.Count ~ Temperature); Exposed fish"
+      title = "Pairwise Tukey's HSD, p.adj: Dunnett",
+      subtitle = "Tukey(Total.Worm.Count ~ Temperature); Exposed fish"
     )
 
 
