@@ -1446,7 +1446,7 @@ beta.stats[[tmp.subset]][[tmp.variables]][["HoD.Tukey.Table"]] %>%
 
 ```{r include=FALSE}
 # creates a temporary variable to aid in automating knitted document
-
+tmp.subset <- "Exposed"
 tmp.variables <- "TEMP:CLUSTER"
 
 ```
@@ -1514,7 +1514,7 @@ alpha.stats[[tmp.subset]][[tmp.variables]][["Tukey.Table"]] %>%
 
 ```{r include=FALSE}
 # creates a temporary variable to aid in automating knitted document
-
+tmp.subset <- "Exposed"
 tmp.variables <- "TEMP:CLUSTER"
 
 ```
@@ -1540,12 +1540,12 @@ Click on tabs to display tables. Scroll to see additional rows.
 
 ```{r stats-6Dadonis2, echo=FALSE}
 
-# beta.stats[[tmp.subset]][[tmp.variables]][["CAP.ADONIS.Table"]] %>%
-#   # Set the maximum height to 6.5 inches (6.5 * 96 pixels = 624 pixels)
-#     gt::tab_options(
-#       container.overflow.y = "auto",       # Enable vertical overflow
-#       container.height = gt::px(624)           # Set the height to 624 pixels (6.5 inches)
-#     )
+beta.stats[[tmp.subset]][[tmp.variables]][["CAP.ADONIS.Table"]] %>%
+  # Set the maximum height to 6.5 inches (6.5 * 96 pixels = 624 pixels)
+    gt::tab_options(
+      container.overflow.y = "auto",       # Enable vertical overflow
+      container.height = gt::px(624)           # Set the height to 624 pixels (6.5 inches)
+    )
 
 ```
 
@@ -1553,12 +1553,12 @@ Click on tabs to display tables. Scroll to see additional rows.
 
 ```{r stats-6D-anova, echo=FALSE}
 
-# beta.stats[[tmp.subset]][[tmp.variables]][["HoD.ANOVA.Table"]] %>%
-#   # Set the maximum height to 6.5 inches (6.5 * 96 pixels = 624 pixels)
-#     gt::tab_options(
-#       container.overflow.y = "auto",       # Enable vertical overflow
-#       container.height = gt::px(624)           # Set the height to 624 pixels (6.5 inches)
-#     )
+beta.stats[[tmp.subset]][[tmp.variables]][["HoD.ANOVA.Table"]] %>%
+  # Set the maximum height to 6.5 inches (6.5 * 96 pixels = 624 pixels)
+    gt::tab_options(
+      container.overflow.y = "auto",       # Enable vertical overflow
+      container.height = gt::px(624)           # Set the height to 624 pixels (6.5 inches)
+    )
 
 ```
 
@@ -1566,12 +1566,12 @@ Click on tabs to display tables. Scroll to see additional rows.
 
 ```{r stats-6D-tukey, echo=FALSE}
 
-# beta.stats[[tmp.subset]][[tmp.variables]][["HoD.Tukey.Table"]] %>%
-#   # Set the maximum height to 6.5 inches (6.5 * 96 pixels = 624 pixels)
-#     gt::tab_options(
-#       container.overflow.y = "auto",       # Enable vertical overflow
-#       container.height = gt::px(624)           # Set the height to 624 pixels (6.5 inches)
-#     )
+beta.stats[[tmp.subset]][[tmp.variables]][["HoD.Tukey.Table"]] %>%
+  # Set the maximum height to 6.5 inches (6.5 * 96 pixels = 624 pixels)
+    gt::tab_options(
+      container.overflow.y = "auto",       # Enable vertical overflow
+      container.height = gt::px(624)           # Set the height to 624 pixels (6.5 inches)
+    )
 
 ```
 
