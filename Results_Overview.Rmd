@@ -174,9 +174,9 @@ Press on tabs to display tables. Scroll to see additional rows.
 ```
 
 
-###### Capscale
+###### ADONIS2
 
-```{r stats-2B-capscale, echo=FALSE}
+```{r stats-2Badonis2, echo=FALSE}
 
 beta.stats[[tmp.subset]][[tmp.variables]][["CAP.ADONIS.Table"]] %>%
   # Set the maximum height to 6.5 inches (6.5 * 96 pixels = 624 pixels)
@@ -307,9 +307,9 @@ Press on tabs to display tables. Scroll to see additional rows.
 ```
 
 
-###### Capscale
+###### ADONIS2
 
-```{r stats-2D-capscale, echo=FALSE}
+```{r stats-2Dadonis2, echo=FALSE}
 
 beta.stats[[tmp.subset]][[tmp.variables]][["CAP.ADONIS.Table"]] %>%
   # Set the maximum height to 6.5 inches (6.5 * 96 pixels = 624 pixels)
@@ -533,9 +533,9 @@ Press on tabs to display tables. Scroll to see additional rows.
 ```
 
 
-###### Capscale
+###### ADONIS2
 
-```{r stats-4B-capscale, echo=FALSE}
+```{r stats-4Badonis2, echo=FALSE}
 
 beta.stats[[tmp.subset]][[tmp.variables]][["CAP.ADONIS.Table"]] %>%
   # Set the maximum height to 6.5 inches (6.5 * 96 pixels = 624 pixels)
@@ -668,9 +668,9 @@ Press on tabs to display tables. Scroll to see additional rows.
 ```
 
 
-###### Capscale
+###### ADONIS2
 
-```{r stats-4D-capscale, echo=FALSE}
+```{r stats-4Dadonis2, echo=FALSE}
 
 beta.stats[[tmp.subset]][[tmp.variables]][["CAP.ADONIS.Table"]] %>%
   # Set the maximum height to 6.5 inches (6.5 * 96 pixels = 624 pixels)
@@ -876,9 +876,9 @@ Press on tabs to display tables. Scroll to see additional rows.
 ```
 
 
-###### Capscale
+###### ADONIS2
 
-```{r stats-5C-capscale, echo=FALSE}
+```{r stats-5Cadonis2, echo=FALSE}
 
 beta.stats[[tmp.subset]][[tmp.variables]][["CAP.ADONIS.Table"]] %>%
   # Set the maximum height to 6.5 inches (6.5 * 96 pixels = 624 pixels)
@@ -943,9 +943,9 @@ Press on tabs to display tables. Scroll to see additional rows.
 ```
 
 
-###### Capscale
+###### ADONIS2
 
-```{r stats-5D-capscale, echo=FALSE}
+```{r stats-5Dadonis2, echo=FALSE}
 
 beta.stats[[tmp.subset]][[tmp.variables]][["CAP.ADONIS.Table"]] %>%
   # Set the maximum height to 6.5 inches (6.5 * 96 pixels = 624 pixels)
@@ -1074,9 +1074,9 @@ Press on tabs to display tables. Scroll to see additional rows.
 ```
 
 
-###### Capscale
+###### ADONIS2
 
-```{r stats-6B-capscale, echo=FALSE}
+```{r stats-6Badonis2, echo=FALSE}
 
 beta.stats[[tmp.subset]][[tmp.variables]][["CAP.ADONIS.Table"]] %>%
   # Set the maximum height to 6.5 inches (6.5 * 96 pixels = 624 pixels)
@@ -1209,9 +1209,9 @@ Press on tabs to display tables. Scroll to see additional rows.
 ```
 
 
-###### Capscale
+###### ADONIS2
 
-```{r stats-6D-capscale, echo=FALSE}
+```{r stats-6Dadonis2, echo=FALSE}
 
 # beta.stats[[tmp.subset]][[tmp.variables]][["CAP.ADONIS.Table"]] %>%
 #   # Set the maximum height to 6.5 inches (6.5 * 96 pixels = 624 pixels)
