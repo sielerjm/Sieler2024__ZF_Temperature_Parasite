@@ -102,35 +102,100 @@ worm.stats[[tmp.resSubSection]][["TEMP"]][["TUKEY_GLM.NB.Table"]] <-
 
 ### TEMP:DPE ----------------------------------------------------------------
 
+#### GLM ---------------------------------------------------------------------
 
-worm.stats[["TEMP:DPE"]][["TUKEY_GLM.NB"]] <-
-   tmp.psOBJ %>%
+worm.stats[[tmp.resSubSection]][["TEMP:DPE"]][["GLM.NB"]] <-
+  tmp.psOBJ %>%
   # Convert phyloseq object into a tibble
-    microViz::samdat_tbl() %>%
+  microViz::samdat_tbl() %>%
+  # Run negative binomial GLM
+  MASS::glm.nb(formula = Total.Worm.Count ~ Temperature*DPE)
+
+### Table
+
+worm.stats[[tmp.resSubSection]][["TEMP:DPE"]][["GLM.NB.Table"]] <-
+  worm.stats[[tmp.resSubSection]][["TEMP:DPE"]][["GLM.NB"]] %>%
+  
+  # Create tidy dataframe
+  tidy() %>%
+  
+  # Add significance indicators in a new column
+  SigStars() %>%
+  
+  # Create GT Table
+  set_GT(var = "p.value", group.by = "") %>%
+  
+  # Title/caption
+  gt::tab_header(
+    title = "GLM Results",
+    subtitle = "glm.nb(Total.Worm.Count ~ Temperature*DPE); Exposed fish"
+  )
+
+#### ANOVA -------------------------------------------------------------------
+
+worm.stats[[tmp.resSubSection]][["TEMP:DPE"]][["ANOVA"]] <-
+  Anova(worm.stats[[tmp.resSubSection]][["TEMP:DPE"]][["GLM.NB"]], type = 2)
+
+### Table
+
+worm.stats[[tmp.resSubSection]][["TEMP:DPE"]][["ANOVA.Table"]] <-
+  worm.stats[[tmp.resSubSection]][["TEMP:DPE"]][["ANOVA"]] %>%
+  
+  # Tidy
+  tidy() %>%
+  
+  # Create GT Table
+  set_GT(var = "p.value", group.by = "") %>%
+  
+  # Title/caption
+  gt::tab_header(
+    title = "ANOVA of GLM",
+    subtitle = "ANOVA(GLM.NB(Total.Worm.Count ~ Temperature*DPE), type = 2); Exposed fish"
+  )
+
+#### Tukey -------------------------------------------------------------------
+
+worm.stats[[tmp.resSubSection]][["TEMP:DPE"]][["TUKEY_GLM.NB"]] <-
+  tmp.psOBJ %>%
+  # Convert phyloseq object into a tibble
+  microViz::samdat_tbl() %>%
   # Ignore 0 DPE since all have no detectable worms since parasites were not exposed yet
-    # dplyr::filter(DPE != 0) %>%
+  # dplyr::filter(DPE != 0) %>%
   # Convert DPE (time) into a factor for pairwise comparison
-    dplyr::mutate(DPE = as.factor(DPE)) %>%
+  dplyr::mutate(DPE = as.factor(DPE)) %>%
   # Group by DPE
-    group_by(DPE) %>%
+  group_by(DPE) %>%
   # Nest the data for looping with map()
-    nest(data = -DPE) %>%
+  nest(data = -DPE) %>%
   # Create a column called test to store the results of the GLM, emmeans, contrasts, and tidy
-    dplyr::mutate(test = map(.x=data, 
-                             ~ MASS::glm.nb(formula = Total.Worm.Count ~ -1 + Temperature, data = .x) %>% 
-                               emmeans::emmeans( ~ Temperature ) %>%
-                               emmeans::contrast(method = "pairwise", adjust = "tukey") %>% 
-                               tidy() )) %>%
+  dplyr::mutate(test = map(.x=data, 
+                           ~ MASS::glm.nb(formula = Total.Worm.Count ~ -1 + Temperature, data = .x) %>% 
+                             emmeans::emmeans( ~ Temperature ) %>%
+                             emmeans::contrast(method = "pairwise", adjust = "tukey") %>% 
+                             tidy() )) %>%
   # Unnest the test column into a tibble
-    unnest(test) %>%
+  unnest(test) %>%
   # Remove any of the following columns if they exist
-    dplyr::select(-any_of(c("null.value", "data"))) %>%
+  dplyr::select(-any_of(c("null.value", "data"))) %>%
   # Separate out the contrast column for later significance bar plotting
-    tidyr::separate(contrast, c('group1', 'group2'), sep = " - ") %>%
+  tidyr::separate(contrast, c('group1', 'group2'), sep = " - ") %>%
   # Add a column ".y." for plotting worm counts
-    dplyr::mutate(`.y.` = "Total.Worm.Count", .after = 1) %>%
+  dplyr::mutate(`.y.` = "Total.Worm.Count", .after = 1) %>%
   # Clean up cell values under the group1 and 2 columns to get rid of the prefix
-    dplyr::mutate(group1 = (str_remove(group1, term)),
-                  group2 = (str_remove(group2, term))) %>%
+  dplyr::mutate(group1 = (str_remove(group1, term)),
+                group2 = (str_remove(group2, term))) %>%
   # Ungroup
-    dplyr::ungroup()
+  dplyr::ungroup()
+
+
+### Table 
+
+worm.stats[[tmp.resSubSection]][["TEMP:DPE"]][["TUKEY_GLM.NB.Table"]] <-
+  worm.stats[[tmp.resSubSection]][["TEMP:DPE"]][["TUKEY_GLM.NB"]] %>% 
+  set_GT(var = "adj.p.value", group.by = "") %>%
+  
+  # Title/caption
+  gt::tab_header(
+    title = "Pairwise Tukey's HSD, p.adj: Dunnett",
+    subtitle = "Tukey(Total.Worm.Count ~ Temperature*DPE); Exposed fish"
+  )
