@@ -1281,18 +1281,31 @@ alpha.plots[[tmp.subset]][[tmp.variables]][["TUKEY"]][["Plot_SUPP"]]
 
 #### S5C
 
-(in-progress)
-
-```{r}
+```{r include=FALSE}
+# creates a temporary variable to aid in automating knitted document
+tmp.subset <- "PreExposed"
+tmp.variables <- "TEMP:TREAT"
 
 ```
 
+```{r plots-S5C, fig.height=6.5, fig.width=14, message=F, warning=FALSE, echo=FALSE}
+
+beta.plots[[tmp.subset]][[tmp.variables]][["CAP"]][["Plot_SUPP"]]
+
+```
 
 #### S5D
 
-(in-progress)
+```{r include=FALSE}
+# creates a temporary variable to aid in automating knitted document
+tmp.subset <- "PostExposed"
+tmp.variables <- "TEMP:TREAT"
 
-```{r}
+```
+
+```{r plots-S5D, fig.height=6.5, fig.width=14, message=F, warning=FALSE, echo=FALSE}
+
+beta.plots[[tmp.subset]][[tmp.variables]][["CAP"]][["Plot_SUPP"]]
 
 ```
 
@@ -1586,9 +1599,17 @@ alpha.plots[[tmp.subset]][[tmp.variables]][["TUKEY"]][["Plot_SUPP"]]
 
 #### S6B
 
-(in-progress)
 
-```{r}
+```{r include=FALSE}
+# creates a temporary variable to aid in automating knitted document
+tmp.subset <- "Exposed"
+tmp.variables <- "TEMP:PATH"
+
+```
+
+```{r plots-S6B, fig.height=6.5, fig.width=14, message=F, warning=FALSE, echo=FALSE}
+
+beta.plots[[tmp.subset]][[tmp.variables]][["CAP"]][["Plot_SUPP"]]
 
 ```
 
@@ -1609,9 +1630,16 @@ alpha.plots[[tmp.subset]][[tmp.variables]][["TUKEY"]][["Plot_SUPP"]]
 
 #### S6D
 
-(in-progress)
+```{r include=FALSE}
+# creates a temporary variable to aid in automating knitted document
+tmp.subset <- "Exposed"
+tmp.variables <- "TEMP:CLUSTER"
 
-```{r}
+```
+
+```{r plots-S6D, fig.height=6.5, fig.width=14, message=F, warning=FALSE, echo=FALSE}
+
+beta.plots[[tmp.subset]][[tmp.variables]][["CAP"]][["Plot_SUPP"]]
 
 ```
 
