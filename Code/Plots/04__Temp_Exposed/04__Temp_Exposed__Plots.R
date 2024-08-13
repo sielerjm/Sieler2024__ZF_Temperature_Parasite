@@ -613,7 +613,7 @@ beta.plots[[tmp.resSubSection]][["TEMP"]][["CAP"]][["Plot_SUPP"]] <-
     tmp.plot.canberra <- 
       rearrange_layers(tmp.plot.canberra)
     
-    # Sorenson
+    # Unifrac
     tmp.plot.gunifrac <-
       tmp.psOBJ %>%
       # tax_agg("Genus") %>%
@@ -897,7 +897,7 @@ beta.plots[[tmp.resSubSection]][["TEMP:DPE"]][["CAP"]][["Plot_SUPP"]] <-
     tmp.plot.canberra <- 
       rearrange_layers(tmp.plot.canberra)
     
-    # Sorenson
+    # Unifrac
     tmp.plot.unifrac <-
       tmp.psOBJ %>%
       # tax_agg("Genus") %>%

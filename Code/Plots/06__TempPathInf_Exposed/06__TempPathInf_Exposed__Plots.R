@@ -270,7 +270,7 @@ beta.plots[[tmp.resSubSection]][["TEMP:PATH"]][["CAP"]][["Plot"]] <-
   dist_calc("canberra") %>%
   dist_permanova(
     seed = 1,
-    variables = c("Temperature", "Path.Res.", "Temp.Path"),
+    variables = c("Temperature", "Pathology.Results", "Temp.Path"),
     n_processes = 8,
     n_perms = 999 # only 99 perms used in examples for speed (use 9999+!)
   ) %>% 
@@ -554,6 +554,164 @@ alpha.plots[[tmp.resSubSection]][["TEMP:PATH"]][["TUKEY"]][["Plot_SUPP"]] <-
     #                            hide.ns = T)   
   }
 
+
+#### S6B: TEMP:PATH ---------------------------------------------------------------------
+
+beta.plots[[tmp.resSubSection]][["TEMP:PATH"]][["CAP"]][["Plot_SUPP"]] <-
+  {
+    # Bray-Curtis
+    tmp.plot.bray <-
+      tmp.psOBJ %>%
+      tax_agg("Genus") %>%
+      dist_calc("bray") %>%
+      dist_permanova(
+        seed = 1,
+        variables =  c("Temperature", "Pathology.Results", "Temp.Path"),
+        n_processes = 8,
+        n_perms = 999 # only 99 perms used in examples for speed (use 9999+!)
+      ) %>% 
+      ord_calc(method = "CAP", constraints = c("Temperature.", "Path.Res.")) %>%
+      
+      microViz::ord_plot(
+        axes = c(1, 2),
+        color = "Temperature",
+        fill = "Pathology.Results",
+        size = 3,
+        stroke = 1.5,
+        shape = 23,
+        constraint_vec_style = vec_constraint(colour = "black",
+                                              size = 2,
+                                              alpha = 1,
+                                              arrow = grid::arrow(length = grid::unit(0.05, units = "npc"))),
+        constraint_lab_style = constraint_lab_style(
+          type = "label",
+          justify = "side",
+          colour = "black",
+          # max_angle = 90, 
+          # perpendicular = TRUE, 
+          size = 3.5,
+          check_overlap = TRUE
+        ), 
+        auto_caption = NA
+      ) +
+      
+      scale_fill_manual(values = c("white", "black"), name = "Pathology Results", labels = c("Negative", "Positive")) +
+      scale_color_manual(values = col.Temp, name = "Temp (°C)", guide = "none") +
+      
+      ggnewscale::new_scale_color() +
+      ggnewscale::new_scale_fill() +
+      
+      stat_ellipse(aes(color = Temperature,
+                       fill = Temperature),
+                   alpha = .05,
+                   linetype = "dashed",
+                   geom = "polygon"
+      ) +
+      
+      # facet_grid(.~Temperature, labeller = labeller(Temperature = c("28" = "28°C", "32" = "32°C", "35" = "35°C"))) +
+      
+      scale_shape_manual(values = c(16, 23)) +
+      scale_color_manual(values = col.Temp, labels = c("28°C", "32°C", "35°C")) +
+      scale_fill_manual(values = c(col.Temp, "white"), labels = c("28°C", "32°C", "35°C"))  +
+      # scale_x_continuous(limits = c(-1.1, 3.1)) +
+      
+      guides(
+        shape = guide_legend(override.aes = list(shape = c(16, 23), size = 3))
+      ) +
+      
+      scale_x_continuous(limits = c(-3,2.5)) +
+      labs(caption = "bray-curtis") +
+      
+      theme(legend.position = "bottom",
+            legend.direction = "horizontal",
+            strip.text = element_text(size = 14))
+    
+    # Reshuffle layers so ellipse is in background
+    tmp.plot.bray <- 
+      rearrange_layers(tmp.plot.bray)
+    
+    tmp.plot.bray <- 
+      move_label_layer_to_top(tmp.plot.bray)
+    
+    # Unifrac
+    tmp.plot.unifrac <-
+      tmp.psOBJ %>%
+      # tax_agg("Genus") %>%
+      dist_calc("gunifrac") %>%
+      dist_permanova(
+        seed = 1,
+        variables =  c("Temperature", "Pathology.Results", "Temp.Path"),
+        n_processes = 8,
+        n_perms = 999 # only 99 perms used in examples for speed (use 9999+!)
+      ) %>% 
+      ord_calc(method = "CAP", constraints = c("Temperature.", "Path.Res.")) %>%
+      
+      microViz::ord_plot(
+        axes = c(1, 2),
+        color = "Temperature",
+        fill = "Pathology.Results",
+        size = 3,
+        stroke = 1.5,
+        shape = 23,
+        constraint_vec_style = vec_constraint(colour = "black",
+                                              size = 2,
+                                              alpha = 1,
+                                              arrow = grid::arrow(length = grid::unit(0.05, units = "npc"))),
+        constraint_lab_style = constraint_lab_style(
+          type = "label",
+          justify = "side",
+          colour = "black",
+          # max_angle = 90, 
+          # perpendicular = TRUE, 
+          size = 3.5,
+          check_overlap = TRUE
+        ), 
+        auto_caption = NA
+      ) +
+      
+      scale_fill_manual(values = c("white", "black"), name = "Pathology Results", labels = c("Negative", "Positive")) +
+      scale_color_manual(values = col.Temp, name = "Temp (°C)", guide = "none") +
+      
+      ggnewscale::new_scale_color() +
+      ggnewscale::new_scale_fill() +
+      
+      stat_ellipse(aes(color = Temperature,
+                       fill = Temperature),
+                   alpha = .05,
+                   linetype = "dashed",
+                   geom = "polygon"
+      ) +
+      
+      # facet_grid(.~Temperature, labeller = labeller(Temperature = c("28" = "28°C", "32" = "32°C", "35" = "35°C"))) +
+      
+      scale_shape_manual(values = c(16, 23)) +
+      scale_color_manual(values = col.Temp, labels = c("28°C", "32°C", "35°C")) +
+      scale_fill_manual(values = c(col.Temp, "white"), labels = c("28°C", "32°C", "35°C")) +
+      scale_x_continuous(limits = c(-2.5, 3)) +
+      
+      guides(
+        shape = guide_legend(override.aes = list(shape = c(16, 23), size = 3))
+      ) +
+      
+      # scale_x_continuous(limits = c(-3,3)) +
+      labs(caption = "gunifrac") +
+      
+      theme(legend.position = "bottom",
+            legend.direction = "horizontal",
+            strip.text = element_text(size = 14))
+    
+    # Reshuffle layers so ellipse is in background
+    tmp.plot.unifrac <- 
+      rearrange_layers(tmp.plot.unifrac)
+    
+    tmp.plot.unifrac <- 
+      move_label_layer_to_top(tmp.plot.unifrac)
+    
+    # Combine plots
+    cowplot::plot_grid(tmp.plot.bray, tmp.plot.unifrac, ncol = 2)
+  }
+
+
 #### S6C: TEMP:CLUSTER ---------------------------------------------------------------------
 
 alpha.plots[[tmp.resSubSection]][["TEMP:CLUSTER"]][["TUKEY"]][["Plot_SUPP"]] <-
@@ -675,3 +833,1368 @@ alpha.plots[[tmp.resSubSection]][["TEMP:CLUSTER"]][["TUKEY"]][["Plot_SUPP"]] <-
         panel.grid.minor.y = element_blank(),
         strip.text.y = element_text(size = 12))
   }
+
+#### S6D: TEMP:CLUSTER ---------------------------------------------------------------------
+
+
+##### Phylogenetic ----------------------------------------------------------------
+
+
+beta.plots[[tmp.resSubSection]][["TEMP:CLUSTER"]][["CAP"]][["Plot_SUPP_phylogenetic"]] <-
+  {
+    
+    # Bray-Curtis
+    tmp.plot.bray <-
+      tmp.psOBJ %>%
+      
+      # Group samples by Alpha Score
+      ps_mutate(Cluster = if_else(
+        Treatment == "Exposed" & Total.Worm.Count > 0,
+        case_when(
+          Phylogenetic__Genus_norm <= 0.5 ~ "Low",
+          Phylogenetic__Genus_norm > 0.5 ~ "High",
+          TRUE ~ "Other"
+        ),
+        "Other"
+      ), .after = Treatment) %>%
+      ps_mutate(Cluster = fct_relevel(factor(Cluster, levels = c("Other", "Low", "High")))) %>%
+      ps_mutate(Cluster. = as.numeric(Cluster)) %>%
+      
+      
+    # ungroup()  %>%
+    tax_agg("Genus") %>%
+      dist_calc("bray") %>%
+      dist_permanova(
+        seed = 1,
+        variables = c("Temperature", "Total.Worm.Count", "Cluster"),
+        n_processes = 8,
+        n_perms = 999 # only 99 perms used in examples for speed (use 9999+!)
+      ) %>% 
+      ord_calc(
+        method = "CAP",
+        constraints = c("Temperature.", "Total.Worm.Count"),
+      ) %>%
+      microViz::ord_plot(fill = NA, 
+                         color = NA,
+                         alpha = 0,
+                         shape = 23, size = 3.5, stroke = 1,
+                         constraint_vec_style = vec_constraint(colour = "black",
+                                                               size = 2,
+                                                               alpha = 1,
+                                                               arrow = grid::arrow(length = grid::unit(0.05, units = "npc"))),
+                         constraint_lab_style = constraint_lab_style(
+                           type = "label", 
+                           justify = "side",
+                           colour = "black",
+                           # max_angle = 90, 
+                           # perpendicular = TRUE, 
+                           size = 3.5,
+                           check_overlap = TRUE
+                         ), 
+                         show.legend = F, 
+                         auto_caption = NA
+      ) +
+      
+      scale_color_manual(values = c("white", "orange", "purple"), name = "Cluster") +
+      ggnewscale::new_scale_color() +
+      
+      stat_ellipse(aes(color = Cluster, 
+                       fill = Cluster,
+                       alpha = ifelse(Cluster == "Other",0,.15)),
+                   # alpha = .5,
+                   linetype = "dashed",
+                   geom = "polygon",
+                   show.legend = F
+      ) +
+      
+      scale_alpha_manual(values = c(0,.15), guide = "none") +
+      scale_color_manual(values = c("white", "orange", "purple"), name = "Cluster", guide = "none") +
+      ggnewscale::new_scale_color() +
+      
+      geom_point(aes(color = Temperature,
+                     fill = Cluster,
+                     # alpha = ifelse(Cluster != "Other", "Other", "H v L"),
+                     alpha = ifelse(Cluster != "Other", 1, .1)),
+                 shape = 23,
+                 size = 3.5,
+                 stroke = 1) +
+      
+      scale_fill_manual(values = c("Other" = "white", "Low" = "orange", "High" = "purple"), name = "Cluster") +
+      scale_shape_manual(values = c(23)) +
+      scale_color_manual(values = col.Temp, labels = c("28°C", "32°C", "35°C"), name = "Temperature") +
+      scale_alpha(guide = "none") +
+      
+      # scale_x_continuous(limits = c(-.75, 1.75)) +
+      # scale_y_continuous(limits = c(-2, 1.75)) +
+      
+      guides(color = guide_legend(override.aes = list(size = 4, stroke = 1.5, 
+                                                      linetype = NA,
+                                                      shape = c(23, 23, 23), 
+                                                      fill = "white" 
+      )),
+      fill = guide_legend(override.aes = list(size = 4, stroke = 1.5, 
+                                              linetype = NA,
+                                              shape = c(23, 23, 23), 
+                                              fill = c("white", "orange", "purple")
+      ))
+      ) +
+      
+      labs(caption = "bray-curtis X Phylogenetic") +
+      
+      theme(legend.position = "bottom",
+            legend.direction = "horizontal",
+            legend.title.position = "top",
+            strip.text = element_text(size = 14))
+    
+    # Reshuffle layers so ellipse is in background
+    tmp.plot.bray <- 
+      rearrange_layers(tmp.plot.bray)
+    
+    tmp.plot.bray <- 
+      move_label_layer_to_top(tmp.plot.bray)
+    
+    
+    # Canberra
+    tmp.plot.canberra <-
+      tmp.psOBJ %>%
+
+      # Group samples by Alpha Score
+      ps_mutate(Cluster = if_else(
+        Treatment == "Exposed" & Total.Worm.Count > 0,
+        case_when(
+          Phylogenetic__Genus_norm <= 0.5 ~ "Low",
+          Phylogenetic__Genus_norm > 0.5 ~ "High",
+          TRUE ~ "Other"
+        ),
+        "Other"
+      ), .after = Treatment) %>%
+      ps_mutate(Cluster = fct_relevel(factor(Cluster, levels = c("Other", "Low", "High")))) %>%
+      ps_mutate(Cluster. = as.numeric(Cluster)) %>%
+      
+      # ungroup()  %>%
+      tax_agg("Genus") %>%
+      dist_calc("canberra") %>%
+      dist_permanova(
+        seed = 1,
+        variables = c("Temperature", "Total.Worm.Count", "Cluster"),
+        n_processes = 8,
+        n_perms = 999 # only 99 perms used in examples for speed (use 9999+!)
+      ) %>% 
+      ord_calc(
+        method = "CAP",
+        constraints = c("Temperature.", "Total.Worm.Count"),
+      ) %>%
+      microViz::ord_plot(fill = NA, 
+                         color = NA,
+                         alpha = 0,
+                         shape = 23, size = 3.5, stroke = 1,
+                         constraint_vec_style = vec_constraint(colour = "black",
+                                                               size = 2,
+                                                               alpha = 1,
+                                                               arrow = grid::arrow(length = grid::unit(0.05, units = "npc"))),
+                         constraint_lab_style = constraint_lab_style(
+                           type = "label", 
+                           justify = "side",
+                           colour = "black",
+                           # max_angle = 90, 
+                           # perpendicular = TRUE, 
+                           size = 3.5,
+                           check_overlap = TRUE
+                         ), 
+                         show.legend = F, 
+                         auto_caption = NA
+      ) +
+      
+      scale_color_manual(values = c("white", "orange", "purple"), name = "Cluster") +
+      ggnewscale::new_scale_color() +
+      
+      stat_ellipse(aes(color = Cluster, 
+                       fill = Cluster,
+                       alpha = ifelse(Cluster == "Other",0,.15)),
+                   # alpha = .5,
+                   linetype = "dashed",
+                   geom = "polygon",
+                   show.legend = F
+      ) +
+      
+      scale_alpha_manual(values = c(0,.15), guide = "none") +
+      scale_color_manual(values = c("white", "orange", "purple"), name = "Cluster", guide = "none") +
+      ggnewscale::new_scale_color() +
+      
+      geom_point(aes(color = Temperature,
+                     fill = Cluster,
+                     # alpha = ifelse(Cluster != "Other", "Other", "H v L"),
+                     alpha = ifelse(Cluster != "Other", 1, .1)),
+                 shape = 23,
+                 size = 3.5,
+                 stroke = 1) +
+      
+      scale_fill_manual(values = c("Other" = "white", "Low" = "orange", "High" = "purple"), name = "Cluster") +
+      scale_shape_manual(values = c(23)) +
+      scale_color_manual(values = col.Temp, labels = c("28°C", "32°C", "35°C"), name = "Temperature") +
+      scale_alpha(guide = "none") +
+      
+      # scale_x_continuous(limits = c(-.75, 1.75)) +
+      # scale_y_continuous(limits = c(-2, 1.75)) +
+      
+      guides(color = guide_legend(override.aes = list(size = 4, stroke = 1.5, 
+                                                      linetype = NA,
+                                                      shape = c(23, 23, 23), 
+                                                      fill = "white" 
+      )),
+      fill = guide_legend(override.aes = list(size = 4, stroke = 1.5, 
+                                              linetype = NA,
+                                              shape = c(23, 23, 23), 
+                                              fill = c("white", "orange", "purple")
+      ))
+      ) +
+      
+      labs(caption = "canberra X Phylogenetic") +
+      
+      theme(legend.position = "bottom",
+            legend.direction = "horizontal",
+            legend.title.position = "top",
+            strip.text = element_text(size = 14))
+    
+    # Reshuffle layers so ellipse is in background
+    tmp.plot.canberra <- 
+      rearrange_layers(tmp.plot.canberra)
+    
+    tmp.plot.canberra <- 
+      move_label_layer_to_top(tmp.plot.canberra)
+    
+    # Unifrac
+    tmp.plot.unifrac <-
+      tmp.psOBJ %>%
+      
+      # Group samples by Alpha Score
+      ps_mutate(Cluster = if_else(
+        Treatment == "Exposed" & Total.Worm.Count > 0,
+        case_when(
+          Phylogenetic__Genus_norm <= 0.5 ~ "Low",
+          Phylogenetic__Genus_norm > 0.5 ~ "High",
+          TRUE ~ "Other"
+        ),
+        "Other"
+      ), .after = Treatment) %>%
+      ps_mutate(Cluster = fct_relevel(factor(Cluster, levels = c("Other", "Low", "High")))) %>%
+      ps_mutate(Cluster. = as.numeric(Cluster)) %>%
+      
+      # ungroup()  %>%
+      # tax_agg("Genus") %>%
+      dist_calc("gunifrac") %>%
+      dist_permanova(
+        seed = 1,
+        variables = c("Temperature", "Total.Worm.Count", "Cluster"),
+        n_processes = 8,
+        n_perms = 999 # only 99 perms used in examples for speed (use 9999+!)
+      ) %>% 
+      ord_calc(
+        method = "CAP",
+        constraints = c("Temperature.", "Total.Worm.Count"),
+      ) %>%
+      microViz::ord_plot(fill = NA, 
+                         color = NA,
+                         alpha = 0,
+                         shape = 23, size = 3.5, stroke = 1,
+                         constraint_vec_style = vec_constraint(colour = "black",
+                                                               size = 2,
+                                                               alpha = 1,
+                                                               arrow = grid::arrow(length = grid::unit(0.05, units = "npc"))),
+                         constraint_lab_style = constraint_lab_style(
+                           type = "label", 
+                           justify = "side",
+                           colour = "black",
+                           # max_angle = 90, 
+                           # perpendicular = TRUE, 
+                           size = 3.5,
+                           check_overlap = TRUE
+                         ), 
+                         show.legend = F, 
+                         auto_caption = NA
+      ) +
+      
+      scale_color_manual(values = c("white", "orange", "purple"), name = "Cluster") +
+      ggnewscale::new_scale_color() +
+      
+      stat_ellipse(aes(color = Cluster, 
+                       fill = Cluster,
+                       alpha = ifelse(Cluster == "Other",0,.15)),
+                   # alpha = .5,
+                   linetype = "dashed",
+                   geom = "polygon",
+                   show.legend = F
+      ) +
+      
+      scale_alpha_manual(values = c(0,.15), guide = "none") +
+      scale_color_manual(values = c("white", "orange", "purple"), name = "Cluster", guide = "none") +
+      ggnewscale::new_scale_color() +
+      
+      geom_point(aes(color = Temperature,
+                     fill = Cluster,
+                     # alpha = ifelse(Cluster != "Other", "Other", "H v L"),
+                     alpha = ifelse(Cluster != "Other", 1, .1)),
+                 shape = 23,
+                 size = 3.5,
+                 stroke = 1) +
+      
+      scale_fill_manual(values = c("Other" = "white", "Low" = "orange", "High" = "purple"), name = "Cluster") +
+      scale_shape_manual(values = c(23)) +
+      scale_color_manual(values = col.Temp, labels = c("28°C", "32°C", "35°C"), name = "Temperature") +
+      scale_alpha(guide = "none") +
+      
+      # scale_x_continuous(limits = c(-.75, 1.75)) +
+      # scale_y_continuous(limits = c(-2, 1.75)) +
+      
+      guides(color = guide_legend(override.aes = list(size = 4, stroke = 1.5, 
+                                                      linetype = NA,
+                                                      shape = c(23, 23, 23), 
+                                                      fill = "white" 
+      )),
+      fill = guide_legend(override.aes = list(size = 4, stroke = 1.5, 
+                                              linetype = NA,
+                                              shape = c(23, 23, 23), 
+                                              fill = c("white", "orange", "purple")
+      ))
+      ) +
+      
+      labs(caption = "gunifrac X Phylogenetic") +
+      
+      theme(legend.position = "bottom",
+            legend.direction = "horizontal",
+            legend.title.position = "top",
+            strip.text = element_text(size = 14))
+    
+    # Reshuffle layers so ellipse is in background
+    tmp.plot.unifrac <- 
+      rearrange_layers(tmp.plot.unifrac)
+    
+    tmp.plot.unifrac <- 
+      move_label_layer_to_top(tmp.plot.unifrac)
+    
+    # Combine plots
+    cowplot::plot_grid(tmp.plot.bray, tmp.plot.canberra, tmp.plot.unifrac, ncol = 3)
+  }
+
+
+##### Richness ----------------------------------------------------------------
+
+beta.plots[[tmp.resSubSection]][["TEMP:CLUSTER"]][["CAP"]][["Plot_SUPP_richness"]] <-
+  {
+    
+    # Bray-Curtis
+    tmp.plot.bray <-
+      tmp.psOBJ %>%
+      
+      # Group samples by Alpha Score
+      ps_mutate(Cluster = if_else(
+        Treatment == "Exposed" & Total.Worm.Count > 0,
+        case_when(
+          Richness__Genus_norm <= 0.5 ~ "Low",
+          Richness__Genus_norm > 0.5 ~ "High",
+          TRUE ~ "Other"
+        ),
+        "Other"
+      ), .after = Treatment) %>%
+      ps_mutate(Cluster = fct_relevel(factor(Cluster, levels = c("Other", "Low", "High")))) %>%
+      ps_mutate(Cluster. = as.numeric(Cluster)) %>%
+      
+      
+      # ungroup()  %>%
+      tax_agg("Genus") %>%
+      dist_calc("bray") %>%
+      dist_permanova(
+        seed = 1,
+        variables = c("Temperature", "Total.Worm.Count", "Cluster"),
+        n_processes = 8,
+        n_perms = 999 # only 99 perms used in examples for speed (use 9999+!)
+      ) %>% 
+      ord_calc(
+        method = "CAP",
+        constraints = c("Temperature.", "Total.Worm.Count"),
+      ) %>%
+      microViz::ord_plot(fill = NA, 
+                         color = NA,
+                         alpha = 0,
+                         shape = 23, size = 3.5, stroke = 1,
+                         constraint_vec_style = vec_constraint(colour = "black",
+                                                               size = 2,
+                                                               alpha = 1,
+                                                               arrow = grid::arrow(length = grid::unit(0.05, units = "npc"))),
+                         constraint_lab_style = constraint_lab_style(
+                           type = "label", 
+                           justify = "side",
+                           colour = "black",
+                           # max_angle = 90, 
+                           # perpendicular = TRUE, 
+                           size = 3.5,
+                           check_overlap = TRUE
+                         ), 
+                         show.legend = F, 
+                         auto_caption = NA
+      ) +
+      
+      scale_color_manual(values = c("white", "orange", "purple"), name = "Cluster") +
+      ggnewscale::new_scale_color() +
+      
+      stat_ellipse(aes(color = Cluster, 
+                       fill = Cluster,
+                       alpha = ifelse(Cluster == "Other",0,.15)),
+                   # alpha = .5,
+                   linetype = "dashed",
+                   geom = "polygon",
+                   show.legend = F
+      ) +
+      
+      scale_alpha_manual(values = c(0,.15), guide = "none") +
+      scale_color_manual(values = c("white", "orange", "purple"), name = "Cluster", guide = "none") +
+      ggnewscale::new_scale_color() +
+      
+      geom_point(aes(color = Temperature,
+                     fill = Cluster,
+                     # alpha = ifelse(Cluster != "Other", "Other", "H v L"),
+                     alpha = ifelse(Cluster != "Other", 1, .1)),
+                 shape = 23,
+                 size = 3.5,
+                 stroke = 1) +
+      
+      scale_fill_manual(values = c("Other" = "white", "Low" = "orange", "High" = "purple"), name = "Cluster") +
+      scale_shape_manual(values = c(23)) +
+      scale_color_manual(values = col.Temp, labels = c("28°C", "32°C", "35°C"), name = "Temperature") +
+      scale_alpha(guide = "none") +
+      
+      # scale_x_continuous(limits = c(-.75, 1.75)) +
+      # scale_y_continuous(limits = c(-2, 1.75)) +
+      
+      guides(color = guide_legend(override.aes = list(size = 4, stroke = 1.5, 
+                                                      linetype = NA,
+                                                      shape = c(23, 23, 23), 
+                                                      fill = "white" 
+      )),
+      fill = guide_legend(override.aes = list(size = 4, stroke = 1.5, 
+                                              linetype = NA,
+                                              shape = c(23, 23, 23), 
+                                              fill = c("white", "orange", "purple")
+      ))
+      ) +
+      
+      labs(caption = "bray-curtis X Richness") +
+      
+      theme(legend.position = "bottom",
+            legend.direction = "horizontal",
+            legend.title.position = "top",
+            strip.text = element_text(size = 14))
+    
+    # Reshuffle layers so ellipse is in background
+    tmp.plot.bray <- 
+      rearrange_layers(tmp.plot.bray)
+    
+    tmp.plot.bray <- 
+      move_label_layer_to_top(tmp.plot.bray)
+    
+    
+    # Canberra
+    tmp.plot.canberra <-
+      tmp.psOBJ %>%
+      
+      # Group samples by Alpha Score
+      ps_mutate(Cluster = if_else(
+        Treatment == "Exposed" & Total.Worm.Count > 0,
+        case_when(
+          Richness__Genus_norm <= 0.5 ~ "Low",
+          Richness__Genus_norm > 0.5 ~ "High",
+          TRUE ~ "Other"
+        ),
+        "Other"
+      ), .after = Treatment) %>%
+      ps_mutate(Cluster = fct_relevel(factor(Cluster, levels = c("Other", "Low", "High")))) %>%
+      ps_mutate(Cluster. = as.numeric(Cluster)) %>%
+      
+      # ungroup()  %>%
+      tax_agg("Genus") %>%
+      dist_calc("canberra") %>%
+      dist_permanova(
+        seed = 1,
+        variables = c("Temperature", "Total.Worm.Count", "Cluster"),
+        n_processes = 8,
+        n_perms = 999 # only 99 perms used in examples for speed (use 9999+!)
+      ) %>% 
+      ord_calc(
+        method = "CAP",
+        constraints = c("Temperature.", "Total.Worm.Count"),
+      ) %>%
+      microViz::ord_plot(fill = NA, 
+                         color = NA,
+                         alpha = 0,
+                         shape = 23, size = 3.5, stroke = 1,
+                         constraint_vec_style = vec_constraint(colour = "black",
+                                                               size = 2,
+                                                               alpha = 1,
+                                                               arrow = grid::arrow(length = grid::unit(0.05, units = "npc"))),
+                         constraint_lab_style = constraint_lab_style(
+                           type = "label", 
+                           justify = "side",
+                           colour = "black",
+                           # max_angle = 90, 
+                           # perpendicular = TRUE, 
+                           size = 3.5,
+                           check_overlap = TRUE
+                         ), 
+                         show.legend = F, 
+                         auto_caption = NA
+      ) +
+      
+      scale_color_manual(values = c("white", "orange", "purple"), name = "Cluster") +
+      ggnewscale::new_scale_color() +
+      
+      stat_ellipse(aes(color = Cluster, 
+                       fill = Cluster,
+                       alpha = ifelse(Cluster == "Other",0,.15)),
+                   # alpha = .5,
+                   linetype = "dashed",
+                   geom = "polygon",
+                   show.legend = F
+      ) +
+      
+      scale_alpha_manual(values = c(0,.15), guide = "none") +
+      scale_color_manual(values = c("white", "orange", "purple"), name = "Cluster", guide = "none") +
+      ggnewscale::new_scale_color() +
+      
+      geom_point(aes(color = Temperature,
+                     fill = Cluster,
+                     # alpha = ifelse(Cluster != "Other", "Other", "H v L"),
+                     alpha = ifelse(Cluster != "Other", 1, .1)),
+                 shape = 23,
+                 size = 3.5,
+                 stroke = 1) +
+      
+      scale_fill_manual(values = c("Other" = "white", "Low" = "orange", "High" = "purple"), name = "Cluster") +
+      scale_shape_manual(values = c(23)) +
+      scale_color_manual(values = col.Temp, labels = c("28°C", "32°C", "35°C"), name = "Temperature") +
+      scale_alpha(guide = "none") +
+      
+      # scale_x_continuous(limits = c(-.75, 1.75)) +
+      # scale_y_continuous(limits = c(-2, 1.75)) +
+      
+      guides(color = guide_legend(override.aes = list(size = 4, stroke = 1.5, 
+                                                      linetype = NA,
+                                                      shape = c(23, 23, 23), 
+                                                      fill = "white" 
+      )),
+      fill = guide_legend(override.aes = list(size = 4, stroke = 1.5, 
+                                              linetype = NA,
+                                              shape = c(23, 23, 23), 
+                                              fill = c("white", "orange", "purple")
+      ))
+      ) +
+      
+      labs(caption = "canberra X Richness") +
+      
+      theme(legend.position = "bottom",
+            legend.direction = "horizontal",
+            legend.title.position = "top",
+            strip.text = element_text(size = 14))
+    
+    # Reshuffle layers so ellipse is in background
+    tmp.plot.canberra <- 
+      rearrange_layers(tmp.plot.canberra)
+    
+    tmp.plot.canberra <- 
+      move_label_layer_to_top(tmp.plot.canberra)
+    
+    # Unifrac
+    tmp.plot.unifrac <-
+      tmp.psOBJ %>%
+      
+      # Group samples by Alpha Score
+      ps_mutate(Cluster = if_else(
+        Treatment == "Exposed" & Total.Worm.Count > 0,
+        case_when(
+          Richness__Genus_norm <= 0.5 ~ "Low",
+          Richness__Genus_norm > 0.5 ~ "High",
+          TRUE ~ "Other"
+        ),
+        "Other"
+      ), .after = Treatment) %>%
+      ps_mutate(Cluster = fct_relevel(factor(Cluster, levels = c("Other", "Low", "High")))) %>%
+      ps_mutate(Cluster. = as.numeric(Cluster)) %>%
+      
+      # ungroup()  %>%
+      # tax_agg("Genus") %>%
+      dist_calc("gunifrac") %>%
+      dist_permanova(
+        seed = 1,
+        variables = c("Temperature", "Total.Worm.Count", "Cluster"),
+        n_processes = 8,
+        n_perms = 999 # only 99 perms used in examples for speed (use 9999+!)
+      ) %>% 
+      ord_calc(
+        method = "CAP",
+        constraints = c("Temperature.", "Total.Worm.Count"),
+      ) %>%
+      microViz::ord_plot(fill = NA, 
+                         color = NA,
+                         alpha = 0,
+                         shape = 23, size = 3.5, stroke = 1,
+                         constraint_vec_style = vec_constraint(colour = "black",
+                                                               size = 2,
+                                                               alpha = 1,
+                                                               arrow = grid::arrow(length = grid::unit(0.05, units = "npc"))),
+                         constraint_lab_style = constraint_lab_style(
+                           type = "label", 
+                           justify = "side",
+                           colour = "black",
+                           # max_angle = 90, 
+                           # perpendicular = TRUE, 
+                           size = 3.5,
+                           check_overlap = TRUE
+                         ), 
+                         show.legend = F, 
+                         auto_caption = NA
+      ) +
+      
+      scale_color_manual(values = c("white", "orange", "purple"), name = "Cluster") +
+      ggnewscale::new_scale_color() +
+      
+      stat_ellipse(aes(color = Cluster, 
+                       fill = Cluster,
+                       alpha = ifelse(Cluster == "Other",0,.15)),
+                   # alpha = .5,
+                   linetype = "dashed",
+                   geom = "polygon",
+                   show.legend = F
+      ) +
+      
+      scale_alpha_manual(values = c(0,.15), guide = "none") +
+      scale_color_manual(values = c("white", "orange", "purple"), name = "Cluster", guide = "none") +
+      ggnewscale::new_scale_color() +
+      
+      geom_point(aes(color = Temperature,
+                     fill = Cluster,
+                     # alpha = ifelse(Cluster != "Other", "Other", "H v L"),
+                     alpha = ifelse(Cluster != "Other", 1, .1)),
+                 shape = 23,
+                 size = 3.5,
+                 stroke = 1) +
+      
+      scale_fill_manual(values = c("Other" = "white", "Low" = "orange", "High" = "purple"), name = "Cluster") +
+      scale_shape_manual(values = c(23)) +
+      scale_color_manual(values = col.Temp, labels = c("28°C", "32°C", "35°C"), name = "Temperature") +
+      scale_alpha(guide = "none") +
+      
+      # scale_x_continuous(limits = c(-.75, 1.75)) +
+      # scale_y_continuous(limits = c(-2, 1.75)) +
+      
+      guides(color = guide_legend(override.aes = list(size = 4, stroke = 1.5, 
+                                                      linetype = NA,
+                                                      shape = c(23, 23, 23), 
+                                                      fill = "white" 
+      )),
+      fill = guide_legend(override.aes = list(size = 4, stroke = 1.5, 
+                                              linetype = NA,
+                                              shape = c(23, 23, 23), 
+                                              fill = c("white", "orange", "purple")
+      ))
+      ) +
+      
+      labs(caption = "gunifrac X Richness") +
+      
+      theme(legend.position = "bottom",
+            legend.direction = "horizontal",
+            legend.title.position = "top",
+            strip.text = element_text(size = 14))
+    
+    # Reshuffle layers so ellipse is in background
+    tmp.plot.unifrac <- 
+      rearrange_layers(tmp.plot.unifrac)
+    
+    tmp.plot.unifrac <- 
+      move_label_layer_to_top(tmp.plot.unifrac)
+    
+    # Combine plots
+    cowplot::plot_grid(tmp.plot.bray, tmp.plot.canberra, tmp.plot.unifrac, ncol = 3)
+  }
+
+
+##### Shannon ----------------------------------------------------------------
+
+beta.plots[[tmp.resSubSection]][["TEMP:CLUSTER"]][["CAP"]][["Plot_SUPP_shannon"]] <-
+  {
+    
+    # Bray-Curtis
+    tmp.plot.bray <-
+      tmp.psOBJ %>%
+      
+      # Group samples by Alpha Score
+      ps_mutate(Cluster = if_else(
+        Treatment == "Exposed" & Total.Worm.Count > 0,
+        case_when(
+          Shannon__Genus_norm <= 0.5 ~ "Low",
+          Shannon__Genus_norm > 0.5 ~ "High",
+          TRUE ~ "Other"
+        ),
+        "Other"
+      ), .after = Treatment) %>%
+      ps_mutate(Cluster = fct_relevel(factor(Cluster, levels = c("Other", "Low", "High")))) %>%
+      ps_mutate(Cluster. = as.numeric(Cluster)) %>%
+      
+      
+      # ungroup()  %>%
+      tax_agg("Genus") %>%
+      dist_calc("bray") %>%
+      dist_permanova(
+        seed = 1,
+        variables = c("Temperature", "Total.Worm.Count", "Cluster"),
+        n_processes = 8,
+        n_perms = 999 # only 99 perms used in examples for speed (use 9999+!)
+      ) %>% 
+      ord_calc(
+        method = "CAP",
+        constraints = c("Temperature.", "Total.Worm.Count"),
+      ) %>%
+      microViz::ord_plot(fill = NA, 
+                         color = NA,
+                         alpha = 0,
+                         shape = 23, size = 3.5, stroke = 1,
+                         constraint_vec_style = vec_constraint(colour = "black",
+                                                               size = 2,
+                                                               alpha = 1,
+                                                               arrow = grid::arrow(length = grid::unit(0.05, units = "npc"))),
+                         constraint_lab_style = constraint_lab_style(
+                           type = "label", 
+                           justify = "side",
+                           colour = "black",
+                           # max_angle = 90, 
+                           # perpendicular = TRUE, 
+                           size = 3.5,
+                           check_overlap = TRUE
+                         ), 
+                         show.legend = F, 
+                         auto_caption = NA
+      ) +
+      
+      scale_color_manual(values = c("white", "orange", "purple"), name = "Cluster") +
+      ggnewscale::new_scale_color() +
+      
+      stat_ellipse(aes(color = Cluster, 
+                       fill = Cluster,
+                       alpha = ifelse(Cluster == "Other",0,.15)),
+                   # alpha = .5,
+                   linetype = "dashed",
+                   geom = "polygon",
+                   show.legend = F
+      ) +
+      
+      scale_alpha_manual(values = c(0,.15), guide = "none") +
+      scale_color_manual(values = c("white", "orange", "purple"), name = "Cluster", guide = "none") +
+      ggnewscale::new_scale_color() +
+      
+      geom_point(aes(color = Temperature,
+                     fill = Cluster,
+                     # alpha = ifelse(Cluster != "Other", "Other", "H v L"),
+                     alpha = ifelse(Cluster != "Other", 1, .1)),
+                 shape = 23,
+                 size = 3.5,
+                 stroke = 1) +
+      
+      scale_fill_manual(values = c("Other" = "white", "Low" = "orange", "High" = "purple"), name = "Cluster") +
+      scale_shape_manual(values = c(23)) +
+      scale_color_manual(values = col.Temp, labels = c("28°C", "32°C", "35°C"), name = "Temperature") +
+      scale_alpha(guide = "none") +
+      
+      # scale_x_continuous(limits = c(-.75, 1.75)) +
+      # scale_y_continuous(limits = c(-2, 1.75)) +
+      
+      guides(color = guide_legend(override.aes = list(size = 4, stroke = 1.5, 
+                                                      linetype = NA,
+                                                      shape = c(23, 23, 23), 
+                                                      fill = "white" 
+      )),
+      fill = guide_legend(override.aes = list(size = 4, stroke = 1.5, 
+                                              linetype = NA,
+                                              shape = c(23, 23, 23), 
+                                              fill = c("white", "orange", "purple")
+      ))
+      ) +
+      
+      labs(caption = "bray-curtis X Shannon") +
+      
+      theme(legend.position = "bottom",
+            legend.direction = "horizontal",
+            legend.title.position = "top",
+            strip.text = element_text(size = 14))
+    
+    # Reshuffle layers so ellipse is in background
+    tmp.plot.bray <- 
+      rearrange_layers(tmp.plot.bray)
+    
+    tmp.plot.bray <- 
+      move_label_layer_to_top(tmp.plot.bray)
+    
+    
+    # Canberra
+    tmp.plot.canberra <-
+      tmp.psOBJ %>%
+      
+      # Group samples by Alpha Score
+      ps_mutate(Cluster = if_else(
+        Treatment == "Exposed" & Total.Worm.Count > 0,
+        case_when(
+          Shannon__Genus_norm <= 0.5 ~ "Low",
+          Shannon__Genus_norm > 0.5 ~ "High",
+          TRUE ~ "Other"
+        ),
+        "Other"
+      ), .after = Treatment) %>%
+      ps_mutate(Cluster = fct_relevel(factor(Cluster, levels = c("Other", "Low", "High")))) %>%
+      ps_mutate(Cluster. = as.numeric(Cluster)) %>%
+      
+      # ungroup()  %>%
+      tax_agg("Genus") %>%
+      dist_calc("canberra") %>%
+      dist_permanova(
+        seed = 1,
+        variables = c("Temperature", "Total.Worm.Count", "Cluster"),
+        n_processes = 8,
+        n_perms = 999 # only 99 perms used in examples for speed (use 9999+!)
+      ) %>% 
+      ord_calc(
+        method = "CAP",
+        constraints = c("Temperature.", "Total.Worm.Count"),
+      ) %>%
+      microViz::ord_plot(fill = NA, 
+                         color = NA,
+                         alpha = 0,
+                         shape = 23, size = 3.5, stroke = 1,
+                         constraint_vec_style = vec_constraint(colour = "black",
+                                                               size = 2,
+                                                               alpha = 1,
+                                                               arrow = grid::arrow(length = grid::unit(0.05, units = "npc"))),
+                         constraint_lab_style = constraint_lab_style(
+                           type = "label", 
+                           justify = "side",
+                           colour = "black",
+                           # max_angle = 90, 
+                           # perpendicular = TRUE, 
+                           size = 3.5,
+                           check_overlap = TRUE
+                         ), 
+                         show.legend = F, 
+                         auto_caption = NA
+      ) +
+      
+      scale_color_manual(values = c("white", "orange", "purple"), name = "Cluster") +
+      ggnewscale::new_scale_color() +
+      
+      stat_ellipse(aes(color = Cluster, 
+                       fill = Cluster,
+                       alpha = ifelse(Cluster == "Other",0,.15)),
+                   # alpha = .5,
+                   linetype = "dashed",
+                   geom = "polygon",
+                   show.legend = F
+      ) +
+      
+      scale_alpha_manual(values = c(0,.15), guide = "none") +
+      scale_color_manual(values = c("white", "orange", "purple"), name = "Cluster", guide = "none") +
+      ggnewscale::new_scale_color() +
+      
+      geom_point(aes(color = Temperature,
+                     fill = Cluster,
+                     # alpha = ifelse(Cluster != "Other", "Other", "H v L"),
+                     alpha = ifelse(Cluster != "Other", 1, .1)),
+                 shape = 23,
+                 size = 3.5,
+                 stroke = 1) +
+      
+      scale_fill_manual(values = c("Other" = "white", "Low" = "orange", "High" = "purple"), name = "Cluster") +
+      scale_shape_manual(values = c(23)) +
+      scale_color_manual(values = col.Temp, labels = c("28°C", "32°C", "35°C"), name = "Temperature") +
+      scale_alpha(guide = "none") +
+      
+      # scale_x_continuous(limits = c(-.75, 1.75)) +
+      # scale_y_continuous(limits = c(-2, 1.75)) +
+      
+      guides(color = guide_legend(override.aes = list(size = 4, stroke = 1.5, 
+                                                      linetype = NA,
+                                                      shape = c(23, 23, 23), 
+                                                      fill = "white" 
+      )),
+      fill = guide_legend(override.aes = list(size = 4, stroke = 1.5, 
+                                              linetype = NA,
+                                              shape = c(23, 23, 23), 
+                                              fill = c("white", "orange", "purple")
+      ))
+      ) +
+      
+      labs(caption = "canberra X Shannon") +
+      
+      theme(legend.position = "bottom",
+            legend.direction = "horizontal",
+            legend.title.position = "top",
+            strip.text = element_text(size = 14))
+    
+    # Reshuffle layers so ellipse is in background
+    tmp.plot.canberra <- 
+      rearrange_layers(tmp.plot.canberra)
+    
+    tmp.plot.canberra <- 
+      move_label_layer_to_top(tmp.plot.canberra)
+    
+    # Unifrac
+    tmp.plot.unifrac <-
+      tmp.psOBJ %>%
+      
+      # Group samples by Alpha Score
+      ps_mutate(Cluster = if_else(
+        Treatment == "Exposed" & Total.Worm.Count > 0,
+        case_when(
+          Shannon__Genus_norm <= 0.5 ~ "Low",
+          Shannon__Genus_norm > 0.5 ~ "High",
+          TRUE ~ "Other"
+        ),
+        "Other"
+      ), .after = Treatment) %>%
+      ps_mutate(Cluster = fct_relevel(factor(Cluster, levels = c("Other", "Low", "High")))) %>%
+      ps_mutate(Cluster. = as.numeric(Cluster)) %>%
+      
+      # ungroup()  %>%
+      # tax_agg("Genus") %>%
+      dist_calc("gunifrac") %>%
+      dist_permanova(
+        seed = 1,
+        variables = c("Temperature", "Total.Worm.Count", "Cluster"),
+        n_processes = 8,
+        n_perms = 999 # only 99 perms used in examples for speed (use 9999+!)
+      ) %>% 
+      ord_calc(
+        method = "CAP",
+        constraints = c("Temperature.", "Total.Worm.Count"),
+      ) %>%
+      microViz::ord_plot(fill = NA, 
+                         color = NA,
+                         alpha = 0,
+                         shape = 23, size = 3.5, stroke = 1,
+                         constraint_vec_style = vec_constraint(colour = "black",
+                                                               size = 2,
+                                                               alpha = 1,
+                                                               arrow = grid::arrow(length = grid::unit(0.05, units = "npc"))),
+                         constraint_lab_style = constraint_lab_style(
+                           type = "label", 
+                           justify = "side",
+                           colour = "black",
+                           # max_angle = 90, 
+                           # perpendicular = TRUE, 
+                           size = 3.5,
+                           check_overlap = TRUE
+                         ), 
+                         show.legend = F, 
+                         auto_caption = NA
+      ) +
+      
+      scale_color_manual(values = c("white", "orange", "purple"), name = "Cluster") +
+      ggnewscale::new_scale_color() +
+      
+      stat_ellipse(aes(color = Cluster, 
+                       fill = Cluster,
+                       alpha = ifelse(Cluster == "Other",0,.15)),
+                   # alpha = .5,
+                   linetype = "dashed",
+                   geom = "polygon",
+                   show.legend = F
+      ) +
+      
+      scale_alpha_manual(values = c(0,.15), guide = "none") +
+      scale_color_manual(values = c("white", "orange", "purple"), name = "Cluster", guide = "none") +
+      ggnewscale::new_scale_color() +
+      
+      geom_point(aes(color = Temperature,
+                     fill = Cluster,
+                     # alpha = ifelse(Cluster != "Other", "Other", "H v L"),
+                     alpha = ifelse(Cluster != "Other", 1, .1)),
+                 shape = 23,
+                 size = 3.5,
+                 stroke = 1) +
+      
+      scale_fill_manual(values = c("Other" = "white", "Low" = "orange", "High" = "purple"), name = "Cluster") +
+      scale_shape_manual(values = c(23)) +
+      scale_color_manual(values = col.Temp, labels = c("28°C", "32°C", "35°C"), name = "Temperature") +
+      scale_alpha(guide = "none") +
+      
+      # scale_x_continuous(limits = c(-.75, 1.75)) +
+      # scale_y_continuous(limits = c(-2, 1.75)) +
+      
+      guides(color = guide_legend(override.aes = list(size = 4, stroke = 1.5, 
+                                                      linetype = NA,
+                                                      shape = c(23, 23, 23), 
+                                                      fill = "white" 
+      )),
+      fill = guide_legend(override.aes = list(size = 4, stroke = 1.5, 
+                                              linetype = NA,
+                                              shape = c(23, 23, 23), 
+                                              fill = c("white", "orange", "purple")
+      ))
+      ) +
+      
+      labs(caption = "gunifrac X Shannon") +
+      
+      theme(legend.position = "bottom",
+            legend.direction = "horizontal",
+            legend.title.position = "top",
+            strip.text = element_text(size = 14))
+    
+    # Reshuffle layers so ellipse is in background
+    tmp.plot.unifrac <- 
+      rearrange_layers(tmp.plot.unifrac)
+    
+    tmp.plot.unifrac <- 
+      move_label_layer_to_top(tmp.plot.unifrac)
+    
+    # Combine plots
+    cowplot::plot_grid(tmp.plot.bray, tmp.plot.canberra, tmp.plot.unifrac, ncol = 3)
+  }
+
+
+
+
+##### Simpson ----------------------------------------------------------------
+
+
+beta.plots[[tmp.resSubSection]][["TEMP:CLUSTER"]][["CAP"]][["Plot_SUPP_simpsons"]] <-
+  {
+    
+    # Bray-Curtis
+    tmp.plot.bray <-
+      tmp.psOBJ %>%
+      
+      # Group samples by Alpha Score
+      ps_mutate(Cluster = if_else(
+        Treatment == "Exposed" & Total.Worm.Count > 0,
+        case_when(
+          Simpson__Genus_norm <= 0.5 ~ "Low",
+          Simpson__Genus_norm > 0.5 ~ "High",
+          TRUE ~ "Other"
+        ),
+        "Other"
+      ), .after = Treatment) %>%
+      ps_mutate(Cluster = fct_relevel(factor(Cluster, levels = c("Other", "Low", "High")))) %>%
+      ps_mutate(Cluster. = as.numeric(Cluster)) %>%
+      
+      
+      # ungroup()  %>%
+      tax_agg("Genus") %>%
+      dist_calc("bray") %>%
+      dist_permanova(
+        seed = 1,
+        variables = c("Temperature", "Total.Worm.Count", "Cluster"),
+        n_processes = 8,
+        n_perms = 999 # only 99 perms used in examples for speed (use 9999+!)
+      ) %>% 
+      ord_calc(
+        method = "CAP",
+        constraints = c("Temperature.", "Total.Worm.Count"),
+      ) %>%
+      microViz::ord_plot(fill = NA, 
+                         color = NA,
+                         alpha = 0,
+                         shape = 23, size = 3.5, stroke = 1,
+                         constraint_vec_style = vec_constraint(colour = "black",
+                                                               size = 2,
+                                                               alpha = 1,
+                                                               arrow = grid::arrow(length = grid::unit(0.05, units = "npc"))),
+                         constraint_lab_style = constraint_lab_style(
+                           type = "label", 
+                           justify = "side",
+                           colour = "black",
+                           # max_angle = 90, 
+                           # perpendicular = TRUE, 
+                           size = 3.5,
+                           check_overlap = TRUE
+                         ), 
+                         show.legend = F, 
+                         auto_caption = NA
+      ) +
+      
+      scale_color_manual(values = c("white", "orange", "purple"), name = "Cluster") +
+      ggnewscale::new_scale_color() +
+      
+      stat_ellipse(aes(color = Cluster, 
+                       fill = Cluster,
+                       alpha = ifelse(Cluster == "Other",0,.15)),
+                   # alpha = .5,
+                   linetype = "dashed",
+                   geom = "polygon",
+                   show.legend = F
+      ) +
+      
+      scale_alpha_manual(values = c(0,.15), guide = "none") +
+      scale_color_manual(values = c("white", "orange", "purple"), name = "Cluster", guide = "none") +
+      ggnewscale::new_scale_color() +
+      
+      geom_point(aes(color = Temperature,
+                     fill = Cluster,
+                     # alpha = ifelse(Cluster != "Other", "Other", "H v L"),
+                     alpha = ifelse(Cluster != "Other", 1, .1)),
+                 shape = 23,
+                 size = 3.5,
+                 stroke = 1) +
+      
+      scale_fill_manual(values = c("Other" = "white", "Low" = "orange", "High" = "purple"), name = "Cluster") +
+      scale_shape_manual(values = c(23)) +
+      scale_color_manual(values = col.Temp, labels = c("28°C", "32°C", "35°C"), name = "Temperature") +
+      scale_alpha(guide = "none") +
+      
+      # scale_x_continuous(limits = c(-.75, 1.75)) +
+      # scale_y_continuous(limits = c(-2, 1.75)) +
+      
+      guides(color = guide_legend(override.aes = list(size = 4, stroke = 1.5, 
+                                                      linetype = NA,
+                                                      shape = c(23, 23, 23), 
+                                                      fill = "white" 
+      )),
+      fill = guide_legend(override.aes = list(size = 4, stroke = 1.5, 
+                                              linetype = NA,
+                                              shape = c(23, 23, 23), 
+                                              fill = c("white", "orange", "purple")
+      ))
+      ) +
+      
+      labs(caption = "bray-curtis X Simpsons") +
+      
+      theme(legend.position = "bottom",
+            legend.direction = "horizontal",
+            legend.title.position = "top",
+            strip.text = element_text(size = 14))
+    
+    # Reshuffle layers so ellipse is in background
+    tmp.plot.bray <- 
+      rearrange_layers(tmp.plot.bray)
+    
+    tmp.plot.bray <- 
+      move_label_layer_to_top(tmp.plot.bray)
+    
+    
+    # Canberra
+    tmp.plot.canberra <-
+      tmp.psOBJ %>%
+      
+      # Group samples by Alpha Score
+      ps_mutate(Cluster = if_else(
+        Treatment == "Exposed" & Total.Worm.Count > 0,
+        case_when(
+          Simpson__Genus_norm <= 0.5 ~ "Low",
+          Simpson__Genus_norm > 0.5 ~ "High",
+          TRUE ~ "Other"
+        ),
+        "Other"
+      ), .after = Treatment) %>%
+      ps_mutate(Cluster = fct_relevel(factor(Cluster, levels = c("Other", "Low", "High")))) %>%
+      ps_mutate(Cluster. = as.numeric(Cluster)) %>%
+      
+      # ungroup()  %>%
+      tax_agg("Genus") %>%
+      dist_calc("canberra") %>%
+      dist_permanova(
+        seed = 1,
+        variables = c("Temperature", "Total.Worm.Count", "Cluster"),
+        n_processes = 8,
+        n_perms = 999 # only 99 perms used in examples for speed (use 9999+!)
+      ) %>% 
+      ord_calc(
+        method = "CAP",
+        constraints = c("Temperature.", "Total.Worm.Count"),
+      ) %>%
+      microViz::ord_plot(fill = NA, 
+                         color = NA,
+                         alpha = 0,
+                         shape = 23, size = 3.5, stroke = 1,
+                         constraint_vec_style = vec_constraint(colour = "black",
+                                                               size = 2,
+                                                               alpha = 1,
+                                                               arrow = grid::arrow(length = grid::unit(0.05, units = "npc"))),
+                         constraint_lab_style = constraint_lab_style(
+                           type = "label", 
+                           justify = "side",
+                           colour = "black",
+                           # max_angle = 90, 
+                           # perpendicular = TRUE, 
+                           size = 3.5,
+                           check_overlap = TRUE
+                         ), 
+                         show.legend = F, 
+                         auto_caption = NA
+      ) +
+      
+      scale_color_manual(values = c("white", "orange", "purple"), name = "Cluster") +
+      ggnewscale::new_scale_color() +
+      
+      stat_ellipse(aes(color = Cluster, 
+                       fill = Cluster,
+                       alpha = ifelse(Cluster == "Other",0,.15)),
+                   # alpha = .5,
+                   linetype = "dashed",
+                   geom = "polygon",
+                   show.legend = F
+      ) +
+      
+      scale_alpha_manual(values = c(0,.15), guide = "none") +
+      scale_color_manual(values = c("white", "orange", "purple"), name = "Cluster", guide = "none") +
+      ggnewscale::new_scale_color() +
+      
+      geom_point(aes(color = Temperature,
+                     fill = Cluster,
+                     # alpha = ifelse(Cluster != "Other", "Other", "H v L"),
+                     alpha = ifelse(Cluster != "Other", 1, .1)),
+                 shape = 23,
+                 size = 3.5,
+                 stroke = 1) +
+      
+      scale_fill_manual(values = c("Other" = "white", "Low" = "orange", "High" = "purple"), name = "Cluster") +
+      scale_shape_manual(values = c(23)) +
+      scale_color_manual(values = col.Temp, labels = c("28°C", "32°C", "35°C"), name = "Temperature") +
+      scale_alpha(guide = "none") +
+      
+      # scale_x_continuous(limits = c(-.75, 1.75)) +
+      # scale_y_continuous(limits = c(-2, 1.75)) +
+      
+      guides(color = guide_legend(override.aes = list(size = 4, stroke = 1.5, 
+                                                      linetype = NA,
+                                                      shape = c(23, 23, 23), 
+                                                      fill = "white" 
+      )),
+      fill = guide_legend(override.aes = list(size = 4, stroke = 1.5, 
+                                              linetype = NA,
+                                              shape = c(23, 23, 23), 
+                                              fill = c("white", "orange", "purple")
+      ))
+      ) +
+      
+      labs(caption = "canberra X Simpsons") +
+      
+      theme(legend.position = "bottom",
+            legend.direction = "horizontal",
+            legend.title.position = "top",
+            strip.text = element_text(size = 14))
+    
+    # Reshuffle layers so ellipse is in background
+    tmp.plot.canberra <- 
+      rearrange_layers(tmp.plot.canberra)
+    
+    tmp.plot.canberra <- 
+      move_label_layer_to_top(tmp.plot.canberra)
+    
+    # Unifrac
+    tmp.plot.unifrac <-
+      tmp.psOBJ %>%
+      
+      # Group samples by Alpha Score
+      ps_mutate(Cluster = if_else(
+        Treatment == "Exposed" & Total.Worm.Count > 0,
+        case_when(
+          Simpson__Genus_norm <= 0.5 ~ "Low",
+          Simpson__Genus_norm > 0.5 ~ "High",
+          TRUE ~ "Other"
+        ),
+        "Other"
+      ), .after = Treatment) %>%
+      ps_mutate(Cluster = fct_relevel(factor(Cluster, levels = c("Other", "Low", "High")))) %>%
+      ps_mutate(Cluster. = as.numeric(Cluster)) %>%
+      
+      # ungroup()  %>%
+      # tax_agg("Genus") %>%
+      dist_calc("gunifrac") %>%
+      dist_permanova(
+        seed = 1,
+        variables = c("Temperature", "Total.Worm.Count", "Cluster"),
+        n_processes = 8,
+        n_perms = 999 # only 99 perms used in examples for speed (use 9999+!)
+      ) %>% 
+      ord_calc(
+        method = "CAP",
+        constraints = c("Temperature.", "Total.Worm.Count"),
+      ) %>%
+      microViz::ord_plot(fill = NA, 
+                         color = NA,
+                         alpha = 0,
+                         shape = 23, size = 3.5, stroke = 1,
+                         constraint_vec_style = vec_constraint(colour = "black",
+                                                               size = 2,
+                                                               alpha = 1,
+                                                               arrow = grid::arrow(length = grid::unit(0.05, units = "npc"))),
+                         constraint_lab_style = constraint_lab_style(
+                           type = "label", 
+                           justify = "side",
+                           colour = "black",
+                           # max_angle = 90, 
+                           # perpendicular = TRUE, 
+                           size = 3.5,
+                           check_overlap = TRUE
+                         ), 
+                         show.legend = F, 
+                         auto_caption = NA
+      ) +
+      
+      scale_color_manual(values = c("white", "orange", "purple"), name = "Cluster") +
+      ggnewscale::new_scale_color() +
+      
+      stat_ellipse(aes(color = Cluster, 
+                       fill = Cluster,
+                       alpha = ifelse(Cluster == "Other",0,.15)),
+                   # alpha = .5,
+                   linetype = "dashed",
+                   geom = "polygon",
+                   show.legend = F
+      ) +
+      
+      scale_alpha_manual(values = c(0,.15), guide = "none") +
+      scale_color_manual(values = c("white", "orange", "purple"), name = "Cluster", guide = "none") +
+      ggnewscale::new_scale_color() +
+      
+      geom_point(aes(color = Temperature,
+                     fill = Cluster,
+                     # alpha = ifelse(Cluster != "Other", "Other", "H v L"),
+                     alpha = ifelse(Cluster != "Other", 1, .1)),
+                 shape = 23,
+                 size = 3.5,
+                 stroke = 1) +
+      
+      scale_fill_manual(values = c("Other" = "white", "Low" = "orange", "High" = "purple"), name = "Cluster") +
+      scale_shape_manual(values = c(23)) +
+      scale_color_manual(values = col.Temp, labels = c("28°C", "32°C", "35°C"), name = "Temperature") +
+      scale_alpha(guide = "none") +
+      
+      # scale_x_continuous(limits = c(-.75, 1.75)) +
+      # scale_y_continuous(limits = c(-2, 1.75)) +
+      
+      guides(color = guide_legend(override.aes = list(size = 4, stroke = 1.5, 
+                                                      linetype = NA,
+                                                      shape = c(23, 23, 23), 
+                                                      fill = "white" 
+      )),
+      fill = guide_legend(override.aes = list(size = 4, stroke = 1.5, 
+                                              linetype = NA,
+                                              shape = c(23, 23, 23), 
+                                              fill = c("white", "orange", "purple")
+      ))
+      ) +
+      
+      labs(caption = "gunifrac X Simpsons") +
+      
+      theme(legend.position = "bottom",
+            legend.direction = "horizontal",
+            legend.title.position = "top",
+            strip.text = element_text(size = 14))
+    
+    # Reshuffle layers so ellipse is in background
+    tmp.plot.unifrac <- 
+      rearrange_layers(tmp.plot.unifrac)
+    
+    tmp.plot.unifrac <- 
+      move_label_layer_to_top(tmp.plot.unifrac)
+    
+    # Combine plots
+    cowplot::plot_grid(tmp.plot.bray, tmp.plot.canberra, tmp.plot.unifrac, ncol = 3)
+  }
+
+
+

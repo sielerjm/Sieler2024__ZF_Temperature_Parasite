@@ -435,7 +435,7 @@ beta.plots[[tmp.resSubSection]][["TEMP:TREAT"]][["CAP"]][["Plot_SUPP"]] <-
     tmp.plot.canberra <- 
       move_label_layer_to_top(tmp.plot.canberra)
     
-    # Sorenson
+    # Unifrac
     tmp.plot.unifrac <-
       tmp.psOBJ %>%
       # tax_agg("Genus") %>%

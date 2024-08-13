@@ -1628,7 +1628,7 @@ alpha.plots[[tmp.subset]][[tmp.variables]][["TUKEY"]][["Plot_SUPP"]]
 
 ```
 
-#### S6D
+#### S6D {.tabset}
 
 ```{r include=FALSE}
 # creates a temporary variable to aid in automating knitted document
@@ -1637,12 +1637,37 @@ tmp.variables <- "TEMP:CLUSTER"
 
 ```
 
-```{r plots-S6D, fig.height=6.5, fig.width=14, message=F, warning=FALSE, echo=FALSE}
+##### Phylogenetic
 
-beta.plots[[tmp.subset]][[tmp.variables]][["CAP"]][["Plot_SUPP"]]
+```{r plots-S6D-phylogenetic, fig.height=6.5, fig.width=14, message=F, warning=FALSE, echo=FALSE}
+
+beta.plots[[tmp.subset]][[tmp.variables]][["CAP"]][["Plot_SUPP_phylogenetic"]]
 
 ```
 
+##### Richness
+
+```{r plots-S6D-richness, fig.height=6.5, fig.width=14, message=F, warning=FALSE, echo=FALSE}
+
+beta.plots[[tmp.subset]][[tmp.variables]][["CAP"]][["Plot_SUPP_richness"]]
+
+```
+
+##### Shannon
+
+```{r plots-S6D-shannon, fig.height=6.5, fig.width=14, message=F, warning=FALSE, echo=FALSE}
+
+beta.plots[[tmp.subset]][[tmp.variables]][["CAP"]][["Plot_SUPP_shannon"]]
+
+```
+
+##### Simpsons
+
+```{r plots-S6D-simpsons, fig.height=6.5, fig.width=14, message=F, warning=FALSE, echo=FALSE}
+
+beta.plots[[tmp.subset]][[tmp.variables]][["CAP"]][["Plot_SUPP_simpsons"]]
+
+```
 
 
 ### 7) Gut microbial abundance is significantly associated with environmental conditions and stressors
