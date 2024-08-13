@@ -269,7 +269,265 @@ alpha.plots[[tmp.resSubSection]][["TEMP:DPE"]][["TUKEY"]][["Plot"]] <-
   #                            bracket.size = 1,
   #                            hide.ns = T)
 
+### SUPP --------------------------------------------------------------------
 
+
+#### S4A: TEMP --------------------------------------------------------------------
+
+alpha.plots[[tmp.resSubSection]][["TEMP"]][["TUKEY"]][["Plot_SUPP"]] <-
+  {
+  
+  
+  
+  tmp.sig.bars <-
+    alpha.stats[[tmp.resSubSection]][["TEMP"]][["Tukey"]] %>%
+    SigStars(pval.var = "adj.p.value") %>%
+    dplyr::filter(p.value < 0.05 ) 
+  
+  tmp.psOBJ %>%
+    microViz::samdat_tbl() %>%
+    tidyr::pivot_longer(cols = contains("_norm"), names_to = "Alpha.Metric", values_to = "Alpha.Score") %>%
+    cutCellNames(col = "Alpha.Metric") %>%
+    # filter(Alpha.Metric == "Simpson") %>%
+    # filter(Treatment == "Control") %>%
+    # dplyr::mutate(DPE = as.numeric(levels(DPE)[DPE])) %>%
+    ggplot(aes(x = Temperature, y = Alpha.Score)) +
+    
+    
+    geom_violin(aes(#color = Temperature,
+      fill = Temperature,
+      group = interaction(Temperature)),
+      # position = position_dodge(width = 5),
+      # width = 4,
+      color = "white",
+      draw_quantiles = c(.5),
+      size = 3,
+      alpha = .05,
+      scale = "width",
+      show.legend = F,
+      na.rm = T) +
+    
+    geom_violin(aes(color = Temperature,
+                    fill = Temperature,
+                    group = interaction(Temperature)),
+                # position = position_dodge(width = 5),
+                # width = 4,
+                size = 1.25,
+                alpha = 0,
+                scale = "width",
+                show.legend = F,
+                na.rm = T) +
+    
+    scale_fill_manual(values = c(col.Temp, "white"), name = "Temp (°C)", guide = "none") +
+    
+    geom_violin(aes(color = Temperature,
+                    fill = Temperature,
+                    group = interaction(Temperature)),
+                # position = position_dodge(width = 5),
+                # width = 4,
+                draw_quantiles = c(.5),
+                size = 1.25,
+                alpha = 0,
+                scale = "width",
+                show.legend = F,
+                na.rm = T) +
+    
+    scale_fill_manual(values = c(col.Temp, "white"), name = "Temp (°C)", guide = "none") +
+    scale_color_manual(values = col.Temp, name = "Temp (°C)", guide = "none") +
+    
+    ggnewscale::new_scale_color() +
+    ggnewscale::new_scale_fill() +
+    
+    ggbeeswarm::geom_quasirandom(aes(
+      color = Temperature),
+      size = 3,
+      fill = "white",
+      shape = 23,
+      stroke = 2,
+      show.legend = T,
+      # position = position_dodge2(width = 5),
+      na.rm = T) +
+    
+    scale_fill_manual(values = c(col.Temp, "white"), name = "Temp (°C)", guide = "none") +
+    scale_color_manual(values = col.Temp, name = "Temp (°C)", guide = "none") +
+    
+    scale_x_discrete(
+      labels = function(x) paste0(x, "°C"), # Append '°C' to x-axis labels
+      breaks = c('28', '32', '35')
+    ) +
+    scale_y_continuous(limits = c(-0.05, 1.2), breaks = seq(0, 1, by = .25)) +
+    labs(title = "Alpha Diversity Scores across Temperature", #caption = "Alpha; All",
+         x = "Temperature",
+         y = "Alpha Score (Normalized)"
+    ) +
+    guides(
+      color = guide_legend(order = 1, title = "Temp (°C)",
+                           override.aes = list(shape = 16, size = 5, linetype = NA))
+    ) +
+    
+    facet_grid(Alpha.Metric~.) +
+    
+    theme(legend.position = "none",
+          legend.justification = "center",
+          legend.direction = "vertical",
+          panel.grid.major.x = element_blank(),
+          strip.text.y = element_text(size = 12)) +  # Adjust the size for the facet labels on the y-axis (if applicable)) +
+    
+    # Statistical Notation
+    ggpubr::stat_pvalue_manual(tmp.sig.bars,
+                               label = "p.adj.sig",
+                               y.position = c(1, 1.1, 1, 1.1, 1),
+                               size = 3,
+                               label.size = 6,
+                               bracket.size = 1,
+                               hide.ns = T)   
+}
+
+#### S4C: TEMP:DPE --------------------------------------------------------------------
+
+alpha.plots[[tmp.resSubSection]][["TEMP:DPE"]][["TUKEY"]][["Plot_SUPP"]] <-
+  {
+    
+    tmp.sig.bars <-
+      alpha.stats[[tmp.resSubSection]][["TEMP:DPE"]][["Tukey"]] %>%
+      SigStars(pval.var = "adj.p.value") %>%
+      dplyr::filter(p.value < 0.05 ) 
+    
+    tmp.psOBJ %>%
+      microViz::samdat_tbl() %>%
+      tidyr::pivot_longer(cols = contains("_norm"), names_to = "Alpha.Metric", values_to = "Alpha.Score") %>%
+      cutCellNames(col = "Alpha.Metric") %>%
+      # filter(Alpha.Metric == "Simpson") %>%
+      # filter(Treatment == "Control") %>%
+      # dplyr::mutate(DPE = as.numeric(levels(DPE)[DPE])) %>%
+      ggplot(aes(x = DPE, y = Alpha.Score, group = interaction(Temperature, DPE))) +
+      
+      # geom_ribbon(data = modelbased::estimate_expectation(alpha.stats[[tmp.resSubSection]][["TEMP:DPE"]][["GLM"]][["Simpson"]], data = "grid"),
+      #             aes(x = DPE, y = Predicted, color = Temperature, fill = Temperature, 
+      #                 ymin = CI_low, ymax = CI_high), 
+      #             alpha = 0.2,
+      #             inherit.aes = F) + 
+      
+      scale_fill_manual(values = c(col.Temp, "white"), name = "Temp (°C)", guide = "none") +
+      scale_color_manual(values = col.Temp, name = "Temp (°C)", guide = "none") +
+      ggnewscale::new_scale_color() +
+      ggnewscale::new_scale_fill() +
+      
+      geom_violin(aes(color = Temperature,
+                      fill = Temperature),
+                  # color = "white",
+                  draw_quantiles = c(.5),
+                  size = 1.5,
+                  alpha = .75,
+                  scale = "width",
+                  show.legend = F,
+                  na.rm = T) +
+      
+      scale_color_manual(values = c("white","white","white")) +
+      scale_fill_manual(values = c("white","white","white")) +
+      ggnewscale::new_scale_color() +
+      ggnewscale::new_scale_fill() +
+      
+      geom_violin(aes(color = Temperature,
+                      fill = Temperature),
+                  size = .75,
+                  alpha = 0.05,
+                  scale = "width",
+                  show.legend = F,
+                  na.rm = T) +
+      
+      scale_fill_manual(values = c(col.Temp, "white"), name = "Temp (°C)", guide = "none") +
+      scale_color_manual(values = col.Temp, name = "Temp (°C)", guide = "none") +
+      
+      ggnewscale::new_scale_color() +
+      ggnewscale::new_scale_fill() +
+      
+      geom_violin(aes(color = Temperature,
+                      fill = Temperature),
+                  draw_quantiles = c(.5),
+                  size = .75,
+                  alpha = 0,
+                  scale = "width",
+                  show.legend = F,
+                  na.rm = T) +
+      
+      scale_fill_manual(values = c(col.Temp, "white"), name = "Temp (°C)", guide = "none") +
+      scale_color_manual(values = col.Temp, name = "Temp (°C)", guide = "none") +
+      
+      ggnewscale::new_scale_color() +
+      ggnewscale::new_scale_fill() +
+      
+      ggbeeswarm::geom_quasirandom(aes(#color = Temperature,
+        color = Temperature),
+        size = 1.5,
+        fill = "white",
+        shape = 23,
+        stroke = .75,
+        show.legend = T,
+        dodge.width = 6,
+        varwidth = T,
+        na.rm = T) +
+      
+      scale_fill_manual(values = c(col.Temp, "white"), name = "Temp (°C)", guide = "none") +
+      scale_color_manual(values = col.Temp, name = "Temp (°C)", guide = "none") +
+      
+      ggnewscale::new_scale_color() +
+      ggnewscale::new_scale_fill() +
+      
+      geom_smooth(#data = modelbased::estimate_expectation(alpha.stats[[tmp.resSubSection]][["TEMP:DPE"]][["GLM"]][["Simpson"]], data = "grid"),
+        aes(x = DPE, y = Alpha.Score, color = Temperature, fill = Temperature, group = Temperature),
+        size = 3,
+        method = "glm", se = F,
+        inherit.aes = T) +
+      
+      scale_color_manual(values = c("white","white","white")) +
+      scale_fill_manual(values = c("white","white","white")) +
+      ggnewscale::new_scale_color() +
+      ggnewscale::new_scale_fill() +
+      
+      geom_smooth(#data = modelbased::estimate_expectation(alpha.stats[[tmp.resSubSection]][["TEMP:DPE"]][["GLM"]][["Simpson"]], data = "grid"),
+        aes(x = DPE, y = Alpha.Score, color = Temperature, group = Temperature),
+        size = 1.5,
+        method = "glm", se = F,
+        inherit.aes = T) +
+      
+      scale_fill_manual(values = c(col.Temp, "white"), name = "Temp (°C)", guide = "none") +
+      scale_color_manual(values = col.Temp, name = "Temp (°C)", guide = "none") +
+      
+      # Scaling
+      scale_x_continuous(limits = c(-5, 47), breaks = seq(0, 42, by = 7)) +
+      scale_y_continuous(limits = c(-0.05, 1), breaks = seq(0, 1, by = .25)) + # Commented, since no sig comparisons, so no sig bars
+      
+      # Labels
+      labs(#title = "Alpha Diversity Scores across Temperature and Time", #caption = "Alpha; All",
+        x = "Days post exposure (dpe)",
+        y = "Alpha Score (Normalized)"
+      ) +
+      
+      # Facet
+      facet_grid(Alpha.Metric ~ Temperature, labeller = labeller(Temperature = c("28" = "28°C", "32" = "32°C", "35" = "35°C"))) +
+      
+      # Theme Settings
+      theme(legend.position = "none",
+            legend.justification = "center",
+            legend.direction = "horizontal",
+            panel.grid.major.x = element_blank(),
+            axis.text.x = element_text(size = 12),
+            strip.text.y = element_text(size = 12)
+      ) #+
+      
+      # Statistical Notation
+      # ggpubr::stat_pvalue_manual(tmp.sig.bars %>%
+      #                              dplyr::mutate(group1 = as.numeric(group1),
+      #                                            group2 = as.numeric(group2)),
+      #                            label = "p.adj.sig",
+      #                            y.position = c(1,1.1),
+      #                            step.group.by = "term",
+      #                            size = 3,
+      #                            label.size = 5,
+      #                            bracket.size = .75,
+      #                            hide.ns = T)   
+  }
 
 
 ## BETA --------------------------------------------------------------------

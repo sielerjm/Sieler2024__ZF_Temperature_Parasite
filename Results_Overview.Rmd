@@ -101,7 +101,7 @@ alpha.plots[[tmp.subset]][[tmp.variables]][["TUKEY"]][["Plot"]] +
 
 ###### (hide)
 
-Press on tabs to display tables. Scroll to see additional rows.
+Click on tabs to display tables. Scroll to see additional rows.
 
 ```{r empty-2A}
 
@@ -167,7 +167,7 @@ beta.plots[[tmp.subset]][[tmp.variables]][["CAP"]][["Plot"]]
 
 ###### (hide)
 
-Press on tabs to display tables. Scroll to see additional rows.
+Click on tabs to display tables. Scroll to see additional rows.
 
 ```{r empty-2B}
 
@@ -234,7 +234,7 @@ alpha.plots[[tmp.subset]][[tmp.variables]][["TUKEY"]][["Plot"]]
 
 ###### (hide)
 
-Press on tabs to display tables. Scroll to see additional rows.
+Click on tabs to display tables. Scroll to see additional rows.
 
 ```{r empty-2C}
 
@@ -300,7 +300,7 @@ beta.plots[[tmp.subset]][[tmp.variables]][["CAP"]][["Plot"]]
 
 ###### (hide)
 
-Press on tabs to display tables. Scroll to see additional rows.
+Click on tabs to display tables. Scroll to see additional rows.
 
 ```{r empty-2D}
 
@@ -433,7 +433,7 @@ worm.plots[[tmp.subset]][[tmp.variables]][["TUKEY_GLM.NB"]][["Plot"]] +
 
 ###### (hide)
 
-Press on tabs to display tables. Scroll to see additional rows.
+Click on tabs to display tables. Scroll to see additional rows.
 
 ```{r empty-3A}
 
@@ -509,7 +509,7 @@ worm.plots[[tmp.subset]][[tmp.variables]][["TUKEY_GLM.NB"]][["Plot"]]
 
 ###### (hide)
 
-Press on tabs to display tables. Scroll to see additional rows.
+Click on tabs to display tables. Scroll to see additional rows.
 
 ```{r empty-S3-1-1}
 
@@ -574,7 +574,7 @@ worm.plots[[tmp.subset]][[tmp.variables]][["TUKEY_GLM.NB"]][["Plot_v2"]]
 
 ###### (hide)
 
-Press on tabs to display tables. Scroll to see additional rows.
+Click on tabs to display tables. Scroll to see additional rows.
 
 ```{r empty-S3-1-2}
 
@@ -641,7 +641,7 @@ alpha.plots[[tmp.subset]][[tmp.variables]][["TUKEY"]][["Plot"]] +
 
 ###### (hide)
 
-Press on tabs to display tables. Scroll to see additional rows.
+Click on tabs to display tables. Scroll to see additional rows.
 
 ```{r empty-4A}
 
@@ -707,7 +707,7 @@ beta.plots[[tmp.subset]][[tmp.variables]][["CAP"]][["Plot"]]
 
 ###### (hide)
 
-Press on tabs to display tables. Scroll to see additional rows.
+Click on tabs to display tables. Scroll to see additional rows.
 
 ```{r empty-4B}
 
@@ -776,7 +776,7 @@ alpha.plots[[tmp.subset]][[tmp.variables]][["TUKEY"]][["Plot"]] +
 
 ###### (hide)
 
-Press on tabs to display tables. Scroll to see additional rows.
+Click on tabs to display tables. Scroll to see additional rows.
 
 ```{r empty-4C}
 
@@ -842,7 +842,7 @@ beta.plots[[tmp.subset]][[tmp.variables]][["CAP"]][["Plot"]]
 
 ###### (hide)
 
-Press on tabs to display tables. Scroll to see additional rows.
+Click on tabs to display tables. Scroll to see additional rows.
 
 ```{r empty-4D}
 
@@ -888,7 +888,57 @@ beta.stats[[tmp.subset]][[tmp.variables]][["HoD.Tukey.Table"]] %>%
 
 ```
 
+### {.tabset}
 
+#### Suppl.
+
+Click on tabs to reveal supplementary figures and tables.
+
+
+#### S4A
+
+
+```{r include=FALSE}
+# creates a temporary variable to aid in automating knitted document
+tmp.subset <- "Exposed"
+tmp.variables <- "TEMP"
+
+```
+
+```{r plots-S4A, fig.height=6.5, fig.width=14, message=F, warning=FALSE, echo=FALSE}
+alpha.plots[[tmp.subset]][[tmp.variables]][["TUKEY"]][["Plot_SUPP"]]
+```
+
+#### S4B
+
+(in-progress)
+
+```{r}
+
+```
+
+
+#### S4C
+
+
+```{r include=FALSE}
+# creates a temporary variable to aid in automating knitted document
+tmp.subset <- "Exposed"
+tmp.variables <- "TEMP:DPE"
+
+```
+
+```{r plots-S4C, fig.height=6.5, fig.width=14, message=F, warning=FALSE, echo=FALSE}
+alpha.plots[[tmp.subset]][[tmp.variables]][["TUKEY"]][["Plot_SUPP"]]
+```
+
+#### S4D
+
+(in-progress)
+
+```{r}
+
+```
 
 ### 5) Water temperature influences gut microbiome’s sensitivity to parasite exposure {.tabset}
 
@@ -916,7 +966,7 @@ alpha.plots[["PreExposed"]][["TEMP:TREAT"]][["TUKEY"]][["Plot"]]
 
 ###### (hide)
 
-Press on tabs to display tables. Scroll to see additional rows.
+Click on tabs to display tables. Scroll to see additional rows.
 
 ```{r empty-5A}
 
@@ -983,7 +1033,7 @@ alpha.plots[["PostExposed"]][["TEMP:TREAT"]][["TUKEY"]][["Plot"]]
 
 ###### (hide)
 
-Press on tabs to display tables. Scroll to see additional rows.
+Click on tabs to display tables. Scroll to see additional rows.
 
 ```{r empty-5B}
 
@@ -1050,7 +1100,7 @@ beta.plots[["PreExposed"]][["TEMP:TREAT"]][["CAP"]][["Plot"]]
 
 ###### (hide)
 
-Press on tabs to display tables. Scroll to see additional rows.
+Click on tabs to display tables. Scroll to see additional rows.
 
 ```{r empty-5C}
 
@@ -1117,7 +1167,7 @@ beta.plots[["PostExposed"]][["TEMP:TREAT"]][["CAP"]][["Plot"]]
 
 ###### (hide)
 
-Press on tabs to display tables. Scroll to see additional rows.
+Click on tabs to display tables. Scroll to see additional rows.
 
 ```{r empty-5D}
 
@@ -1163,7 +1213,58 @@ beta.stats[[tmp.subset]][[tmp.variables]][["HoD.Tukey.Table"]] %>%
 
 ```
 
- 
+### {.tabset}
+
+#### Suppl.
+
+Click on tabs to reveal supplementary figures and tables.
+
+
+#### S5A
+
+
+```{r include=FALSE}
+# creates a temporary variable to aid in automating knitted document
+tmp.subset <- "PreExposed"
+tmp.variables <- "TEMP:TREAT"
+
+```
+
+```{r plots-S5A, fig.height=6.5, fig.width=14, message=F, warning=FALSE, echo=FALSE}
+alpha.plots[[tmp.subset]][[tmp.variables]][["TUKEY"]][["Plot_SUPP"]]
+```
+
+
+#### S5B
+
+
+```{r include=FALSE}
+# creates a temporary variable to aid in automating knitted document
+tmp.subset <- "PostExposed"
+tmp.variables <- "TEMP:TREAT"
+
+```
+
+```{r plots-S5B, fig.height=6.5, fig.width=14, message=F, warning=FALSE, echo=FALSE}
+alpha.plots[[tmp.subset]][[tmp.variables]][["TUKEY"]][["Plot_SUPP"]]
+```
+
+#### S5C
+
+(in-progress)
+
+```{r}
+
+```
+
+
+#### S5D
+
+(in-progress)
+
+```{r}
+
+```
 
 ### 6) Water temperature moderates the impact of infection burden on fish gut microbiomes {.tabset}
 
@@ -1189,7 +1290,7 @@ alpha.plots[[tmp.subset]][["TEMP:PATH"]][["TUKEY"]][["Plot"]]
 
 ###### (hide)
 
-Press on tabs to display tables. Scroll to see additional rows.
+Click on tabs to display tables. Scroll to see additional rows.
 
 ```{r empty-6A}
 
@@ -1236,6 +1337,8 @@ alpha.stats[[tmp.subset]][[tmp.variables]][["Tukey.Table"]] %>%
 ```
 
 
+
+
 #### 6B)
 
 ```{r plots-6B, fig.height=6.5, fig.width=6.5, message=F, warning=FALSE, echo=FALSE}
@@ -1248,7 +1351,7 @@ beta.plots[[tmp.subset]][["TEMP:PATH"]][["CAP"]][["Plot"]]
 
 ###### (hide)
 
-Press on tabs to display tables. Scroll to see additional rows.
+Click on tabs to display tables. Scroll to see additional rows.
 
 ```{r empty-6B}
 
@@ -1315,7 +1418,7 @@ alpha.plots[[tmp.subset]][["TEMP:CLUSTER"]][["Cluster"]][["Plot"]]
 
 ###### (hide)
 
-Press on tabs to display tables. Scroll to see additional rows.
+Click on tabs to display tables. Scroll to see additional rows.
 
 ```{r empty-6C}
 
@@ -1383,7 +1486,7 @@ beta.plots[[tmp.subset]][[tmp.variables]][["CAP"]][["Plot"]]
 
 ###### (hide)
 
-Press on tabs to display tables. Scroll to see additional rows.
+Click on tabs to display tables. Scroll to see additional rows.
 
 ```{r empty-6D}
 
@@ -1429,6 +1532,58 @@ Press on tabs to display tables. Scroll to see additional rows.
 
 ```
 
+### {.tabset}
+
+#### Suppl.
+
+Click on tabs to reveal supplementary figures and tables.
+
+
+#### S6A
+
+
+```{r include=FALSE}
+# creates a temporary variable to aid in automating knitted document
+tmp.subset <- "Exposed"
+tmp.variables <- "TEMP:PATH"
+
+```
+
+```{r plots-S6A, fig.height=6.5, fig.width=14, message=F, warning=FALSE, echo=FALSE}
+alpha.plots[[tmp.subset]][[tmp.variables]][["TUKEY"]][["Plot_SUPP"]]
+```
+
+
+#### S6B
+
+(in-progress)
+
+```{r}
+
+```
+
+#### S6C
+
+```{r include=FALSE}
+# creates a temporary variable to aid in automating knitted document
+tmp.subset <- "Exposed"
+tmp.variables <- "TEMP:CLUSTER"
+
+```
+
+```{r plots-S6C, fig.height=6.5, fig.width=14, message=F, warning=FALSE, echo=FALSE}
+
+alpha.plots[[tmp.subset]][[tmp.variables]][["TUKEY"]][["Plot_SUPP"]]
+
+```
+
+#### S6D
+
+(in-progress)
+
+```{r}
+
+```
 
 
 

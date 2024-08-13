@@ -256,7 +256,7 @@ alpha.plots[[tmp.resSubSection]][["TEMP:DPE"]][["TUKEY"]][["Plot"]] <-
 ### SUPP --------------------------------------------------------------------
 
 
-#### TEMP --------------------------------------------------------------------
+#### S2A: TEMP --------------------------------------------------------------------
 
 alpha.plots[[tmp.resSubSection]][["TEMP"]][["TUKEY"]][["Plot_SUPP"]] <- {
  
@@ -363,7 +363,7 @@ alpha.plots[[tmp.resSubSection]][["TEMP"]][["TUKEY"]][["Plot_SUPP"]] <- {
                                hide.ns = T)   
 }
 
-#### TEMP:DPE --------------------------------------------------------------------
+#### S2C: TEMP:DPE --------------------------------------------------------------------
 
 alpha.plots[[tmp.resSubSection]][["TEMP:DPE"]][["TUKEY"]][["Plot_SUPP"]] <-
  {
@@ -384,10 +384,10 @@ alpha.plots[[tmp.resSubSection]][["TEMP:DPE"]][["TUKEY"]][["Plot_SUPP"]] <-
     # dplyr::mutate(DPE = as.numeric(levels(DPE)[DPE])) %>%
     ggplot(aes(x = DPE, y = Alpha.Score, group = interaction(Temperature, DPE))) +
     
-    geom_ribbon(data = modelbased::estimate_expectation(alpha.stats[[tmp.resSubSection]][["TEMP:DPE"]][["GLM"]][["Simpson"]], data = "grid"),
-                aes(x = DPE, y = Predicted, color = Temperature, fill = Temperature, 
-                    ymin = CI_low, ymax = CI_high), alpha = 0.2,
-                inherit.aes = F) + 
+    # geom_ribbon(data = modelbased::estimate_expectation(alpha.stats[[tmp.resSubSection]][["TEMP:DPE"]][["GLM"]][["Simpson"]], data = "grid"),
+    #             aes(x = DPE, y = Predicted, color = Temperature, fill = Temperature, 
+    #                 ymin = CI_low, ymax = CI_high), alpha = 0.2,
+    #             inherit.aes = F) + 
     
     geom_violin(aes(#color = Temperature,
       fill = Temperature),
@@ -443,22 +443,22 @@ alpha.plots[[tmp.resSubSection]][["TEMP:DPE"]][["TUKEY"]][["Plot_SUPP"]] <-
     ggnewscale::new_scale_color() +
     ggnewscale::new_scale_fill() +
     
-    geom_smooth(data = modelbased::estimate_expectation(alpha.stats[[tmp.resSubSection]][["TEMP:DPE"]][["GLM"]][["Simpson"]], data = "grid"),
-                aes(x = DPE, y = Predicted, color = Temperature, fill = Temperature),
+    geom_smooth(#data = modelbased::estimate_expectation(alpha.stats[[tmp.resSubSection]][["TEMP:DPE"]][["GLM"]][["Simpson"]], data = "grid"),
+                aes(x = DPE, y = Alpha.Score, color = Temperature, fill = Temperature, group = Temperature),
                 size = 3,
                 method = "glm", se = T,
-                inherit.aes = F) +
+                inherit.aes = T) +
     
     scale_color_manual(values = c("white","white","white")) +
     scale_fill_manual(values = c("white","white","white")) +
     ggnewscale::new_scale_color() +
     ggnewscale::new_scale_fill() +
     
-    geom_smooth(data = modelbased::estimate_expectation(alpha.stats[[tmp.resSubSection]][["TEMP:DPE"]][["GLM"]][["Simpson"]], data = "grid"),
-                aes(x = DPE, y = Predicted, color = Temperature),
+    geom_smooth(#data = modelbased::estimate_expectation(alpha.stats[[tmp.resSubSection]][["TEMP:DPE"]][["GLM"]][["Simpson"]], data = "grid"),
+                aes(x = DPE, y = Alpha.Score, color = Temperature, group = Temperature),
                 size = 1.5,
                 method = "glm", se = F,
-                inherit.aes = F) +
+                inherit.aes = T) +
     
     scale_fill_manual(values = c(col.Temp, "white"), name = "Temp (°C)", guide = "none") +
     scale_color_manual(values = col.Temp, name = "Temp (°C)", guide = "none") +
