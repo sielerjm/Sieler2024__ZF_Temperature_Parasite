@@ -1630,6 +1630,8 @@ alpha.plots[[tmp.subset]][[tmp.variables]][["TUKEY"]][["Plot_SUPP"]]
 
 #### S6D {.tabset}
 
+Click on tabs to cycle through different cluster comparisons between alpha and beta diversity.
+
 ```{r include=FALSE}
 # creates a temporary variable to aid in automating knitted document
 tmp.subset <- "Exposed"
@@ -1690,4 +1692,24 @@ diffAbnd.plots[[tmp.subset]][["All__TEMP_DPE_TREAT_PATH_WORM_CLUSTER"]][["Maasli
 ```
 
 
+### {.tabset}
 
+#### Suppl.
+
+Click on tabs to reveal supplementary figures and tables.
+
+
+#### S7X
+
+
+```{r include=FALSE}
+# creates a temporary variable to aid in automating knitted document
+tmp.subset <- "All"
+
+```
+
+```{r plots-S7X-1, echo=FALSE}
+
+diffAbnd.plots[[tmp.subset]][["All__TEMP_DPE_TREAT_PATH_WORM_CLUSTER"]][["Maaslin2"]][["All_sig"]]
+
+```

@@ -55,7 +55,7 @@ global_min <- min(diffAbnd.stats[["All"]][["All__TEMP_DPE_TREAT_PATH_WORM_CLUSTE
 
 global_max <- max(diffAbnd.stats[["All"]][["All__TEMP_DPE_TREAT_PATH_WORM_CLUSTER"]][["Maaslin2"]][["output"]][["coef"]], na.rm = TRUE)
 
-gradient_palette <- scales::col_numeric(palette = c("blue", "white", "red"), domain = c(global_min, global_max))
+gradient_palette <- scales::col_numeric(palette = c("blue", "white", "red"), domain = c(-8.1, 8.1)) # (GLobal Min and max, but I just set this manually.
 
 
 # Function for applying color formatting and other GT table styles
