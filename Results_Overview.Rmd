@@ -369,9 +369,17 @@ alpha.plots[[tmp.subset]][[tmp.variables]][["TUKEY"]][["Plot_SUPP"]]
 
 #### S2B
 
-(in-progress)
+```{r include=FALSE}
+# creates a temporary variable to aid in automating knitted document
+tmp.subset <- "Unexposed"
+tmp.variables <- "TEMP"
 
-```{r}
+```
+
+```{r plots-S2B, fig.height=6.5, fig.width=14, message=F, warning=FALSE, echo=FALSE}
+
+beta.plots[[tmp.subset]][[tmp.variables]][["CAP"]][["Plot_SUPP"]]
+
 
 ```
 
@@ -392,9 +400,16 @@ alpha.plots[[tmp.subset]][[tmp.variables]][["TUKEY"]][["Plot_SUPP"]]
 
 #### S2D
 
-(in-progress)
+```{r include=FALSE}
+# creates a temporary variable to aid in automating knitted document
+tmp.subset <- "Unexposed"
+tmp.variables <- "TEMP:DPE"
 
-```{r}
+```
+
+```{r plots-S2D, fig.height=6.5, fig.width=14, message=F, warning=FALSE, echo=FALSE}
+
+beta.plots[[tmp.subset]][[tmp.variables]][["CAP"]][["Plot_SUPP"]]
 
 ```
 
@@ -490,7 +505,7 @@ Click on tabs to reveal supplementary figures and tables.
 ```
 
 
-#### S3-1.1
+#### S3-X.1
 
 ```{r include=FALSE}
 # creates a temporary variable to aid in automating knitted document
@@ -499,7 +514,7 @@ tmp.variables <- "TEMP:DPE"
 
 ```
 
-```{r plots-S3-1-1, fig.height=6.5, fig.width=14, message=F, warning=FALSE, echo=FALSE}
+```{r plots-S3-X-1, fig.height=6.5, fig.width=14, message=F, warning=FALSE, echo=FALSE}
 
 worm.plots[[tmp.subset]][[tmp.variables]][["TUKEY_GLM.NB"]][["Plot"]]
 
@@ -511,14 +526,14 @@ worm.plots[[tmp.subset]][[tmp.variables]][["TUKEY_GLM.NB"]][["Plot"]]
 
 Click on tabs to display tables. Scroll to see additional rows.
 
-```{r empty-S3-1-1}
+```{r empty-S3-X-1}
 
 ```
 
 
 ###### GLM
 
-```{r stats-S3-1-1-glm, echo=FALSE}
+```{r stats-S3-X-1-glm, echo=FALSE}
 
 worm.stats[[tmp.subset]][[tmp.variables]][["GLM.NB.Table"]] %>%
   # Set the maximum height to 6.5 inches (6.5 * 96 pixels = 624 pixels)
@@ -531,7 +546,7 @@ worm.stats[[tmp.subset]][[tmp.variables]][["GLM.NB.Table"]] %>%
 
 ###### ANOVA
 
-```{r stats-S3-1-1-anova, echo=FALSE}
+```{r stats-S3-X-1-anova, echo=FALSE}
 
 worm.stats[[tmp.subset]][[tmp.variables]][["ANOVA.Table"]] %>%
   # Set the maximum height to 6.5 inches (6.5 * 96 pixels = 624 pixels)
@@ -544,7 +559,7 @@ worm.stats[[tmp.subset]][[tmp.variables]][["ANOVA.Table"]] %>%
 
 ###### Tukey
 
-```{r stats-S3-1-1-tukey, echo=FALSE}
+```{r stats-S3-X-1-tukey, echo=FALSE}
 
 worm.stats[[tmp.subset]][[tmp.variables]][["TUKEY_GLM.NB.Table"]] %>%
   # Set the maximum height to 6.5 inches (6.5 * 96 pixels = 624 pixels)
@@ -555,7 +570,7 @@ worm.stats[[tmp.subset]][[tmp.variables]][["TUKEY_GLM.NB.Table"]] %>%
 
 ```
 
-#### S3-1.2
+#### S3-X.2
 
 ```{r include=FALSE}
 # creates a temporary variable to aid in automating knitted document
@@ -564,7 +579,7 @@ tmp.variables <- "TEMP:DPE"
 
 ```
 
-```{r plots-S3-1-2, fig.height=6.5, fig.width=14, message=F, warning=FALSE, echo=FALSE}
+```{r plots-S3-X-2, fig.height=6.5, fig.width=14, message=F, warning=FALSE, echo=FALSE}
 
 worm.plots[[tmp.subset]][[tmp.variables]][["TUKEY_GLM.NB"]][["Plot_v2"]]
 
@@ -576,14 +591,14 @@ worm.plots[[tmp.subset]][[tmp.variables]][["TUKEY_GLM.NB"]][["Plot_v2"]]
 
 Click on tabs to display tables. Scroll to see additional rows.
 
-```{r empty-S3-1-2}
+```{r empty-S3-X-2}
 
 ```
 
 
 ###### GLM
 
-```{r stats-S3-1-2-glm, echo=FALSE}
+```{r stats-S3-X-2-glm, echo=FALSE}
 
 worm.stats[[tmp.subset]][[tmp.variables]][["GLM.NB.Table"]] %>%
   # Set the maximum height to 6.5 inches (6.5 * 96 pixels = 624 pixels)
@@ -596,7 +611,7 @@ worm.stats[[tmp.subset]][[tmp.variables]][["GLM.NB.Table"]] %>%
 
 ###### ANOVA
 
-```{r stats-S3-1-2-anova, echo=FALSE}
+```{r stats-S3-X-2-anova, echo=FALSE}
 
 worm.stats[[tmp.subset]][[tmp.variables]][["ANOVA.Table"]] %>%
   # Set the maximum height to 6.5 inches (6.5 * 96 pixels = 624 pixels)
@@ -911,9 +926,17 @@ alpha.plots[[tmp.subset]][[tmp.variables]][["TUKEY"]][["Plot_SUPP"]]
 
 #### S4B
 
-(in-progress)
+```{r include=FALSE}
+# creates a temporary variable to aid in automating knitted document
+tmp.subset <- "Exposed"
+tmp.variables <- "TEMP"
 
-```{r}
+```
+
+```{r plots-S4B, fig.height=6.5, fig.width=14, message=F, warning=FALSE, echo=FALSE}
+
+beta.plots[[tmp.subset]][[tmp.variables]][["CAP"]][["Plot_SUPP"]]
+
 
 ```
 
@@ -934,9 +957,16 @@ alpha.plots[[tmp.subset]][[tmp.variables]][["TUKEY"]][["Plot_SUPP"]]
 
 #### S4D
 
-(in-progress)
+```{r include=FALSE}
+# creates a temporary variable to aid in automating knitted document
+tmp.subset <- "Exposed"
+tmp.variables <- "TEMP:DPE"
 
-```{r}
+```
+
+```{r plots-S4D, fig.height=6.5, fig.width=14, message=F, warning=FALSE, echo=FALSE}
+
+beta.plots[[tmp.subset]][[tmp.variables]][["CAP"]][["Plot_SUPP"]]
 
 ```
 

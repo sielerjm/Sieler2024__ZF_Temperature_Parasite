@@ -477,7 +477,8 @@ alpha.plots[[tmp.resSubSection]][["TEMP:CLUSTER"]][["TUKEY"]][["Plot_SUPP"]] <-
         legend.position = "none",
         #   legend.direction = "horizontal",
         #   legend.title.position = "top",
-        panel.grid.minor.y = element_blank())
+        panel.grid.minor.y = element_blank(),
+        strip.text.y = element_text(size = 12))
   }
 
 ## BETA --------------------------------------------------------------------
