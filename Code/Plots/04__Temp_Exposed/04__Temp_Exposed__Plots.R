@@ -831,10 +831,10 @@ alpha.plots[[tmp.resSubSection]][["TEMP:DPE"]][["TUKEY"]][["Plot_SUPP"]] <-
 beta.plots[[tmp.resSubSection]][["TEMP:DPE"]][["CAP"]][["Plot_SUPP"]] <-
   {
     # Canberra
-    tmp.plot.canberra <-
+    tmp.plot.bray <-
       tmp.psOBJ %>%
       tax_agg("Genus") %>%
-      dist_calc("canberra") %>%
+      dist_calc("bray") %>%
       dist_permanova(
         seed = 1,
         variables = c("Temperature", "DPE", "Temp.DPE"),
@@ -887,15 +887,15 @@ beta.plots[[tmp.resSubSection]][["TEMP:DPE"]][["CAP"]][["Plot_SUPP"]] <-
       scale_fill_manual(values = c(col.Temp, "white"), labels = c("28°C", "32°C", "35°C"))   +
       
       # scale_x_continuous(limits = c(-3.5,3)) +
-      labs(caption = "canberra") +
+      labs(caption = "bray-curtis") +
       
       theme(legend.position = "bottom",
             legend.direction = "horizontal",
             strip.text = element_text(size = 14))
     
     # Reshuffle layers so ellipse is in background
-    tmp.plot.canberra <- 
-      rearrange_layers(tmp.plot.canberra)
+    tmp.plot.bray <- 
+      rearrange_layers(tmp.plot.bray)
     
     # Unifrac
     tmp.plot.unifrac <-
@@ -960,7 +960,7 @@ beta.plots[[tmp.resSubSection]][["TEMP:DPE"]][["CAP"]][["Plot_SUPP"]] <-
       rearrange_layers(tmp.plot.unifrac)
     
     # Combine plots
-    cowplot::plot_grid(tmp.plot.canberra, tmp.plot.unifrac, ncol = 2)
+    cowplot::plot_grid(tmp.plot.bray, tmp.plot.unifrac, ncol = 2)
   }
 
 

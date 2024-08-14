@@ -239,7 +239,7 @@ legend.html <- htmltools::HTML('
   <div style="display: flex; align-items: center;">
     <div style="display: flex; flex-direction: column; margin-left: 10px; align-items: center;">
     <span style="color: black; font-weight: bold;">Coefficient</span>
-    <span style="color: black; font-weight: bold;">7</span>
+    <span style="color: black; font-weight: bold;">8</span>
       <div style="background: linear-gradient(red, white, blue); width: 20px; height: 100px; border: 1px solid black;"></div>
       <div style="display: flex; justify-content: space-between; font-size: 12px;">
       </div>
