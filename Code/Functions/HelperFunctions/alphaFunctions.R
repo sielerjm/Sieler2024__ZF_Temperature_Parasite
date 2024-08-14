@@ -205,12 +205,75 @@ run_tukey_glm <- function(data, alpha_score_col, alpha_metric_col, variables, gr
 }
 
 
-# -------------------------------------------------------------------------
+
+
+# Levene's test (Alpha) -------------------------------------------------------------------------
 # Description: 
 # Input: 
 # Output: 
 
+run_leveneTest <- function(data, alpha_metric_col = "Alpha.Metric", alpha_score_col = "Alpha.Score", formula_str) {
+  # Extract unique alpha metrics
+  unique_metrics <- data %>% select(all_of(alpha_metric_col)) %>% distinct() %>% pull()
+  
+  # Run GLM models for each unique alpha metric
+  test.res <- purrr::map(unique_metrics, function(x){
+    car::leveneTest( formula = as.formula(formula_str),
+                     data = subset(data, Alpha.Metric == x)
+         )
+  }) %>% setNames(unique_metrics) 
+  
+  return(test.res)
+}
 
+run_tukey_glm <- function(data, alpha_score_col, alpha_metric_col, variables, group_by_var = NULL) {
+  
+  # Helper function to run GLM and Tukey test
+  run_glm_tukey <- function(metric_data, var, alpha_score_col, group_var = NULL) {
+    if (!is.null(group_var)) {
+      results <- metric_data %>%
+        group_by(.data[[group_var]]) %>%
+        group_modify(~ {
+          .x[[var]] <- as.factor(.x[[var]])  # Convert to factor if not already
+          formula <- as.formula(paste(alpha_score_col, "~", var))
+          glm_fit <- glm(formula, data = .x, family = quasibinomial)
+          mcp_arg <- eval(parse(text = paste0("mcp(", var, " = \"Tukey\")")))
+          tukey_test <- glht(glm_fit, linfct = mcp_arg)
+          tidy(tukey_test) %>%
+            mutate(Variable = var, Group = .y[[group_var]])
+        }) %>%
+        ungroup() 
+    } else {
+      metric_data[[var]] <- as.factor(metric_data[[var]])  # Convert to factor if not already
+      formula <- as.formula(paste(alpha_score_col, "~", var))
+      glm_fit <- glm(formula, data = metric_data, family = quasibinomial)
+      mcp_arg <- eval(parse(text = paste0("mcp(", var, " = \"Tukey\")")))
+      tukey_test <- glht(glm_fit, linfct = mcp_arg)
+      results <- tidy(tukey_test) %>%
+        mutate(Variable = var)
+    }
+    return(results) 
+  }
+  
+  # Get unique alpha metrics
+  unique_metrics <- unique(data[[alpha_metric_col]])
+  
+  results <- unique_metrics %>%
+    set_names() %>%
+    map_df(~ {
+      metric_data <- filter(data, .data[[alpha_metric_col]] == .x)
+      other_vars <- setdiff(variables, group_by_var)
+      other_vars %>%
+        set_names() %>%
+        map_df(~ run_glm_tukey(metric_data, .x, alpha_score_col, group_by_var)) %>%
+        mutate(Alpha.Metric = .x) %>%
+        dplyr::select(-any_of("null.value")) %>%
+        tidyr::separate(contrast, c('group1', 'group2'), sep = " - ") %>% # Dataframe clean up
+        dplyr::mutate(`.y.` = "Alpha.Score", .after = 1) 
+    })
+  
+  return(results) 
+}
 
 # -------------------------------------------------------------------------
 # Description: 
