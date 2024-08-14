@@ -1,9 +1,13 @@
 ---
-title: "Main Figures and Results"
+title: "Zebrafish Temperature and Parasite"
+subtitle: "Main Figures and Results"
 author: "Michael Sieler"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: 
-  html_document: default
+  html_document:
+    toc: true           # Enable the table of contents
+    toc_depth: 3        # Set the depth of headers to include in the TOC (1, 2, 3, etc.)
+    toc_float: true     # Make the TOC float on the page (optional)
 ---
 
 ```{r setup, include=FALSE}
@@ -53,8 +57,9 @@ source(paste0(proj.path,"/Code/Functions/StartFunctions/plot_settings.R"))
 
 ```
 
+## Overview
 
-## Experimental Design Schematic
+### Fig. 1) Experimental Design Schematic
 
 ```{r exp-scheme, fig.width=7.5, echo=FALSE}
 
@@ -68,7 +73,7 @@ Fig.1 Experimental design showing treatments and husbandry events during the cou
 ## Results
 
 
-### 2) Water temperature shapes gut microbiome structure {.tabset}
+### Fig. 2) Water temperature shapes gut microbiome structure {.tabset}
 
 
 Fig. 2 Effects of water temperature on gut microbiomes of parasite unexposed zebrafish. (A) Simpson’s Index of diversity shows that gut microbiome diversity significantly differs between fish reared at 28°C and 35°C water temperatures. (B) Capscale ordination based on the Bray-Curtis dissimilarity of gut microbiome composition. The analysis shows that gut microbiome composition significantly differs between fish reared at different water temperatures. (C) Simpson’s Index of diversity shows microbial gut diversity increases with time from 0 days post exposure (dpe) to 42 dpe, irrespective of water temperature. (D) Capscale ordination of gut microbiome composition based on the Bray-Curtis dissimilarity constrained on the main effects of water temperature and time, and their interaction. The analysis shows that shows that gut microbiome composition differs between fish across time depending on water temperature. Ribbons and ellipses indicate 95% confidence interval. Only statistically significant relationships are shown. A “*” indicates statistical significance below the “0.05” level. Black arrows indicate direction of greatest change in the indicated covariates.
@@ -413,7 +418,7 @@ beta.plots[[tmp.subset]][[tmp.variables]][["CAP"]][["Plot_SUPP"]]
 
 ```
 
-### 3) Parasitic worm burden differs by water temperature {.tabset}
+### Fig. 3) Parasitic worm burden differs by water temperature {.tabset}
 
 
 Fig. 3 Histological sections stained with ### stain in zebrafish exposed to Pseudocapillaria tomentosa examined at ### days post exposure. (A) Nematodes in intestinal lumen. Arrow = ###. (B) Infection outcome analysis of fish exposed to P. tomentosa (n = 89) by temperature. Fish reared at 28°C and 32°C water temperatures had significantly different infection burden to fish reared at 35°C water temperature. Only one fish reared at 35°C was identified as being positively infected by wet mount.
@@ -624,7 +629,7 @@ worm.stats[[tmp.subset]][[tmp.variables]][["ANOVA.Table"]] %>%
 
 
 
-### 4) Water temperature differentially stratifies gut microbiome communities of parasite exposed fish {.tabset}
+### Fig. 4) Water temperature differentially stratifies gut microbiome communities of parasite exposed fish {.tabset}
 
 Fig. 4 Effects of parasite exposure and water temperature on gut microbiomes of zebrafish. (A) Simpson’s Index of diversity shows that gut microbiome diversity significantly differs between fish reared at 28°C water temperature to fish reared at 32°C and 35°C water temperatures. (B) Capscale ordination based on the Bray-Curtis dissimilarity of gut microbiome composition. The analysis shows that gut microbiome composition significantly differs between parasite exposed fish reared at different water temperatures. (C) Simpson’s Index of diversity shows microbial gut diversity decreases with time from 0 days post exposure (dpe) to 42 dpe in parasite exposed fish reared at 28°C water temperature. (D) Capscale ordination of gut microbiome composition based on the Canberra dissimilarity constrained on the main effects of water temperature and time, and their interaction. The analysis shows that shows that gut microbiome composition differs between parasite exposed fish across time depending on water temperature. Ribbons and ellipses indicate 95% confidence interval. Only statistically significant relationships are shown. A “*” indicates statistical significance below the “0.05” level. Black arrows indicate direction of greatest change in the indicated covariates.
 
@@ -970,7 +975,7 @@ beta.plots[[tmp.subset]][[tmp.variables]][["CAP"]][["Plot_SUPP"]]
 
 ```
 
-### 5) Water temperature influences gut microbiome’s sensitivity to parasite exposure {.tabset}
+### Fig. 5) Water temperature influences gut microbiome’s sensitivity to parasite exposure {.tabset}
 
 
 Fig. 5  Water temperature influences gut microbiome response to Pseudocapillaria tomentosa. (A) Simpson’s Index for diversity of parasite unexposed and pre-exposed fish at 0 days post exposure (dpe). Prior to parasite exposure gut microbial alpha-diversity does not significantly differ between fish reared at the same water temperature. (B)  Simpson’s Index for diversity of parasite unexposed and exposed fish. Gut microbial alpha-diversity significantly differs between parasite exposed fish reared at 28°C and 32°C water temperature relative to unexposed control fish, but gut microbial alpha-diversity does not differ between parasite unexposed and exposed fish reared at 35°C water temperature. Capscale ordinations based on the Bray-Curtis dissimilarity of gut microbiome composition constrained on the main and interaction effects of temperature and parasite exposure (treatment) (C) of pre-exposed samples at 0 dpe, and  (D) post-exposed samples after 0 dpe. The analysis shows that gut microbiome composition of fish significantly differs between water temperature and parasite exposure in pre- and post-exposed fish. However, the interaction effect between temperature and parasite exposure is not significant in pre-exposed fish, but is significant in post-exposed fish. Ribbons and ellipses indicate 95% confidence interval. Ribbons and ellipses indicate 95% confidence interval. Only statistically significant relationships are shown. A “*” indicates statistical significance below the “0.05” level. Black arrows indicate statistically significant covariates and direction of greatest change in the indicated covariates.  
@@ -1309,7 +1314,7 @@ beta.plots[[tmp.subset]][[tmp.variables]][["CAP"]][["Plot_SUPP"]]
 
 ```
 
-### 6) Water temperature moderates the impact of infection burden on fish gut microbiomes {.tabset}
+### Fig. 6) Water temperature moderates the impact of infection burden on fish gut microbiomes {.tabset}
 
 Fig. 6 Exposure to Pseudocapillaria tomentosa differentially impacts gut microbiome depending on water temperature. (A) Simpson’s Index for diversity of parasite exposed fish. Gut microbial alpha-diversity does not significantly differ between fish reared at the same water temperature with presence or absence of infection. (B) Capscale ordination based on the Canberra dissimilarity of gut microbiome composition of parasite exposed fish. The analysis shows that gut microbiome composition significantly differs between positively infected fish reared at different water temperatures. (C) Total worm count is positively correlated with lowest or highest alpha diversity scores in fish with detectable parasites. Points are colored by temperature and filled by cluster (High = purple, Low = orange, Other = white), and samples with a worm count equal to 0 are transparent. (D) Capscale ordination based on the Bray-Curtis dissimilarity of gut microbiome composition of water temperature and worm counts. Points are colored by temperature and filled by cluster (High = purple, Low = orange, Other = white), and samples with a worm count equal to 0 are transparent. The analysis shows that gut microbiome composition significantly differs between water temperature and total worm count, and samples labeled as “High” or “Low” form distinct clusters. Ribbons and ellipses indicate 95% confidence interval. Only statistically significant relationships are shown. A “*” indicates statistical significance below the “0.05” level. Black arrows indicate statistically significant covariates and direction of greatest change in the indicated covariates.  
 
@@ -1663,7 +1668,7 @@ beta.plots[[tmp.subset]][[tmp.variables]][["CAP"]][["Plot_SUPP_shannon"]]
 
 ```
 
-##### Simpsons
+##### Simpsons {.active}
 
 ```{r plots-S6D-simpsons, fig.height=6.5, fig.width=14, message=F, warning=FALSE, echo=FALSE}
 
@@ -1672,7 +1677,7 @@ beta.plots[[tmp.subset]][[tmp.variables]][["CAP"]][["Plot_SUPP_simpsons"]]
 ```
 
 
-### 7) Gut microbial abundance is significantly associated with environmental conditions and stressors
+### Fig. 7) Gut microbial abundance is significantly associated with environmental conditions and stressors
 
 ```{r include=FALSE}
 # creates a temporary variable to aid in automating knitted document
