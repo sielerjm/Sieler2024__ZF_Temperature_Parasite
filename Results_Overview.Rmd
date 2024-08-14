@@ -975,25 +975,24 @@ beta.plots[[tmp.subset]][[tmp.variables]][["CAP"]][["Plot_SUPP"]]
 
 ```
 
-### Fig. 5) Water temperature influences gut microbiome’s sensitivity to parasite exposure {.tabset}
 
+### Fig. 5) Water temperature moderates the impact of infection burden on fish gut microbiomes {.tabset}
 
-Fig. 5  Water temperature influences gut microbiome response to Pseudocapillaria tomentosa. (A) Simpson’s Index for diversity of parasite unexposed and pre-exposed fish at 0 days post exposure (dpe). Prior to parasite exposure gut microbial alpha-diversity does not significantly differ between fish reared at the same water temperature. (B)  Simpson’s Index for diversity of parasite unexposed and exposed fish. Gut microbial alpha-diversity significantly differs between parasite exposed fish reared at 28°C and 32°C water temperature relative to unexposed control fish, but gut microbial alpha-diversity does not differ between parasite unexposed and exposed fish reared at 35°C water temperature. Capscale ordinations based on the Bray-Curtis dissimilarity of gut microbiome composition constrained on the main and interaction effects of temperature and parasite exposure (treatment) (C) of pre-exposed samples at 0 dpe, and  (D) post-exposed samples after 0 dpe. The analysis shows that gut microbiome composition of fish significantly differs between water temperature and parasite exposure in pre- and post-exposed fish. However, the interaction effect between temperature and parasite exposure is not significant in pre-exposed fish, but is significant in post-exposed fish. Ribbons and ellipses indicate 95% confidence interval. Ribbons and ellipses indicate 95% confidence interval. Only statistically significant relationships are shown. A “*” indicates statistical significance below the “0.05” level. Black arrows indicate statistically significant covariates and direction of greatest change in the indicated covariates.  
-
-
-#### 5A)
+Fig. 5 Exposure to Pseudocapillaria tomentosa differentially impacts gut microbiome depending on water temperature. (A) Simpson’s Index for diversity of parasite exposed fish. Gut microbial alpha-diversity does not significantly differ between fish reared at the same water temperature with presence or absence of infection. (B) Capscale ordination based on the Canberra dissimilarity of gut microbiome composition of parasite exposed fish. The analysis shows that gut microbiome composition significantly differs between positively infected fish reared at different water temperatures. (C) Total worm count is positively correlated with lowest or highest alpha diversity scores in fish with detectable parasites. Points are colored by temperature and filled by cluster (High = purple, Low = orange, Other = white), and samples with a worm count equal to 0 are transparent. (D) Capscale ordination based on the Bray-Curtis dissimilarity of gut microbiome composition of water temperature and worm counts. Points are colored by temperature and filled by cluster (High = purple, Low = orange, Other = white), and samples with a worm count equal to 0 are transparent. The analysis shows that gut microbiome composition significantly differs between water temperature and total worm count, and samples labeled as “High” or “Low” form distinct clusters. Ribbons and ellipses indicate 95% confidence interval. Only statistically significant relationships are shown. A “*” indicates statistical significance below the “0.05” level. Black arrows indicate statistically significant covariates and direction of greatest change in the indicated covariates.  
 
 ```{r include=FALSE}
 # creates a temporary variable to aid in automating knitted document
 
-tmp.subset <- "PreExposed"
-tmp.variables <- "TEMP:TREAT"
+tmp.subset <- "Exposed"
+tmp.variables <- "TEMP:PATH"
 
 ```
 
+#### 5A)
+
 ```{r plots-5A, fig.height=6.5, fig.width=6.5, message=F, warning=FALSE, echo=FALSE}
 
-alpha.plots[["PreExposed"]][["TEMP:TREAT"]][["TUKEY"]][["Plot"]]
+alpha.plots[[tmp.subset]][["TEMP:PATH"]][["TUKEY"]][["Plot"]]
 
 ```
 
@@ -1048,19 +1047,13 @@ alpha.stats[[tmp.subset]][[tmp.variables]][["Tukey.Table"]] %>%
 ```
 
 
+
+
 #### 5B)
-
-```{r include=FALSE}
-# creates a temporary variable to aid in automating knitted document
-
-tmp.subset <- "PostExposed"
-tmp.variables <- "TEMP:TREAT"
-
-```
 
 ```{r plots-5B, fig.height=6.5, fig.width=6.5, message=F, warning=FALSE, echo=FALSE}
 
-alpha.plots[["PostExposed"]][["TEMP:TREAT"]][["TUKEY"]][["Plot"]]
+beta.plots[[tmp.subset]][["TEMP:PATH"]][["CAP"]][["Plot"]]
 
 ```
 
@@ -1075,11 +1068,11 @@ Click on tabs to display tables. Scroll to see additional rows.
 ```
 
 
-###### GLM
+###### ADONIS2
 
-```{r stats-5B-glm, echo=FALSE}
+```{r stats-5Badonis2, echo=FALSE}
 
-alpha.stats[[tmp.subset]][[tmp.variables]][["GLM.Table"]] %>%
+beta.stats[[tmp.subset]][[tmp.variables]][["CAP.ADONIS.Table"]] %>%
   # Set the maximum height to 6.5 inches (6.5 * 96 pixels = 624 pixels)
     gt::tab_options(
       container.overflow.y = "auto",       # Enable vertical overflow
@@ -1088,11 +1081,11 @@ alpha.stats[[tmp.subset]][[tmp.variables]][["GLM.Table"]] %>%
 
 ```
 
-###### ANOVA
+###### Dispersion (ANOVA)
 
 ```{r stats-5B-anova, echo=FALSE}
 
-alpha.stats[[tmp.subset]][[tmp.variables]][["ANOVA.Table"]] %>%
+beta.stats[[tmp.subset]][[tmp.variables]][["HoD.ANOVA.Table"]] %>%
   # Set the maximum height to 6.5 inches (6.5 * 96 pixels = 624 pixels)
     gt::tab_options(
       container.overflow.y = "auto",       # Enable vertical overflow
@@ -1101,11 +1094,11 @@ alpha.stats[[tmp.subset]][[tmp.variables]][["ANOVA.Table"]] %>%
 
 ```
 
-###### Tukey
+###### Dispersion (Tukey)
 
 ```{r stats-5B-tukey, echo=FALSE}
 
-alpha.stats[[tmp.subset]][[tmp.variables]][["Tukey.Table"]] %>%
+beta.stats[[tmp.subset]][[tmp.variables]][["HoD.Tukey.Table"]] %>%
   # Set the maximum height to 6.5 inches (6.5 * 96 pixels = 624 pixels)
     gt::tab_options(
       container.overflow.y = "auto",       # Enable vertical overflow
@@ -1113,21 +1106,21 @@ alpha.stats[[tmp.subset]][[tmp.variables]][["Tukey.Table"]] %>%
     )
 
 ```
+
 
 
 #### 5C)
 
 ```{r include=FALSE}
 # creates a temporary variable to aid in automating knitted document
-
-tmp.subset <- "PreExposed"
-tmp.variables <- "TEMP:TREAT"
+tmp.subset <- "Exposed"
+tmp.variables <- "TEMP:CLUSTER"
 
 ```
 
 ```{r plots-5C, fig.height=6.5, fig.width=6.5, message=F, warning=FALSE, echo=FALSE}
 
-beta.plots[["PreExposed"]][["TEMP:TREAT"]][["CAP"]][["Plot"]]
+alpha.plots[[tmp.subset]][["TEMP:CLUSTER"]][["Cluster"]][["Plot"]]
 
 ```
 
@@ -1142,11 +1135,11 @@ Click on tabs to display tables. Scroll to see additional rows.
 ```
 
 
-###### ADONIS2
+###### GLM
 
-```{r stats-5Cadonis2, echo=FALSE}
+```{r stats-5C-glm, echo=FALSE}
 
-beta.stats[[tmp.subset]][[tmp.variables]][["CAP.ADONIS.Table"]] %>%
+alpha.stats[[tmp.subset]][[tmp.variables]][["GLM.Table"]] %>%
   # Set the maximum height to 6.5 inches (6.5 * 96 pixels = 624 pixels)
     gt::tab_options(
       container.overflow.y = "auto",       # Enable vertical overflow
@@ -1155,11 +1148,11 @@ beta.stats[[tmp.subset]][[tmp.variables]][["CAP.ADONIS.Table"]] %>%
 
 ```
 
-###### Dispersion (ANOVA)
+###### ANOVA
 
 ```{r stats-5C-anova, echo=FALSE}
 
-beta.stats[[tmp.subset]][[tmp.variables]][["HoD.ANOVA.Table"]] %>%
+alpha.stats[[tmp.subset]][[tmp.variables]][["ANOVA.Table"]] %>%
   # Set the maximum height to 6.5 inches (6.5 * 96 pixels = 624 pixels)
     gt::tab_options(
       container.overflow.y = "auto",       # Enable vertical overflow
@@ -1168,11 +1161,11 @@ beta.stats[[tmp.subset]][[tmp.variables]][["HoD.ANOVA.Table"]] %>%
 
 ```
 
-###### Dispersion (Tukey)
+###### Tukey
 
 ```{r stats-5C-tukey, echo=FALSE}
 
-beta.stats[[tmp.subset]][[tmp.variables]][["HoD.Tukey.Table"]] %>%
+alpha.stats[[tmp.subset]][[tmp.variables]][["Tukey.Table"]] %>%
   # Set the maximum height to 6.5 inches (6.5 * 96 pixels = 624 pixels)
     gt::tab_options(
       container.overflow.y = "auto",       # Enable vertical overflow
@@ -1180,21 +1173,22 @@ beta.stats[[tmp.subset]][[tmp.variables]][["HoD.Tukey.Table"]] %>%
     )
 
 ```
+
 
 
 #### 5D)
 
+
 ```{r include=FALSE}
 # creates a temporary variable to aid in automating knitted document
-
-tmp.subset <- "PostExposed"
-tmp.variables <- "TEMP:TREAT"
+tmp.subset <- "Exposed"
+tmp.variables <- "TEMP:CLUSTER"
 
 ```
 
-```{r plots-5D, fig.height=6.5, fig.width=6.5, message=F, warning=FALSE, echo=FALSE}
+```{r plots-5D, fig.height=6.5, fig.width=6.5, message=FALSE, warning=FALSE, echo=FALSE}
 
-beta.plots[["PostExposed"]][["TEMP:TREAT"]][["CAP"]][["Plot"]]
+beta.plots[[tmp.subset]][[tmp.variables]][["CAP"]][["Plot"]]
 
 ```
 
@@ -1260,8 +1254,8 @@ Click on tabs to reveal supplementary figures and tables.
 
 ```{r include=FALSE}
 # creates a temporary variable to aid in automating knitted document
-tmp.subset <- "PreExposed"
-tmp.variables <- "TEMP:TREAT"
+tmp.subset <- "Exposed"
+tmp.variables <- "TEMP:PATH"
 
 ```
 
@@ -1275,62 +1269,95 @@ alpha.plots[[tmp.subset]][[tmp.variables]][["TUKEY"]][["Plot_SUPP"]]
 
 ```{r include=FALSE}
 # creates a temporary variable to aid in automating knitted document
-tmp.subset <- "PostExposed"
-tmp.variables <- "TEMP:TREAT"
+tmp.subset <- "Exposed"
+tmp.variables <- "TEMP:PATH"
 
 ```
 
 ```{r plots-S5B, fig.height=6.5, fig.width=14, message=F, warning=FALSE, echo=FALSE}
-alpha.plots[[tmp.subset]][[tmp.variables]][["TUKEY"]][["Plot_SUPP"]]
+
+beta.plots[[tmp.subset]][[tmp.variables]][["CAP"]][["Plot_SUPP"]]
+
 ```
 
 #### S5C
 
 ```{r include=FALSE}
 # creates a temporary variable to aid in automating knitted document
-tmp.subset <- "PreExposed"
-tmp.variables <- "TEMP:TREAT"
+tmp.subset <- "Exposed"
+tmp.variables <- "TEMP:CLUSTER"
 
 ```
 
 ```{r plots-S5C, fig.height=6.5, fig.width=14, message=F, warning=FALSE, echo=FALSE}
 
-beta.plots[[tmp.subset]][[tmp.variables]][["CAP"]][["Plot_SUPP"]]
+alpha.plots[[tmp.subset]][[tmp.variables]][["TUKEY"]][["Plot_SUPP"]]
 
 ```
 
-#### S5D
+#### S5D {.tabset}
+
+Click on tabs to cycle through different cluster comparisons between alpha and beta diversity.
 
 ```{r include=FALSE}
 # creates a temporary variable to aid in automating knitted document
-tmp.subset <- "PostExposed"
+tmp.subset <- "Exposed"
+tmp.variables <- "TEMP:CLUSTER"
+
+```
+
+##### Phylogenetic
+
+```{r plots-S5D-phylogenetic, fig.height=6.5, fig.width=14, message=F, warning=FALSE, echo=FALSE}
+
+beta.plots[[tmp.subset]][[tmp.variables]][["CAP"]][["Plot_SUPP_phylogenetic"]]
+
+```
+
+##### Richness
+
+```{r plots-S5D-richness, fig.height=6.5, fig.width=14, message=F, warning=FALSE, echo=FALSE}
+
+beta.plots[[tmp.subset]][[tmp.variables]][["CAP"]][["Plot_SUPP_richness"]]
+
+```
+
+##### Shannon
+
+```{r plots-S5D-shannon, fig.height=6.5, fig.width=14, message=F, warning=FALSE, echo=FALSE}
+
+beta.plots[[tmp.subset]][[tmp.variables]][["CAP"]][["Plot_SUPP_shannon"]]
+
+```
+
+##### Simpsons {.active}
+
+```{r plots-S5D-simpsons, fig.height=6.5, fig.width=14, message=F, warning=FALSE, echo=FALSE}
+
+beta.plots[[tmp.subset]][[tmp.variables]][["CAP"]][["Plot_SUPP_simpsons"]]
+
+```
+
+
+### Fig. 6) Water temperature influences gut microbiome’s sensitivity to parasite exposure {.tabset}
+
+
+Fig. 6  Water temperature influences gut microbiome response to Pseudocapillaria tomentosa. (A) Simpson’s Index for diversity of parasite unexposed and pre-exposed fish at 0 days post exposure (dpe). Prior to parasite exposure gut microbial alpha-diversity does not significantly differ between fish reared at the same water temperature. (B)  Simpson’s Index for diversity of parasite unexposed and exposed fish. Gut microbial alpha-diversity significantly differs between parasite exposed fish reared at 28°C and 32°C water temperature relative to unexposed control fish, but gut microbial alpha-diversity does not differ between parasite unexposed and exposed fish reared at 35°C water temperature. Capscale ordinations based on the Bray-Curtis dissimilarity of gut microbiome composition constrained on the main and interaction effects of temperature and parasite exposure (treatment) (C) of pre-exposed samples at 0 dpe, and  (D) post-exposed samples after 0 dpe. The analysis shows that gut microbiome composition of fish significantly differs between water temperature and parasite exposure in pre- and post-exposed fish. However, the interaction effect between temperature and parasite exposure is not significant in pre-exposed fish, but is significant in post-exposed fish. Ribbons and ellipses indicate 95% confidence interval. Ribbons and ellipses indicate 95% confidence interval. Only statistically significant relationships are shown. A “*” indicates statistical significance below the “0.05” level. Black arrows indicate statistically significant covariates and direction of greatest change in the indicated covariates.  
+
+
+#### 6A)
+
+```{r include=FALSE}
+# creates a temporary variable to aid in automating knitted document
+
+tmp.subset <- "PreExposed"
 tmp.variables <- "TEMP:TREAT"
 
 ```
 
-```{r plots-S5D, fig.height=6.5, fig.width=14, message=F, warning=FALSE, echo=FALSE}
-
-beta.plots[[tmp.subset]][[tmp.variables]][["CAP"]][["Plot_SUPP"]]
-
-```
-
-### Fig. 6) Water temperature moderates the impact of infection burden on fish gut microbiomes {.tabset}
-
-Fig. 6 Exposure to Pseudocapillaria tomentosa differentially impacts gut microbiome depending on water temperature. (A) Simpson’s Index for diversity of parasite exposed fish. Gut microbial alpha-diversity does not significantly differ between fish reared at the same water temperature with presence or absence of infection. (B) Capscale ordination based on the Canberra dissimilarity of gut microbiome composition of parasite exposed fish. The analysis shows that gut microbiome composition significantly differs between positively infected fish reared at different water temperatures. (C) Total worm count is positively correlated with lowest or highest alpha diversity scores in fish with detectable parasites. Points are colored by temperature and filled by cluster (High = purple, Low = orange, Other = white), and samples with a worm count equal to 0 are transparent. (D) Capscale ordination based on the Bray-Curtis dissimilarity of gut microbiome composition of water temperature and worm counts. Points are colored by temperature and filled by cluster (High = purple, Low = orange, Other = white), and samples with a worm count equal to 0 are transparent. The analysis shows that gut microbiome composition significantly differs between water temperature and total worm count, and samples labeled as “High” or “Low” form distinct clusters. Ribbons and ellipses indicate 95% confidence interval. Only statistically significant relationships are shown. A “*” indicates statistical significance below the “0.05” level. Black arrows indicate statistically significant covariates and direction of greatest change in the indicated covariates.  
-
-```{r include=FALSE}
-# creates a temporary variable to aid in automating knitted document
-
-tmp.subset <- "Exposed"
-tmp.variables <- "TEMP:PATH"
-
-```
-
-#### 6A)
-
 ```{r plots-6A, fig.height=6.5, fig.width=6.5, message=F, warning=FALSE, echo=FALSE}
 
-alpha.plots[[tmp.subset]][["TEMP:PATH"]][["TUKEY"]][["Plot"]]
+alpha.plots[["PreExposed"]][["TEMP:TREAT"]][["TUKEY"]][["Plot"]]
 
 ```
 
@@ -1385,13 +1412,19 @@ alpha.stats[[tmp.subset]][[tmp.variables]][["Tukey.Table"]] %>%
 ```
 
 
-
-
 #### 6B)
+
+```{r include=FALSE}
+# creates a temporary variable to aid in automating knitted document
+
+tmp.subset <- "PostExposed"
+tmp.variables <- "TEMP:TREAT"
+
+```
 
 ```{r plots-6B, fig.height=6.5, fig.width=6.5, message=F, warning=FALSE, echo=FALSE}
 
-beta.plots[[tmp.subset]][["TEMP:PATH"]][["CAP"]][["Plot"]]
+alpha.plots[["PostExposed"]][["TEMP:TREAT"]][["TUKEY"]][["Plot"]]
 
 ```
 
@@ -1406,11 +1439,11 @@ Click on tabs to display tables. Scroll to see additional rows.
 ```
 
 
-###### ADONIS2
+###### GLM
 
-```{r stats-6Badonis2, echo=FALSE}
+```{r stats-6B-glm, echo=FALSE}
 
-beta.stats[[tmp.subset]][[tmp.variables]][["CAP.ADONIS.Table"]] %>%
+alpha.stats[[tmp.subset]][[tmp.variables]][["GLM.Table"]] %>%
   # Set the maximum height to 6.5 inches (6.5 * 96 pixels = 624 pixels)
     gt::tab_options(
       container.overflow.y = "auto",       # Enable vertical overflow
@@ -1419,11 +1452,11 @@ beta.stats[[tmp.subset]][[tmp.variables]][["CAP.ADONIS.Table"]] %>%
 
 ```
 
-###### Dispersion (ANOVA)
+###### ANOVA
 
 ```{r stats-6B-anova, echo=FALSE}
 
-beta.stats[[tmp.subset]][[tmp.variables]][["HoD.ANOVA.Table"]] %>%
+alpha.stats[[tmp.subset]][[tmp.variables]][["ANOVA.Table"]] %>%
   # Set the maximum height to 6.5 inches (6.5 * 96 pixels = 624 pixels)
     gt::tab_options(
       container.overflow.y = "auto",       # Enable vertical overflow
@@ -1432,11 +1465,11 @@ beta.stats[[tmp.subset]][[tmp.variables]][["HoD.ANOVA.Table"]] %>%
 
 ```
 
-###### Dispersion (Tukey)
+###### Tukey
 
 ```{r stats-6B-tukey, echo=FALSE}
 
-beta.stats[[tmp.subset]][[tmp.variables]][["HoD.Tukey.Table"]] %>%
+alpha.stats[[tmp.subset]][[tmp.variables]][["Tukey.Table"]] %>%
   # Set the maximum height to 6.5 inches (6.5 * 96 pixels = 624 pixels)
     gt::tab_options(
       container.overflow.y = "auto",       # Enable vertical overflow
@@ -1444,21 +1477,21 @@ beta.stats[[tmp.subset]][[tmp.variables]][["HoD.Tukey.Table"]] %>%
     )
 
 ```
-
 
 
 #### 6C)
 
 ```{r include=FALSE}
 # creates a temporary variable to aid in automating knitted document
-tmp.subset <- "Exposed"
-tmp.variables <- "TEMP:CLUSTER"
+
+tmp.subset <- "PreExposed"
+tmp.variables <- "TEMP:TREAT"
 
 ```
 
 ```{r plots-6C, fig.height=6.5, fig.width=6.5, message=F, warning=FALSE, echo=FALSE}
 
-alpha.plots[[tmp.subset]][["TEMP:CLUSTER"]][["Cluster"]][["Plot"]]
+beta.plots[["PreExposed"]][["TEMP:TREAT"]][["CAP"]][["Plot"]]
 
 ```
 
@@ -1473,11 +1506,11 @@ Click on tabs to display tables. Scroll to see additional rows.
 ```
 
 
-###### GLM
+###### ADONIS2
 
-```{r stats-6C-glm, echo=FALSE}
+```{r stats-6Cadonis2, echo=FALSE}
 
-alpha.stats[[tmp.subset]][[tmp.variables]][["GLM.Table"]] %>%
+beta.stats[[tmp.subset]][[tmp.variables]][["CAP.ADONIS.Table"]] %>%
   # Set the maximum height to 6.5 inches (6.5 * 96 pixels = 624 pixels)
     gt::tab_options(
       container.overflow.y = "auto",       # Enable vertical overflow
@@ -1486,11 +1519,11 @@ alpha.stats[[tmp.subset]][[tmp.variables]][["GLM.Table"]] %>%
 
 ```
 
-###### ANOVA
+###### Dispersion (ANOVA)
 
 ```{r stats-6C-anova, echo=FALSE}
 
-alpha.stats[[tmp.subset]][[tmp.variables]][["ANOVA.Table"]] %>%
+beta.stats[[tmp.subset]][[tmp.variables]][["HoD.ANOVA.Table"]] %>%
   # Set the maximum height to 6.5 inches (6.5 * 96 pixels = 624 pixels)
     gt::tab_options(
       container.overflow.y = "auto",       # Enable vertical overflow
@@ -1499,11 +1532,11 @@ alpha.stats[[tmp.subset]][[tmp.variables]][["ANOVA.Table"]] %>%
 
 ```
 
-###### Tukey
+###### Dispersion (Tukey)
 
 ```{r stats-6C-tukey, echo=FALSE}
 
-alpha.stats[[tmp.subset]][[tmp.variables]][["Tukey.Table"]] %>%
+beta.stats[[tmp.subset]][[tmp.variables]][["HoD.Tukey.Table"]] %>%
   # Set the maximum height to 6.5 inches (6.5 * 96 pixels = 624 pixels)
     gt::tab_options(
       container.overflow.y = "auto",       # Enable vertical overflow
@@ -1511,22 +1544,21 @@ alpha.stats[[tmp.subset]][[tmp.variables]][["Tukey.Table"]] %>%
     )
 
 ```
-
 
 
 #### 6D)
 
-
 ```{r include=FALSE}
 # creates a temporary variable to aid in automating knitted document
-tmp.subset <- "Exposed"
-tmp.variables <- "TEMP:CLUSTER"
+
+tmp.subset <- "PostExposed"
+tmp.variables <- "TEMP:TREAT"
 
 ```
 
-```{r plots-6D, fig.height=6.5, fig.width=6.5, message=FALSE, warning=FALSE, echo=FALSE}
+```{r plots-6D, fig.height=6.5, fig.width=6.5, message=F, warning=FALSE, echo=FALSE}
 
-beta.plots[[tmp.subset]][[tmp.variables]][["CAP"]][["Plot"]]
+beta.plots[["PostExposed"]][["TEMP:TREAT"]][["CAP"]][["Plot"]]
 
 ```
 
@@ -1592,8 +1624,8 @@ Click on tabs to reveal supplementary figures and tables.
 
 ```{r include=FALSE}
 # creates a temporary variable to aid in automating knitted document
-tmp.subset <- "Exposed"
-tmp.variables <- "TEMP:PATH"
+tmp.subset <- "PreExposed"
+tmp.variables <- "TEMP:TREAT"
 
 ```
 
@@ -1607,74 +1639,45 @@ alpha.plots[[tmp.subset]][[tmp.variables]][["TUKEY"]][["Plot_SUPP"]]
 
 ```{r include=FALSE}
 # creates a temporary variable to aid in automating knitted document
-tmp.subset <- "Exposed"
-tmp.variables <- "TEMP:PATH"
+tmp.subset <- "PostExposed"
+tmp.variables <- "TEMP:TREAT"
 
 ```
 
 ```{r plots-S6B, fig.height=6.5, fig.width=14, message=F, warning=FALSE, echo=FALSE}
-
-beta.plots[[tmp.subset]][[tmp.variables]][["CAP"]][["Plot_SUPP"]]
-
+alpha.plots[[tmp.subset]][[tmp.variables]][["TUKEY"]][["Plot_SUPP"]]
 ```
 
 #### S6C
 
 ```{r include=FALSE}
 # creates a temporary variable to aid in automating knitted document
-tmp.subset <- "Exposed"
-tmp.variables <- "TEMP:CLUSTER"
+tmp.subset <- "PreExposed"
+tmp.variables <- "TEMP:TREAT"
 
 ```
 
 ```{r plots-S6C, fig.height=6.5, fig.width=14, message=F, warning=FALSE, echo=FALSE}
 
-alpha.plots[[tmp.subset]][[tmp.variables]][["TUKEY"]][["Plot_SUPP"]]
+beta.plots[[tmp.subset]][[tmp.variables]][["CAP"]][["Plot_SUPP"]]
 
 ```
 
-#### S6D {.tabset}
-
-Click on tabs to cycle through different cluster comparisons between alpha and beta diversity.
+#### S6D
 
 ```{r include=FALSE}
 # creates a temporary variable to aid in automating knitted document
-tmp.subset <- "Exposed"
-tmp.variables <- "TEMP:CLUSTER"
+tmp.subset <- "PostExposed"
+tmp.variables <- "TEMP:TREAT"
 
 ```
 
-##### Phylogenetic
+```{r plots-S6D, fig.height=6.5, fig.width=14, message=F, warning=FALSE, echo=FALSE}
 
-```{r plots-S6D-phylogenetic, fig.height=6.5, fig.width=14, message=F, warning=FALSE, echo=FALSE}
-
-beta.plots[[tmp.subset]][[tmp.variables]][["CAP"]][["Plot_SUPP_phylogenetic"]]
+beta.plots[[tmp.subset]][[tmp.variables]][["CAP"]][["Plot_SUPP"]]
 
 ```
 
-##### Richness
-
-```{r plots-S6D-richness, fig.height=6.5, fig.width=14, message=F, warning=FALSE, echo=FALSE}
-
-beta.plots[[tmp.subset]][[tmp.variables]][["CAP"]][["Plot_SUPP_richness"]]
-
-```
-
-##### Shannon
-
-```{r plots-S6D-shannon, fig.height=6.5, fig.width=14, message=F, warning=FALSE, echo=FALSE}
-
-beta.plots[[tmp.subset]][[tmp.variables]][["CAP"]][["Plot_SUPP_shannon"]]
-
-```
-
-##### Simpsons {.active}
-
-```{r plots-S6D-simpsons, fig.height=6.5, fig.width=14, message=F, warning=FALSE, echo=FALSE}
-
-beta.plots[[tmp.subset]][[tmp.variables]][["CAP"]][["Plot_SUPP_simpsons"]]
-
-```
 
 
 ### Fig. 7) Gut microbial abundance is significantly associated with environmental conditions and stressors
