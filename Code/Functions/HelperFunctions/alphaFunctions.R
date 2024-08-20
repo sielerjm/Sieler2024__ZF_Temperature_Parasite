@@ -120,6 +120,21 @@ run_glm_models <- function(data, alpha_metric_col = "Alpha.Metric", alpha_score_
   return(glm_models)
 }
 
+run_glm.nb_models <- function(data, alpha_metric_col = "Alpha.Metric", alpha_score_col = "Alpha.Score", formula_str) {
+  # Extract unique alpha metrics
+  unique_metrics <- data %>% select(all_of(alpha_metric_col)) %>% distinct() %>% pull()
+  
+  # Run GLM models for each unique alpha metric
+  glm.nb_models <- purrr::map(unique_metrics, function(x){
+    # glm( formula = as.formula(formula_str),
+    #      data = subset(data, Alpha.Metric == x),
+    #      family = family_str)
+    MASS::glm.nb(formula = as.formula(formula_str), data = subset(data, Alpha.Metric == x))
+  }) %>% setNames(unique_metrics) 
+  
+  return(glm.nb_models)
+}
+
 
 
 # Run GLM ANOVA (Alpha) -------------------------------------------------------------------------

@@ -384,3 +384,78 @@ diffAbnd.plots[["All"]][["All__TEMP_DPE_TREAT_PATH_WORM_CLUSTER"]][["Maaslin2"]]
     title = "All taxa with significant associations",
     subtitle = "MaAsLin2(log(qval)*sign(coef)); All fish"
   )
+
+## SUPP ----------------------------------------
+
+
+### Tables ------------------------------------------------------------------
+
+
+##### Counts Sig per Variable -------------------------------------------------
+
+
+diffAbnd.plots[["All"]][["All__TEMP_DPE_TREAT_PATH_WORM_CLUSTER"]][["Maaslin2"]][["SUPP__SigCounts"]] <-
+
+  diffAbnd.stats[["All"]][["All__TEMP_DPE_TREAT_PATH_WORM_CLUSTER"]][["Maaslin2"]][["output"]] %>%
+    
+  # Categorize based on significance and coefficience direction
+    mutate(Significance = ifelse(qval < 0.05 & coef > 0, "Positive", 
+                                 ifelse(qval < 0.05 & coef < 0, "Negative", "not significant"))) %>%
+    
+  # Rename and factorize columns
+    mutate(Significance = fct_relevel(factor(Significance, levels = c("Positive", "Negative", "not significant")))) %>%
+    
+  # Count the number of unique taxa per variable per Positive or Negative or Not Significant
+    group_by(metadata, value, Significance) %>%
+    summarize(Count = n()) %>%
+    ungroup()  %>%
+    
+  # Remove not significant counts
+    filter(Significance != "not significant") %>%
+    
+  # Clean up columns
+    mutate(Variables = paste0(metadata, " (", value, ")"), 
+           .before = 1) %>%
+    select(!c(metadata, value)) %>%
+    pivot_wider(names_from = Variables, values_from = Count) %>%
+    
+  # Make table
+    gt() %>%
+    tab_header(
+      title = "Summary of Significant Associations",
+      subtitle = "(per covariate)"
+    ) %>%
+    fmt_number(
+      columns = everything(),
+      decimals = 0
+    )
+
+
+#### Counts Sig per Taxonomy -------------------------------------------------
+
+diffAbnd.plots[["All"]][["All__TEMP_DPE_TREAT_PATH_WORM_CLUSTER"]][["Maaslin2"]][["SUPP__SigTaxonomy"]] <-
+  
+  diffAbnd.stats[["All"]][["All__TEMP_DPE_TREAT_PATH_WORM_CLUSTER"]][["Maaslin2"]][["output"]] %>%
+    filter(pval < 0.05) %>%
+    select(Kingdom, Phylum, Class, Order, Family, Taxon) %>% 
+    rename("Genus" = "Taxon") %>%
+    # distinct() %>%
+    pivot_longer(cols = everything(), names_to = "Taxonomy", values_to = "Name") %>%
+    mutate(Taxonomy = fct_relevel(factor(Taxonomy, levels = c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus")))) %>%
+    group_by(Taxonomy) %>%
+    distinct(Name) %>%
+    count(name = "Count") %>%
+    ungroup() %>%
+  # Make table
+    gt() %>%
+    tab_header(
+      title = "Summary of Significant Associations",
+      subtitle = "(per taxonomic level)"
+    ) %>%
+    fmt_number(
+      columns = everything(),
+      decimals = 0
+    )
+
+
+
