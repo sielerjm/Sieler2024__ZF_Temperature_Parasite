@@ -1689,13 +1689,13 @@ tmp.subset <- "All"
 
 ```
 
-#### 7A) 
+#### 7) 
 
 Fig. 7 A heatmap of model coefficient values of the top 50 statistically significant abundant gut microbial taxa identified by MaAsLin2. The color of each cell represents the coefficient value and direction (red is positive, blue is negative). A “+” or “-” indicates a statistically significant association was observed between taxon abundance and a covariate. Gray colored cells indicate a significant effect was not observed. 
 
-```{r plots-7A, echo=FALSE}
+```{r plots-7, echo=FALSE}
 
-diffAbnd.plots[[tmp.subset]][["All__TEMP_DPE_TREAT_PATH_WORM_CLUSTER"]][["Maaslin2"]][["Top50"]]
+diffAbnd.plots[["All"]][["All__TEMP_DPE_TREAT_PATH_WORM_CLUSTER"]][["Maaslin2"]][["Top50"]]
 
 ```
 
@@ -1716,8 +1716,31 @@ tmp.subset <- "All"
 
 ```
 
-```{r plots-S7X-1, echo=FALSE}
+```{r plots-S7X, echo=FALSE}
 
-diffAbnd.plots[[tmp.subset]][["All__TEMP_DPE_TREAT_PATH_WORM_CLUSTER"]][["Maaslin2"]][["All_sig"]]
+diffAbnd.plots[["All"]][["All__TEMP_DPE_TREAT_PATH_WORM_CLUSTER"]][["Maaslin2"]][["All_sig"]] %>%
+  # Set the maximum height to 6.5 inches (6.5 * 96 pixels = 624 pixels)
+    gt::tab_options(
+      container.overflow.y = "auto",       # Enable vertical overflow
+      container.height = gt::px(1024)           # Set the height to 624 pixels (6.5 inches)
+    )
 
 ```
+
+#### S7X.1
+
+```{r tables-S7X-1}
+
+diffAbnd.plots[["All"]][["All__TEMP_DPE_TREAT_PATH_WORM_CLUSTER"]][["Maaslin2"]][["SUPP__SigCounts"]]
+
+```
+
+#### S7X.2
+
+```{r tables-S7X-2}
+
+diffAbnd.plots[["All"]][["All__TEMP_DPE_TREAT_PATH_WORM_CLUSTER"]][["Maaslin2"]][["SUPP__SigTaxonomy"]]
+
+```
+
+
