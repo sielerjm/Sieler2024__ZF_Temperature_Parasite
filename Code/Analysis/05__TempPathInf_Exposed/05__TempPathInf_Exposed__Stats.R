@@ -531,6 +531,102 @@ beta.stats[[tmp.resSubSection]][["TEMP:CLUSTER"]][["HoD.Tukey.Table"]] <-
   )
 
 
+### SUPP --------------------------------------------------------------------
+
+#### S5D: TEMP:CLUSTER ---------------------------------------------------------------------
 
 
+beta.stats[[tmp.resSubSection]][["TEMP:CLUSTER"]][["CAP.ADONIS__SUPP_5D.1"]] <- {
+  
+  perform_beta_analysis <- function(alpha_metric, beta_metric) {
+    tmp.psOBJ %>%
+      ps_mutate(Cluster = if_else(
+        Treatment == "Exposed" & Total.Worm.Count > 0,
+        case_when(
+          !!sym(alpha_metric) <= 0.5 ~ "Low",
+          !!sym(alpha_metric) > 0.5 ~ "High",
+          TRUE ~ "Other"
+        ),
+        "Other"
+      ), .after = Treatment) %>%
+      ps_mutate(Cluster = fct_relevel(factor(Cluster, levels = c("Other", "Low", "High")))) %>%
+      ps_mutate(Cluster. = as.numeric(Cluster)) %>%
+      tax_agg(ifelse(beta_metric != "gunifrac", "Genus", "unique")) %>%
+      dist_calc(beta_metric) %>% 
+      dist_permanova(
+        seed = 1,
+        variables = "Cluster",
+        n_processes = 8,
+        n_perms = 999 
+      ) %>%
+      perm_get() %>%
+      tidy() %>%
+      dplyr::mutate(Alpha.Metric = alpha_metric,
+                    Beta.Metric = beta_metric,
+                    .before = 1)
+  }
+  
+  alpha_metrics <- c("Simpson__Genus_norm", 
+                     "Shannon__Genus_norm", 
+                     "Richness__Genus_norm", 
+                     "Phylogenetic__Genus_norm")
+  
+  beta_metrics <- c("bray", "canberra", "gunifrac")
+  
+  results <-
+    cross2(alpha_metrics, beta_metrics) %>%
+    map(~ perform_beta_analysis(.x[[1]], .x[[2]])) %>%
+    set_names(map_chr(cross2(alpha_metrics, beta_metrics), ~ paste(.x[[1]], .x[[2]], sep = "_"))) %>%
+    bind_rows() %>%
+    cutCellNames(col = "Alpha.Metric", sep = "__") %>%
+    SigStars()
+  
+  results
+  
+  
+}
 
+
+beta.stats[[tmp.resSubSection]][["TEMP:CLUSTER"]][["HoD.Tukey__SUPP_6D.1"]]  <- {
+  perform_betaDisp_analysis <- function(alpha_metric, beta_metric) {
+    tmp.res <- tmp.psOBJ %>%
+      ps_mutate(Cluster = if_else(
+        Treatment == "Exposed" & Total.Worm.Count > 0,
+        case_when(
+          !!sym(alpha_metric) <= 0.5 ~ "Low",
+          !!sym(alpha_metric) > 0.5 ~ "High",
+          TRUE ~ "Other"
+        ),
+        "Other"
+      ), .after = Treatment) %>%
+      ps_mutate(Cluster = fct_relevel(factor(Cluster, levels = c("Other", "Low", "High")))) %>%
+      ps_mutate(Cluster. = as.numeric(Cluster)) %>%
+      tax_agg(ifelse(beta_metric != "gunifrac", "Genus", "unique")) %>%
+      dist_calc(beta_metric) %>%
+      dist_bdisp(variables = "Cluster") %>%
+      bdisp_get()
+    
+    tmp.res$Cluster$anova %>% tidy() %>%
+      dplyr::mutate(Alpha.Metric = alpha_metric,
+                    Beta.Metric = beta_metric,
+                    .before = 1)
+    
+  }
+  
+  alpha_metrics <- c("Simpson__Genus_norm", 
+                     "Shannon__Genus_norm", 
+                     "Richness__Genus_norm", 
+                     "Phylogenetic__Genus_norm")
+  
+  beta_metrics <- c("bray", "canberra", "gunifrac")
+  
+  results <-
+    cross2(alpha_metrics, beta_metrics) %>%
+    map(~ perform_betaDisp_analysis(.x[[1]], .x[[2]])) %>%
+    set_names(map_chr(cross2(alpha_metrics, beta_metrics), ~ paste(.x[[1]], .x[[2]], sep = "_"))) %>%
+    bind_rows() %>%
+    cutCellNames(col = "Alpha.Metric", sep = "__") %>%
+    SigStars()
+  
+  results
+}

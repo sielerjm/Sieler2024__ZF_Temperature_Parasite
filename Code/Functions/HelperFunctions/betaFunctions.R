@@ -629,22 +629,22 @@ par.adonis.rda <- function(dist.mats,
 # Output: 
 
 
-process_permanova <- function(ps_obj, temperature, metric) {
+process_permanova <- function(ps_obj, var, var_filt, var_test, metric) {
   ps_obj %>%
-    ps_filter(Temperature == temperature) %>%
+    ps_filter(!!sym(var) == var_filt) %>%
     tax_agg(ifelse(metric != "gunifrac", "Genus", "unique")) %>%
     dist_calc(metric) %>%
     dist_permanova(
       seed = 1,
-      variables = c("Treatment"),
+      variables = c(var_test),
       n_processes = 8,
       n_perms = 999 # only 99 perms used in examples for speed (use 9999+!)
     ) %>%
     perm_get() %>%
     tidy() %>%
-    mutate(Temperature = temperature,
-           Metric = metric,
-           .before = 1)
+    dplyr::mutate(!!sym(var) := var_filt,
+                  Metric = metric,
+                  .before = 1)
 }
 
 

@@ -49,11 +49,12 @@ diffAbnd.plots <- readRDS(file = file.path(path.results, "Stats_Plots", "diffAbn
 ```
 
 
-```{r plot-settings, include=FALSE}
+```{r functions, include=FALSE}
 
-# Loads default plot theme settings and color palettes
+# Loads functions required to knit document
 
 source(paste0(proj.path,"/Code/Functions/StartFunctions/plot_settings.R"))
+source(paste0(proj.path,"/Code/Functions/HelperFunctions/miscFunctions.R"))
 
 ```
 
@@ -1330,13 +1331,54 @@ tmp.variables <- "TEMP:CLUSTER"
 
 beta.plots[[tmp.subset]][[tmp.variables]][["CAP"]][["Plot_SUPP_phylogenetic"]]
 
+beta.stats[[tmp.subset]][[tmp.variables]][["CAP.ADONIS__SUPP_5D.1"]] %>%
+  filter(Alpha.Metric == "Phylogenetic") %>% 
+    set_GT(var = "p.value", group.by = "Alpha.Metric") %>%
+  
+    # Title/caption
+    gt::tab_header(
+      title = "ADONIS2",
+      subtitle = "adonis2(Beta Distance ~ Cluster); Exposed fish"
+    )
+
+beta.stats[[tmp.subset]][[tmp.variables]][["HoD.Tukey__SUPP_6D.1"]] %>%
+  filter(Alpha.Metric == "Phylogenetic") %>% 
+    set_GT(var = "p.value", group.by = "Alpha.Metric") %>%
+  
+      # Title/caption
+      gt::tab_header(
+        title = "ANOVA: Homogeneity of Dispersion",
+        subtitle = "ANOVA(Beta Disperson ~ Cluster); Exposed fish"
+        )
+
 ```
+
 
 ##### Richness
 
 ```{r plots-S5D-richness, fig.height=6.5, fig.width=14, message=F, warning=FALSE, echo=FALSE}
 
 beta.plots[[tmp.subset]][[tmp.variables]][["CAP"]][["Plot_SUPP_richness"]]
+
+beta.stats[[tmp.subset]][[tmp.variables]][["CAP.ADONIS__SUPP_5D.1"]] %>%
+  filter(Alpha.Metric == "Richness") %>% 
+    set_GT(var = "p.value", group.by = "Alpha.Metric") %>%
+  
+    # Title/caption
+    gt::tab_header(
+      title = "ADONIS2",
+      subtitle = "adonis2(Beta Distance ~ Cluster); Exposed fish"
+    )
+
+beta.stats[[tmp.subset]][[tmp.variables]][["HoD.Tukey__SUPP_6D.1"]] %>%
+  filter(Alpha.Metric == "Richness") %>% 
+    set_GT(var = "p.value", group.by = "Alpha.Metric") %>%
+  
+      # Title/caption
+      gt::tab_header(
+        title = "ANOVA: Homogeneity of Dispersion",
+        subtitle = "ANOVA(Beta Disperson ~ Cluster); Exposed fish"
+        )
 
 ```
 
@@ -1346,6 +1388,26 @@ beta.plots[[tmp.subset]][[tmp.variables]][["CAP"]][["Plot_SUPP_richness"]]
 
 beta.plots[[tmp.subset]][[tmp.variables]][["CAP"]][["Plot_SUPP_shannon"]]
 
+beta.stats[[tmp.subset]][[tmp.variables]][["CAP.ADONIS__SUPP_5D.1"]] %>%
+  filter(Alpha.Metric == "Shannon") %>% 
+    set_GT(var = "p.value", group.by = "Alpha.Metric") %>%
+  
+    # Title/caption
+    gt::tab_header(
+      title = "ADONIS2",
+      subtitle = "adonis2(Beta Distance ~ Cluster); Exposed fish"
+    )
+
+beta.stats[[tmp.subset]][[tmp.variables]][["HoD.Tukey__SUPP_6D.1"]] %>%
+  filter(Alpha.Metric == "Shannon") %>% 
+    set_GT(var = "p.value", group.by = "Alpha.Metric") %>%
+  
+      # Title/caption
+      gt::tab_header(
+        title = "ANOVA: Homogeneity of Dispersion",
+        subtitle = "ANOVA(Beta Disperson ~ Cluster); Exposed fish"
+        )
+
 ```
 
 ##### Simpsons {.active}
@@ -1353,6 +1415,26 @@ beta.plots[[tmp.subset]][[tmp.variables]][["CAP"]][["Plot_SUPP_shannon"]]
 ```{r plots-S5D-simpsons, fig.height=6.5, fig.width=14, message=F, warning=FALSE, echo=FALSE}
 
 beta.plots[[tmp.subset]][[tmp.variables]][["CAP"]][["Plot_SUPP_simpsons"]]
+
+beta.stats[[tmp.subset]][[tmp.variables]][["CAP.ADONIS__SUPP_5D.1"]] %>%
+  filter(Alpha.Metric == "Simpson") %>% 
+    set_GT(var = "p.value", group.by = "Alpha.Metric") %>%
+  
+    # Title/caption
+    gt::tab_header(
+      title = "ADONIS2",
+      subtitle = "adonis2(Beta Distance ~ Cluster); Exposed fish"
+    )
+
+beta.stats[[tmp.subset]][[tmp.variables]][["HoD.Tukey__SUPP_6D.1"]] %>%
+  filter(Alpha.Metric == "Simpson") %>% 
+    set_GT(var = "p.value", group.by = "Alpha.Metric") %>%
+  
+      # Title/caption
+      gt::tab_header(
+        title = "ANOVA: Homogeneity of Dispersion",
+        subtitle = "ANOVA(Beta Disperson ~ Cluster); Exposed fish"
+        )
 
 ```
 
