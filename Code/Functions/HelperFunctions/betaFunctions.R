@@ -155,7 +155,7 @@ get_HoD_tukey <- function(betaDisper, beta_metric_col = diversity.method[["beta"
         
       }) %>% bind_rows()
     }) %>% bind_rows()  %>%
-    select(-c(null.value)) %>%
+    dplyr::select(-c(null.value)) %>%
     tidyr::separate(contrast, c('group1', 'group2'), sep = "-") %>% # Dataframe clean up
     dplyr::mutate(`.y.` = "Distance", .after = 1) 
   
@@ -622,3 +622,49 @@ par.adonis.rda <- function(dist.mats,
   stopCluster(cl)
   return(adonis.res.list)
 }
+
+# Process PERMANOVA and Beta Dispersion -------------------------------------------------------------------------
+# Description: 
+# Input: 
+# Output: 
+
+
+process_permanova <- function(ps_obj, temperature, metric) {
+  ps_obj %>%
+    ps_filter(Temperature == temperature) %>%
+    tax_agg(ifelse(metric != "gunifrac", "Genus", "unique")) %>%
+    dist_calc(metric) %>%
+    dist_permanova(
+      seed = 1,
+      variables = c("Treatment"),
+      n_processes = 8,
+      n_perms = 999 # only 99 perms used in examples for speed (use 9999+!)
+    ) %>%
+    perm_get() %>%
+    tidy() %>%
+    mutate(Temperature = temperature,
+           Metric = metric,
+           .before = 1)
+}
+
+
+process_bdisp <- function(ps_obj, temperature, metric) {
+  tmp.res <- ps_obj %>%
+    ps_filter(Temperature == temperature) %>%
+    tax_agg(ifelse(metric != "gunifrac", "Genus", "unique")) %>%
+    dist_calc(metric) %>%
+    dist_bdisp(variables = "Treatment") %>%
+    bdisp_get() 
+  
+  tmp.res$Treatment$anova %>% tidy() %>%
+    mutate(Temperature = temperature,
+           Metric = metric,
+           .before = 1)
+}
+
+
+# -------------------------------------------------------------------------
+# Description: 
+# Input: 
+# Output: 
+

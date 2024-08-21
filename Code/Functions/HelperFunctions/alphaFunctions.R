@@ -108,7 +108,7 @@ ps_calc_diversity.phy <- function(ps,
 
 run_glm_models <- function(data, alpha_metric_col = "Alpha.Metric", alpha_score_col = "Alpha.Score", formula_str, family_str = "quasibinomial") {
   # Extract unique alpha metrics
-  unique_metrics <- data %>% select(all_of(alpha_metric_col)) %>% distinct() %>% pull()
+  unique_metrics <- data %>% dplyr::select(all_of(alpha_metric_col)) %>% distinct() %>% pull()
   
   # Run GLM models for each unique alpha metric
   glm_models <- purrr::map(unique_metrics, function(x){
@@ -122,7 +122,7 @@ run_glm_models <- function(data, alpha_metric_col = "Alpha.Metric", alpha_score_
 
 run_glm.nb_models <- function(data, alpha_metric_col = "Alpha.Metric", alpha_score_col = "Alpha.Score", formula_str) {
   # Extract unique alpha metrics
-  unique_metrics <- data %>% select(all_of(alpha_metric_col)) %>% distinct() %>% pull()
+  unique_metrics <- data %>% dplyr::select(all_of(alpha_metric_col)) %>% distinct() %>% pull()
   
   # Run GLM models for each unique alpha metric
   glm.nb_models <- purrr::map(unique_metrics, function(x){
@@ -229,7 +229,7 @@ run_tukey_glm <- function(data, alpha_score_col, alpha_metric_col, variables, gr
 
 run_leveneTest <- function(data, alpha_metric_col = "Alpha.Metric", alpha_score_col = "Alpha.Score", formula_str) {
   # Extract unique alpha metrics
-  unique_metrics <- data %>% select(all_of(alpha_metric_col)) %>% distinct() %>% pull()
+  unique_metrics <- data %>% dplyr::select(all_of(alpha_metric_col)) %>% distinct() %>% pull()
   
   # Run GLM models for each unique alpha metric
   test.res <- purrr::map(unique_metrics, function(x){

@@ -141,7 +141,7 @@ diffAbnd.plots[["All"]][["All__TEMP_DPE_TREAT_PATH_WORM_CLUSTER"]][["Maaslin2"]]
   
   dplyr::rename_with(~ stringr::str_replace(., "^qval_", ""), starts_with("qval_")) %>%
   
-  mutate(across(all_of(columns),
+  dplyr::mutate(across(all_of(columns),
                 ~ case_when(
                   !is.na(.) & get(paste0("coef_", cur_column())) > 0 ~ "+",
                   !is.na(.) & get(paste0("coef_", cur_column())) < 0 ~ "-",
@@ -171,27 +171,27 @@ diffAbnd.plots[["All"]][["All__TEMP_DPE_TREAT_PATH_WORM_CLUSTER"]][["Maaslin2"]]
   apply_GT_tabStyles(., columns, coef_columns) %>%
   
   # Bold the row and column names
-  tab_style(
+  gt::tab_style(
     style = cell_text(weight = "bold",
                       align = "center"),
     locations = cells_column_labels()
   ) %>%
-  tab_style(
+  gt::tab_style(
     style = cell_text(weight = "bold"),
     locations = cells_row_groups()
   ) %>%
   
   # Hide columns containing "coef_" from final table
-  cols_hide(columns = starts_with("coef_")) %>%
+  gt::cols_hide(columns = starts_with("coef_")) %>%
   
   # Convert NA's to blanks
-  fmt_missing(
+  gt::fmt_missing(
     columns = everything(),
     missing_text = ""
   ) %>%
   
   # Ensure text in the first column does not wrap
-  tab_style(
+  gt::tab_style(
     style = cell_text(whitespace = "nowrap"),
     locations = cells_body(
       columns = c(Taxon)
@@ -199,7 +199,7 @@ diffAbnd.plots[["All"]][["All__TEMP_DPE_TREAT_PATH_WORM_CLUSTER"]][["Maaslin2"]]
   ) %>%
   
   # Add vertical lines to columns
-  tab_style(
+  gt::tab_style(
     style = cell_borders(
       sides = "left",
       color = "grey",
@@ -211,7 +211,7 @@ diffAbnd.plots[["All"]][["All__TEMP_DPE_TREAT_PATH_WORM_CLUSTER"]][["Maaslin2"]]
   ) %>%
   
   # Verticle lines to column headers
-  tab_style(
+  gt::tab_style(
     style = cell_borders(
       sides = "all",
       color = "black",
@@ -221,13 +221,13 @@ diffAbnd.plots[["All"]][["All__TEMP_DPE_TREAT_PATH_WORM_CLUSTER"]][["Maaslin2"]]
   ) %>%
   
   # Reduce cell padding to decrease row height
-  tab_options(data_row.padding = px(1.5),
+  gt::tab_options(data_row.padding = px(1.5),
               row_group.padding.horizontal = px(.5)) %>%
   
   # Number formatting
-  fmt_number(decimals = 3, use_seps = FALSE) %>%
-  sub_large_vals(columns = c("Temp: 32°C":"Infection burden"), threshold = 0.25) %>%
-  sub_small_vals(columns = c("Temp: 32°C":"Infection burden"), threshold = 0.001) #%>%
+  gt::fmt_number(decimals = 3, use_seps = FALSE) %>%
+  gt::sub_large_vals(columns = c("Temp: 32°C":"Infection burden"), threshold = 0.25) %>%
+  gt::sub_small_vals(columns = c("Temp: 32°C":"Infection burden"), threshold = 0.001) #%>%
   # 
   # # Title/caption
   # tab_header(
@@ -291,7 +291,7 @@ diffAbnd.plots[["All"]][["All__TEMP_DPE_TREAT_PATH_WORM_CLUSTER"]][["Maaslin2"]]
   
   dplyr::rename_with(~ stringr::str_replace(., "^qval_", ""), starts_with("qval_")) %>%
   
-  mutate(across(all_of(columns),
+  dplyr::mutate(across(all_of(columns),
                 ~ case_when(
                   !is.na(.) & get(paste0("coef_", cur_column())) > 0 ~ "+",
                   !is.na(.) & get(paste0("coef_", cur_column())) < 0 ~ "-",
@@ -321,27 +321,27 @@ diffAbnd.plots[["All"]][["All__TEMP_DPE_TREAT_PATH_WORM_CLUSTER"]][["Maaslin2"]]
   apply_GT_tabStyles(., columns, coef_columns) %>%
   
   # Bold the row and column names
-  tab_style(
+  gt::tab_style(
     style = cell_text(weight = "bold",
                       align = "center"),
     locations = cells_column_labels()
   ) %>%
-  tab_style(
+  gt::tab_style(
     style = cell_text(weight = "bold"),
     locations = cells_row_groups()
   ) %>%
   
   # Hide columns containing "coef_" from final table
-  cols_hide(columns = starts_with("coef_")) %>%
+  gt::cols_hide(columns = starts_with("coef_")) %>%
   
   # Convert NA's to blanks
-  fmt_missing(
+  gt::fmt_missing(
     columns = everything(),
     missing_text = ""
   ) %>%
   
   # Ensure text in the first column does not wrap
-  tab_style(
+  gt::tab_style(
     style = cell_text(whitespace = "nowrap"),
     locations = cells_body(
       columns = c(Taxon)
@@ -349,7 +349,7 @@ diffAbnd.plots[["All"]][["All__TEMP_DPE_TREAT_PATH_WORM_CLUSTER"]][["Maaslin2"]]
   ) %>%
   
   # Add vertical lines to columns
-  tab_style(
+  gt::tab_style(
     style = cell_borders(
       sides = "left",
       color = "grey",
@@ -361,7 +361,7 @@ diffAbnd.plots[["All"]][["All__TEMP_DPE_TREAT_PATH_WORM_CLUSTER"]][["Maaslin2"]]
   ) %>%
   
   # Verticle lines to column headers
-  tab_style(
+  gt::tab_style(
     style = cell_borders(
       sides = "all",
       color = "black",
@@ -371,16 +371,16 @@ diffAbnd.plots[["All"]][["All__TEMP_DPE_TREAT_PATH_WORM_CLUSTER"]][["Maaslin2"]]
   ) %>%
   
   # Reduce cell padding to decrease row height
-  tab_options(data_row.padding = px(1.5),
+  gt::tab_options(data_row.padding = px(1.5),
               row_group.padding.horizontal = px(.5)) %>%
   
   # Number formatting
-  fmt_number(decimals = 3, use_seps = FALSE) %>%
-  sub_large_vals(columns = c("Temp: 32°C":"Infection burden"), threshold = 0.25) %>%
-  sub_small_vals(columns = c("Temp: 32°C":"Infection burden"), threshold = 0.001) %>%
+  gt::fmt_number(decimals = 3, use_seps = FALSE) %>%
+  gt::sub_large_vals(columns = c("Temp: 32°C":"Infection burden"), threshold = 0.25) %>%
+  gt::sub_small_vals(columns = c("Temp: 32°C":"Infection burden"), threshold = 0.001) %>%
   
   # Title/caption
-  tab_header(
+  gt::tab_header(
     title = "All taxa with significant associations",
     subtitle = "MaAsLin2(log(qval)*sign(coef)); All fish"
   )
@@ -399,33 +399,33 @@ diffAbnd.plots[["All"]][["All__TEMP_DPE_TREAT_PATH_WORM_CLUSTER"]][["Maaslin2"]]
   diffAbnd.stats[["All"]][["All__TEMP_DPE_TREAT_PATH_WORM_CLUSTER"]][["Maaslin2"]][["output"]] %>%
     
   # Categorize based on significance and coefficience direction
-    mutate(Significance = ifelse(qval < 0.05 & coef > 0, "Positive", 
+    dplyr::mutate(Significance = ifelse(qval < 0.05 & coef > 0, "Positive", 
                                  ifelse(qval < 0.05 & coef < 0, "Negative", "not significant"))) %>%
     
   # Rename and factorize columns
-    mutate(Significance = fct_relevel(factor(Significance, levels = c("Positive", "Negative", "not significant")))) %>%
+    dplyr::mutate(Significance = fct_relevel(factor(Significance, levels = c("Positive", "Negative", "not significant")))) %>%
     
   # Count the number of unique taxa per variable per Positive or Negative or Not Significant
-    group_by(metadata, value, Significance) %>%
-    summarize(Count = n()) %>%
-    ungroup()  %>%
+    dplyr::group_by(metadata, value, Significance) %>%
+    dplyr::summarize(Count = n()) %>%
+    dplyr::ungroup()  %>%
     
   # Remove not significant counts
-    filter(Significance != "not significant") %>%
+    dplyr::filter(Significance != "not significant") %>%
     
   # Clean up columns
-    mutate(Variables = paste0(metadata, " (", value, ")"), 
+    dplyr::mutate(Variables = paste0(metadata, " (", value, ")"), 
            .before = 1) %>%
-    select(!c(metadata, value)) %>%
-    pivot_wider(names_from = Variables, values_from = Count) %>%
+    dplyr::select(!c(metadata, value)) %>%
+    tidyr::pivot_wider(names_from = Variables, values_from = Count) %>%
     
   # Make table
-    gt() %>%
-    tab_header(
+    gt::gt() %>%
+    gt::tab_header(
       title = "Summary of Significant Associations",
       subtitle = "(per covariate)"
     ) %>%
-    fmt_number(
+    gt::fmt_number(
       columns = everything(),
       decimals = 0
     )
@@ -436,16 +436,16 @@ diffAbnd.plots[["All"]][["All__TEMP_DPE_TREAT_PATH_WORM_CLUSTER"]][["Maaslin2"]]
 diffAbnd.plots[["All"]][["All__TEMP_DPE_TREAT_PATH_WORM_CLUSTER"]][["Maaslin2"]][["SUPP__SigTaxonomy"]] <-
   
   diffAbnd.stats[["All"]][["All__TEMP_DPE_TREAT_PATH_WORM_CLUSTER"]][["Maaslin2"]][["output"]] %>%
-    filter(pval < 0.05) %>%
-    select(Kingdom, Phylum, Class, Order, Family, Taxon) %>% 
+    dplyr::filter(pval < 0.05) %>%
+    dplyr::select(Kingdom, Phylum, Class, Order, Family, Taxon) %>% 
     rename("Genus" = "Taxon") %>%
     # distinct() %>%
     pivot_longer(cols = everything(), names_to = "Taxonomy", values_to = "Name") %>%
-    mutate(Taxonomy = fct_relevel(factor(Taxonomy, levels = c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus")))) %>%
-    group_by(Taxonomy) %>%
+    dplyr::mutate(Taxonomy = fct_relevel(factor(Taxonomy, levels = c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus")))) %>%
+    dplyr::group_by(Taxonomy) %>%
     distinct(Name) %>%
     count(name = "Count") %>%
-    ungroup() %>%
+    dplyr::ungroup() %>%
   # Make table
     gt() %>%
     tab_header(

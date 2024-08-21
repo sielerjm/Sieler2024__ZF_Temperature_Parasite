@@ -152,6 +152,9 @@ alpha.stats[[tmp.subset]][[tmp.variables]][["Tukey.Table"]] %>%
 
 ```
 
+##### Addl. Metrics
+
+
 
 #### 2B)
 
@@ -181,7 +184,7 @@ Click on tabs to display tables. Scroll to see additional rows.
 
 ###### ADONIS2
 
-```{r stats-2Badonis2, echo=FALSE}
+```{r stats-2B-adonis2, echo=FALSE}
 
 beta.stats[[tmp.subset]][[tmp.variables]][["CAP.ADONIS.Table"]] %>%
   # Set the maximum height to 6.5 inches (6.5 * 96 pixels = 624 pixels)
@@ -218,6 +221,7 @@ beta.stats[[tmp.subset]][[tmp.variables]][["HoD.Tukey.Table"]] %>%
 
 ```
 
+##### Addl. Metrics
 
 #### 2C)
 
@@ -285,6 +289,8 @@ alpha.stats[[tmp.subset]][[tmp.variables]][["Tukey.Table"]] %>%
 
 ```
 
+##### Addl. Metrics
+
 #### 2D)
 
 
@@ -314,7 +320,7 @@ Click on tabs to display tables. Scroll to see additional rows.
 
 ###### ADONIS2
 
-```{r stats-2Dadonis2, echo=FALSE}
+```{r stats-2D-adonis2, echo=FALSE}
 
 beta.stats[[tmp.subset]][[tmp.variables]][["CAP.ADONIS.Table"]] %>%
   # Set the maximum height to 6.5 inches (6.5 * 96 pixels = 624 pixels)
@@ -351,9 +357,12 @@ beta.stats[[tmp.subset]][[tmp.variables]][["HoD.Tukey.Table"]] %>%
 
 ```
 
+##### Addl. Metrics
+
+
 ### {.tabset}
 
-#### Suppl.
+#### (hide)
 
 Click on tabs to reveal supplementary figures and tables.
 
@@ -499,9 +508,11 @@ worm.stats[[tmp.subset]][[tmp.variables]][["TUKEY_GLM.NB.Table"]] %>%
 
 ```
 
+#### Other
+
 ### {.tabset}
 
-#### Suppl. 
+#### (hide) 
 
 Click on tabs to reveal supplementary figures and tables.
 
@@ -707,6 +718,7 @@ alpha.stats[[tmp.subset]][[tmp.variables]][["Tukey.Table"]] %>%
 
 ```
 
+##### Addl. Metrics
 
 #### 4B)
 
@@ -736,7 +748,7 @@ Click on tabs to display tables. Scroll to see additional rows.
 
 ###### ADONIS2
 
-```{r stats-4Badonis2, echo=FALSE}
+```{r stats-4B-adonis2, echo=FALSE}
 
 beta.stats[[tmp.subset]][[tmp.variables]][["CAP.ADONIS.Table"]] %>%
   # Set the maximum height to 6.5 inches (6.5 * 96 pixels = 624 pixels)
@@ -773,7 +785,7 @@ beta.stats[[tmp.subset]][[tmp.variables]][["HoD.Tukey.Table"]] %>%
 
 ```
 
-
+##### Addl. Metrics
 
 #### 4C)
 
@@ -842,6 +854,7 @@ alpha.stats[[tmp.subset]][[tmp.variables]][["Tukey.Table"]] %>%
 
 ```
 
+##### Addl. Metrics
 
 #### 4D)
 
@@ -871,7 +884,7 @@ Click on tabs to display tables. Scroll to see additional rows.
 
 ###### ADONIS2
 
-```{r stats-4Dadonis2, echo=FALSE}
+```{r stats-4D-adonis2, echo=FALSE}
 
 beta.stats[[tmp.subset]][[tmp.variables]][["CAP.ADONIS.Table"]] %>%
   # Set the maximum height to 6.5 inches (6.5 * 96 pixels = 624 pixels)
@@ -908,9 +921,12 @@ beta.stats[[tmp.subset]][[tmp.variables]][["HoD.Tukey.Table"]] %>%
 
 ```
 
+
+##### Addl. Metrics
+
 ### {.tabset}
 
-#### Suppl.
+#### (hide)
 
 Click on tabs to reveal supplementary figures and tables.
 
@@ -1047,7 +1063,7 @@ alpha.stats[[tmp.subset]][[tmp.variables]][["Tukey.Table"]] %>%
 ```
 
 
-
+##### Addl. Metrics
 
 #### 5B)
 
@@ -1070,7 +1086,7 @@ Click on tabs to display tables. Scroll to see additional rows.
 
 ###### ADONIS2
 
-```{r stats-5Badonis2, echo=FALSE}
+```{r stats-5B-adonis2, echo=FALSE}
 
 beta.stats[[tmp.subset]][[tmp.variables]][["CAP.ADONIS.Table"]] %>%
   # Set the maximum height to 6.5 inches (6.5 * 96 pixels = 624 pixels)
@@ -1107,7 +1123,7 @@ beta.stats[[tmp.subset]][[tmp.variables]][["HoD.Tukey.Table"]] %>%
 
 ```
 
-
+##### Addl. Metrics
 
 #### 5C)
 
@@ -1174,7 +1190,7 @@ alpha.stats[[tmp.subset]][[tmp.variables]][["Tukey.Table"]] %>%
 
 ```
 
-
+##### Addl. Metrics
 
 #### 5D)
 
@@ -1205,7 +1221,7 @@ Click on tabs to display tables. Scroll to see additional rows.
 
 ###### ADONIS2
 
-```{r stats-5Dadonis2, echo=FALSE}
+```{r stats-5D-adonis2, echo=FALSE}
 
 beta.stats[[tmp.subset]][[tmp.variables]][["CAP.ADONIS.Table"]] %>%
   # Set the maximum height to 6.5 inches (6.5 * 96 pixels = 624 pixels)
@@ -1242,9 +1258,11 @@ beta.stats[[tmp.subset]][[tmp.variables]][["HoD.Tukey.Table"]] %>%
 
 ```
 
+##### Addl. Metrics
+
 ### {.tabset}
 
-#### Suppl.
+#### (hide)
 
 Click on tabs to reveal supplementary figures and tables.
 
@@ -1411,6 +1429,7 @@ alpha.stats[[tmp.subset]][[tmp.variables]][["Tukey.Table"]] %>%
 
 ```
 
+##### Addl. Metrics
 
 #### 6B)
 
@@ -1478,6 +1497,7 @@ alpha.stats[[tmp.subset]][[tmp.variables]][["Tukey.Table"]] %>%
 
 ```
 
+##### Addl. Metrics
 
 #### 6C)
 
@@ -1505,10 +1525,9 @@ Click on tabs to display tables. Scroll to see additional rows.
 
 ```
 
-
 ###### ADONIS2
 
-```{r stats-6Cadonis2, echo=FALSE}
+```{r stats-6C-adonis2, echo=FALSE}
 
 beta.stats[[tmp.subset]][[tmp.variables]][["CAP.ADONIS.Table"]] %>%
   # Set the maximum height to 6.5 inches (6.5 * 96 pixels = 624 pixels)
@@ -1545,6 +1564,7 @@ beta.stats[[tmp.subset]][[tmp.variables]][["HoD.Tukey.Table"]] %>%
 
 ```
 
+##### Addl. Metrics
 
 #### 6D)
 
@@ -1572,10 +1592,9 @@ Click on tabs to display tables. Scroll to see additional rows.
 
 ```
 
-
 ###### ADONIS2
 
-```{r stats-6Dadonis2, echo=FALSE}
+```{r stats-6D-adonis2, echo=FALSE}
 
 beta.stats[[tmp.subset]][[tmp.variables]][["CAP.ADONIS.Table"]] %>%
   # Set the maximum height to 6.5 inches (6.5 * 96 pixels = 624 pixels)
@@ -1612,9 +1631,15 @@ beta.stats[[tmp.subset]][[tmp.variables]][["HoD.Tukey.Table"]] %>%
 
 ```
 
+
+
+
+
+##### Addl. Metrics
+
 ### {.tabset}
 
-#### Suppl.
+#### (hide)
 
 Click on tabs to reveal supplementary figures and tables.
 
@@ -1648,6 +1673,7 @@ tmp.variables <- "TEMP:TREAT"
 alpha.plots[[tmp.subset]][[tmp.variables]][["TUKEY"]][["Plot_SUPP"]]
 ```
 
+
 #### S6C
 
 ```{r include=FALSE}
@@ -1663,6 +1689,65 @@ beta.plots[[tmp.subset]][[tmp.variables]][["CAP"]][["Plot_SUPP"]]
 
 ```
 
+##### Suppl. Plots {.tabset}
+
+###### (hide)
+
+Click on tabs to display tables and figures. Scroll to see additional rows.
+
+###### By Temp
+
+
+```{r plots-6C.1_byTemp, echo=FALSE, fig.height=4, fig.width=6.5, message=FALSE, warning=FALSE}
+
+beta.plots[[tmp.subset]][[tmp.variables]][["CAP"]][["Plot_SUPP_6C.1_bray"]]
+
+beta.plots[[tmp.subset]][[tmp.variables]][["CAP"]][["Plot_SUPP_6C.1_canberra"]]
+
+beta.plots[[tmp.subset]][[tmp.variables]][["CAP"]][["Plot_SUPP_6C.1_gunifrac"]]
+
+```
+
+##### Suppl. Tables {.tabset}
+
+###### (hide)
+
+Click on tabs to display tables and figures. Scroll to see additional rows.
+
+```{r empty-6C.1_hide}
+
+```
+
+###### ADONIS2
+
+```{r stats-6C.1-adonis2, echo=FALSE}
+
+beta.stats[[tmp.subset]][[tmp.variables]][["CAP.ADONIS__SUPP_6C.1"]] %>%
+  # Set the maximum height to 6.5 inches (6.5 * 96 pixels = 624 pixels)
+    gt::tab_options(
+      container.overflow.y = "auto",       # Enable vertical overflow
+      container.height = gt::px(624)           # Set the height to 624 pixels (6.5 inches)
+    )
+
+```
+
+###### Dispersion (ANOVA)
+
+```{r stats-6C.1-anova, echo=FALSE}
+
+beta.stats[[tmp.subset]][[tmp.variables]][["HoD.Tukey__SUPP_6C.1"]] %>%
+  # Set the maximum height to 6.5 inches (6.5 * 96 pixels = 624 pixels)
+    gt::tab_options(
+      container.overflow.y = "auto",       # Enable vertical overflow
+      container.height = gt::px(624)           # Set the height to 624 pixels (6.5 inches)
+    )
+
+```
+
+
+
+
+
 #### S6D
 
 ```{r include=FALSE}
@@ -1672,11 +1757,69 @@ tmp.variables <- "TEMP:TREAT"
 
 ```
 
-```{r plots-S6D, fig.height=6.5, fig.width=14, message=F, warning=FALSE, echo=FALSE}
+```{r plots-S6D, echo=FALSE, fig.height=6.5, fig.width=14, message=FALSE, warning=FALSE}
 
 beta.plots[[tmp.subset]][[tmp.variables]][["CAP"]][["Plot_SUPP"]]
 
 ```
+
+##### Suppl. Plots {.tabset}
+
+###### (hide)
+
+Click on tabs to display tables and figures. Scroll to see additional rows.
+
+
+###### By Temp
+
+```{r plots-6D.1_byTemp, echo=FALSE, fig.height=4, fig.width=6.5, message=FALSE, warning=FALSE}
+
+beta.plots[[tmp.subset]][[tmp.variables]][["CAP"]][["Plot_SUPP_6D.1_bray"]]
+
+beta.plots[[tmp.subset]][[tmp.variables]][["CAP"]][["Plot_SUPP_6D.1_canberra"]]
+
+beta.plots[[tmp.subset]][[tmp.variables]][["CAP"]][["Plot_SUPP_6D.1_gunifrac"]]
+
+```
+
+##### Suppl. Tables {.tabset}
+
+###### (hide)
+
+Click on tabs to display tables and figures. Scroll to see additional rows.
+
+```{r empty-6D.1_hide}
+
+```
+
+###### ADONIS2
+
+```{r stats-6D.1-adonis2, echo=FALSE}
+
+beta.stats[[tmp.subset]][[tmp.variables]][["CAP.ADONIS__SUPP_6D.1"]] %>%
+  # Set the maximum height to 6.5 inches (6.5 * 96 pixels = 624 pixels)
+    gt::tab_options(
+      container.overflow.y = "auto",       # Enable vertical overflow
+      container.height = gt::px(624)           # Set the height to 624 pixels (6.5 inches)
+    )
+
+```
+
+###### Dispersion (ANOVA)
+
+```{r stats-6D.1-anova, echo=FALSE}
+
+beta.stats[[tmp.subset]][[tmp.variables]][["HoD.Tukey__SUPP_6D.1"]] %>%
+  # Set the maximum height to 6.5 inches (6.5 * 96 pixels = 624 pixels)
+    gt::tab_options(
+      container.overflow.y = "auto",       # Enable vertical overflow
+      container.height = gt::px(624)           # Set the height to 624 pixels (6.5 inches)
+    )
+
+```
+
+
+
 
 
 
@@ -1742,5 +1885,7 @@ diffAbnd.plots[["All"]][["All__TEMP_DPE_TREAT_PATH_WORM_CLUSTER"]][["Maaslin2"]]
 diffAbnd.plots[["All"]][["All__TEMP_DPE_TREAT_PATH_WORM_CLUSTER"]][["Maaslin2"]][["SUPP__SigTaxonomy"]]
 
 ```
+
+
 
 
