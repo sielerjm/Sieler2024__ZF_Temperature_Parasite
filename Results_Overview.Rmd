@@ -365,7 +365,7 @@ beta.stats[[tmp.subset]][[tmp.variables]][["HoD.Tukey.Table"]] %>%
 
 #### (hide)
 
-Click on tabs to reveal supplementary figures and tables.
+Click on tabs to reveal figures displaying additional metrics.
 
 
 #### S2A
@@ -509,7 +509,8 @@ worm.stats[[tmp.subset]][[tmp.variables]][["TUKEY_GLM.NB.Table"]] %>%
 
 ```
 
-#### Other
+
+#### Suppl.
 
 ### {.tabset}
 
@@ -521,6 +522,25 @@ Click on tabs to reveal supplementary figures and tables.
 
 ```
 
+
+#### S3B Counts {.tabset}
+
+##### Pathology Results
+
+```{r}
+
+worm.plots[[tmp.subset]][[tmp.variables]][["PathologyResults"]][["Table"]]
+
+```
+
+
+##### Total Worm Counts
+
+```{r}
+
+worm.plots[[tmp.subset]][[tmp.variables]][["TotalWormCount"]][["Table"]]
+
+```
 
 #### S3-X.1
 
@@ -929,7 +949,7 @@ beta.stats[[tmp.subset]][[tmp.variables]][["HoD.Tukey.Table"]] %>%
 
 #### (hide)
 
-Click on tabs to reveal supplementary figures and tables.
+Click on tabs to reveal figures displaying additional metrics.
 
 
 #### S4A
@@ -1265,7 +1285,7 @@ beta.stats[[tmp.subset]][[tmp.variables]][["HoD.Tukey.Table"]] %>%
 
 #### (hide)
 
-Click on tabs to reveal supplementary figures and tables.
+Click on tabs to reveal figures displaying additional metrics.
 
 
 #### S5A
@@ -1723,7 +1743,7 @@ beta.stats[[tmp.subset]][[tmp.variables]][["HoD.Tukey.Table"]] %>%
 
 #### (hide)
 
-Click on tabs to reveal supplementary figures and tables.
+Click on tabs to reveal figures displaying additional metrics.
 
 
 #### S6A

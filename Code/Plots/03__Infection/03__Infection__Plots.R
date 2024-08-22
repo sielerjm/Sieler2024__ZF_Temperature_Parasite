@@ -109,6 +109,55 @@ worm.plots[[tmp.resSubSection]][["TEMP"]][["TUKEY_GLM.NB"]][["Plot"]] <-
                                hide.ns = T) 
 
 
+#### Table -------------------------------------------------------------------
+
+
+##### Pathology Results -------------------------------------------------------
+
+worm.plots[[tmp.resSubSection]][["TEMP"]][["PathologyResults"]][["Table"]] <-
+  
+  tmp.psOBJ %>%
+    microViz::samdat_tbl() %>%
+    
+    dplyr::group_by(Temperature, Pathology.Results) %>%
+    count(name = "Count") %>%
+    ungroup() %>%
+    dplyr::group_by(Temperature) %>%
+    
+    # Make table
+    gt::gt() %>%
+    gt::tab_header(
+      title = "Summary of Infection Outcomes",
+      subtitle = "(Pathology Results)"
+    ) %>%
+    gt::fmt_number(
+      columns = everything(),
+      decimals = 0
+    )
+
+##### Total Worm Counts -------------------------------------------------------
+
+worm.plots[[tmp.resSubSection]][["TEMP"]][["TotalWormCount"]][["Table"]] <-
+
+  tmp.psOBJ %>%
+    microViz::samdat_tbl() %>%
+    group_by(Temperature) %>%
+    dplyr::select(Temperature, Total.Worm.Count) %>%
+    report::report_table() %>%
+    summary() %>%
+    
+    # Make table
+    gt::gt() %>%
+    gt::tab_header(
+      title = "Summary of Infection Outcomes",
+      subtitle = "(Total Worm Count)"
+    ) %>%
+    gt::fmt_number(
+      columns = everything(),
+      decimals = 0
+    )
+
+
 ### TEMP:DPE ----------------------------------------------------------------
 
 #### Sig Labels --------------------------------------------------------------
