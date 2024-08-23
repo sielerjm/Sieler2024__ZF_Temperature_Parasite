@@ -630,3 +630,42 @@ beta.stats[[tmp.resSubSection]][["TEMP:CLUSTER"]][["HoD.Tukey__SUPP_6D.1"]]  <- 
   
   results
 }
+
+
+#### Counts by Temp and Cluster ----------------------------------------------
+
+
+alpha.stats[[tmp.resSubSection]][["TEMP:CLUSTER"]][["Counts_Temp.Cluster"]] <- 
+  tmp.psOBJ %>%
+  
+  # Convert phyloseq object into a dataframe and pivot longer by Alpha Metric and Score
+  psObjToDfLong(div.score = "Alpha.Score", div.metric = "Alpha.Metric") %>%
+  
+  dplyr::mutate(Cluster = 
+           case_when(
+             Alpha.Score <= 0.5 ~ "Low",
+             Alpha.Score > 0.5 ~ "High",
+             .default = "Other"
+           ), .after = Treatment) %>%
+  dplyr::mutate(Cluster = fct_relevel(factor(Cluster, levels = c("Other", "Low", "High")))) %>%
+  
+  dplyr::mutate(Cluster = if_else(
+    Treatment == "Exposed" & Total.Worm.Count > 0,
+    case_when(
+      Alpha.Score < .5 ~ "Low", # Samples below .5 alpha score are assigned "Low"
+      Alpha.Score >= .5 ~ "High", # Samples above .5 alpha score are assigned "High"
+      TRUE ~ "Other"
+    ),
+    "Other"
+  )) %>%
+  
+  # Clean up cell value names by removing any strings including and after "__"
+  cutCellNames(col = "Alpha.Metric", sep = "__") %>%
+  # filter(Alpha.Metric == "Simpson") %>%
+  dplyr::group_by(Alpha.Metric, Cluster, Temperature) %>%
+  dplyr::count(name = "Count") %>%
+  dplyr::ungroup() %>%
+  dplyr::group_by(Alpha.Metric, Cluster) %>%
+  dplyr::mutate(Percentage = round(n / sum(n) * 100, 2)) %>%
+  dplyr::ungroup() %>%
+  dplyr::group_by(Alpha.Metric, Cluster) 

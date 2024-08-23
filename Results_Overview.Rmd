@@ -1459,6 +1459,55 @@ beta.stats[[tmp.subset]][[tmp.variables]][["HoD.Tukey__SUPP_6D.1"]] %>%
 ```
 
 
+### {.tabset}
+
+**Cluster Counts**
+
+Counts of samples per cluster and temperature by alpha-diversity metric. Click on tabs to reveal tables.
+
+#### (hide)
+
+#### Simpson
+
+```{r stats-5S-counts_simpson, echo=FALSE}
+
+alpha.stats[[tmp.subset]][[tmp.variables]][["Counts_Temp.Cluster"]] %>%
+  dplyr::filter(Alpha.Metric == "Simpson") %>%
+  gt::gt() 
+
+```
+
+#### Shannon
+
+```{r stats-5S-counts_shannon, echo=FALSE}
+
+alpha.stats[[tmp.subset]][[tmp.variables]][["Counts_Temp.Cluster"]] %>%
+  dplyr::filter(Alpha.Metric == "Shannon") %>%
+  gt::gt() 
+
+```
+
+#### Richness
+
+```{r stats-5S-counts_richness, echo=FALSE}
+
+alpha.stats[[tmp.subset]][[tmp.variables]][["Counts_Temp.Cluster"]] %>%
+  dplyr::filter(Alpha.Metric == "Richness") %>%
+  gt::gt() 
+
+```
+
+#### Phylogenetic
+
+```{r stats-5S-counts_phylogenetic, echo=FALSE}
+
+alpha.stats[[tmp.subset]][[tmp.variables]][["Counts_Temp.Cluster"]] %>%
+  dplyr::filter(Alpha.Metric == "Phylogenetic") %>%
+  gt::gt() 
+
+```
+
+
 ### Fig. 6) Water temperature influences gut microbiome’s sensitivity to parasite exposure {.tabset}
 
 
