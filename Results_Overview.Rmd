@@ -434,10 +434,11 @@ beta.plots[[tmp.subset]][[tmp.variables]][["CAP"]][["Plot_SUPP"]]
 **Fig. 3** Infection outcomes in zebrafish exposed to Pseudocapillaria tomentosa. (A) Histological sections stained with ### stain in zebrafish exposed to P. tomentosa examined at ### days post exposure. Nematodes in intestinal lumen. Arrow = ###. (B) Infection outcome analysis of fish exposed to P. tomentosa (n = 89) by temperature. Fish reared at 28°C and 32°C water temperatures had significantly different infection burden to fish reared at 35°C water temperature. Only one fish reared at 35°C was identified as being positively infected by wet mount. Only statistically significant relationships are shown. A “*” indicates statistical significance below the “0.05” level.
 
 
-#### *3A)
+#### 3A)
 
-```{r plots-3A, }
+```{r plots-3A, fig.height=6.5, fig.width=6.5, message=F, warning=FALSE, echo=FALSE }
 
+knitr::include_graphics(file.path(proj.path,"Manuscript/Main_Figures/Fig3A.png"))
 
 ```
 

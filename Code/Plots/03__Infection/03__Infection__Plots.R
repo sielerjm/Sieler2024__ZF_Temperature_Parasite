@@ -334,7 +334,7 @@ worm.plots[[tmp.resSubSection]][["TEMP:DPE"]][["TUKEY_GLM.NB"]][["Plot_v2"]] <-
 
 # Import Data
 
-tmp.inf.data <- readxl::read_excel("/Users/michaelsieler/Dropbox/Mac (2)/Documents/Sharpton_Lab/Projects_Repository/Rules_of_Life/RoL_HeaterTrial2021/Data/Raw/Connor Hot Fish RTF Primary No Controls Ver 2.xlsx")
+tmp.inf.data <- readxl::read_excel(file.path(path.data, "Raw/Connor Hot Fish RTF Primary No Controls Ver 2.xlsx"))
 
 # Plot
 
