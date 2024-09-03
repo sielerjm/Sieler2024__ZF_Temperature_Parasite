@@ -326,3 +326,105 @@ worm.plots[[tmp.resSubSection]][["TEMP:DPE"]][["TUKEY_GLM.NB"]][["Plot_v2"]] <-
 }
 
 
+
+## SUPP --------------------------------------------------------------------
+
+
+### INF Method --------------------------------------------------------------
+
+# Import Data
+
+tmp.inf.data <- readxl::read_excel("/Users/michaelsieler/Dropbox/Mac (2)/Documents/Sharpton_Lab/Projects_Repository/Rules_of_Life/RoL_HeaterTrial2021/Data/Raw/Connor Hot Fish RTF Primary No Controls Ver 2.xlsx")
+
+# Plot
+
+worm.plots[[tmp.resSubSection]][["TEMP:DPE"]][["Method.Counts"]][["Plot"]] <-
+  tmp.inf.data %>%
+    dplyr::filter(!is.na(DPE)) %>%
+    dplyr::mutate(wet.res = case_when(
+      Wet == "0" ~ "neg",
+      Wet != "0" & Wet != "NA" ~ "pos",
+      Wet == "NA" ~ NA
+    ),
+    histo.res = case_when(
+      histo == "pos" ~ "pos",
+      histo == "neg" ~ "neg",
+      histo == "NA" ~ NA
+    ),
+    .after = "Sample") %>%
+    dplyr::relocate(Wet, histo, .after = histo.res) %>%
+    dplyr::ungroup() %>%
+    dplyr::mutate(DPE. = factor(DPE),
+                  Temperature. = factor(Temperature)) %>%
+    
+    tidyr::pivot_longer(cols = c(wet.res, histo.res), names_to = "Method", values_to = "Method.Res") %>%
+    dplyr::relocate(Method, Method.Res, .after = "Sample") %>%
+    dplyr::group_by(DPE, Temperature, Method) %>%
+    
+    # # Prevalence
+    # dplyr::summarise(Total = n(),
+    #                  pos = sum(Method.Res == "pos", na.rm = T)/Total,
+    #                  neg = sum(Method.Res == "neg", na.rm = T)/Total,
+    #                  na  = sum(is.na(Method.Res))/Total) %>%
+    
+    # Counts  
+    dplyr::summarise(Total = n(),
+                     pos = sum(Method.Res == "pos", na.rm = T),
+                     neg = sum(Method.Res == "neg", na.rm = T),
+                     na  = sum(is.na(Method.Res)),
+                     Total.noNA = Total - na) %>%
+    
+    tidyr::pivot_longer(cols = c(pos, neg, na), names_to = "Results", values_to = "Counts") %>%
+    dplyr::mutate(Results = factor(Results, levels = c("pos", "neg", "na"))) %>%
+    
+    dplyr::mutate(DPE. = factor(DPE),
+                  Temperature. = factor(Temperature)) %>%
+    dplyr::mutate(DPE. = paste0(DPE.," DPE"),
+                  Temperature. = paste0(Temperature.,"°C")) %>%
+    
+    dplyr::filter(Results == "pos") %>%
+    
+    ggplot(aes(x = Method, y = Counts, 
+               fill = interaction(Results, Method, Temperature),
+               color = Temperature.,
+               group = interaction(DPE.,Method))) +
+    
+    geom_bar(stat = "identity", position = position_dodge2(), aes(group = Method)) +
+    
+    geom_text(aes(label = paste0("n = ",Total.noNA),
+                  y = 5
+    ),
+    color = "black",
+    position = position_stack(vjust = .5),
+    fontface = "bold",
+    size = 5, 
+    show.legend = F) +
+    
+    facet_grid(Temperature.~DPE., scales = "free_x") +
+    
+    scale_x_discrete(labels = c("Histo", "Wet")) +
+    scale_y_continuous(limits = c(0, 10), breaks = seq(0, 10, by = 2)) +
+    
+    scale_fill_manual(values = c(pal.Paired[2], pal.Paired[1],
+                                 pal.Paired[4], pal.Paired[3],
+                                 pal.Paired[6], pal.Paired[5]),
+                      name = "Method",
+                      labels = c("28°C Histo",
+                                 "28°C Wet mount",
+                                 "28°C Histo",
+                                 "32°C Wet mount",
+                                 "32°C Histo",
+                                 "32°C Wet mount")) +
+    scale_color_manual(values = col.Temp, guide = F) +
+    
+    labs(title = "Positive Identification of Infection by Method",
+         x = NULL,
+         y = "Counts of positive identification",
+         caption = "Number of fish analyzed (n = #)") +
+    
+    guides(fill = guide_legend(ncol = 3,
+                               override.aes = list(color = c(col.Temp[1], col.Temp[1],
+                                                             col.Temp[2], col.Temp[2],
+                                                             col.Temp[3], col.Temp[3]))
+    )) # Specify the number of columns in the legend
+

@@ -542,6 +542,21 @@ worm.plots[[tmp.subset]][[tmp.variables]][["TotalWormCount"]][["Table"]]
 
 ```
 
+
+##### Method
+
+```{r include=FALSE}
+# creates a temporary variable to aid in automating knitted document
+tmp.subset <- "Exposed"
+tmp.variables <- "TEMP:DPE"
+
+```
+
+```{r plots-S3-MethodCount-1, fig.height=6.5, fig.width=12, message=F, warning=FALSE, echo=FALSE}
+worm.plots[[tmp.subset]][[tmp.variables]][["Method.Counts"]][["Plot"]]
+```
+
+
 #### S3-X.1
 
 ```{r include=FALSE}
@@ -556,6 +571,9 @@ tmp.variables <- "TEMP:DPE"
 worm.plots[[tmp.subset]][[tmp.variables]][["TUKEY_GLM.NB"]][["Plot"]]
 
 ```
+
+
+
 
 ##### Tables {.tabset}
 
