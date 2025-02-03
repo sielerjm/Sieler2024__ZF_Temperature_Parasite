@@ -6,7 +6,9 @@ Sieler et al. (2024) "Title of paper" *Journal Name*. DOI: [pending]
 
 ## Overview
 
+<div style="background-color: white; display: inline-block; padding: 10px;">
 ![Experimental Design Overview](ExperimentalDesignSchematic.png)
+</div>
 
 ## Repository Structure
 
