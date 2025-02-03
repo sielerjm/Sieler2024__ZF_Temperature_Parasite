@@ -1,4 +1,3 @@
-
 # Microbiome Data Analysis Processing -------------------------------------
 
 
@@ -14,6 +13,9 @@
 # Output:
 #   - Creates a list of phyloseq objects for each analysis
 
+# Add start message with timestamp
+start_time <- Sys.time()
+message("Starting MicrobiomeProcessing_2024-08-12.R at ", format(start_time, "%Y-%m-%d %H:%M:%S"))
 
 ## Set Environmental Variables ---------------------------------------------
 
@@ -182,4 +184,10 @@ sesh.info <- sessionInfo()
 
 # Save a snapshot of the environment and session info
 save_env(path.objects, ID = analysis.ID, extra_info = "microbiomeProcessing")
+
+# Add end message with timestamp and duration
+end_time <- Sys.time()
+duration <- difftime(end_time, start_time, units = "secs")
+message("Completed MicrobiomeProcessing_2024-08-12.R at ", format(end_time, "%Y-%m-%d %H:%M:%S"))
+message("Total execution time: ", round(duration, 2), " seconds")
 

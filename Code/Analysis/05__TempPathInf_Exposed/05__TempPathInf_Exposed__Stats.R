@@ -1,14 +1,17 @@
-
 # 05__Temp_Exposed__Stats --------------------------------------------------
+
+# Add start message with timestamp
+start_time <- Sys.time()
+message("Starting 05__TempPathInf_Exposed__Stats.R at ", format(start_time, "%Y-%m-%d %H:%M:%S"))
 
 tmp.psOBJ <- ps.list[["Exposed"]]
 tmp.resSubSection <- "Exposed"
 
 
-# Add Cluster Columns
-tmp.psOBJ <- 
+# Add Cluster Columns for main analysis
+tmp.psOBJ <-
   tmp.psOBJ %>%
-  
+
   # Group samples by Alpha Score
     ps_mutate(Cluster = if_else(
       Treatment == "Exposed" & Total.Worm.Count > 0,
@@ -535,11 +538,16 @@ beta.stats[[tmp.resSubSection]][["TEMP:CLUSTER"]][["HoD.Tukey.Table"]] <-
 
 #### S5D: TEMP:CLUSTER ---------------------------------------------------------------------
 
+# Re-assigning tmp.psOBJ here for supplementary analysis
+tmp.psOBJ <- ps.list[["Exposed"]]
+tmp.resSubSection <- "Exposed"
 
 beta.stats[[tmp.resSubSection]][["TEMP:CLUSTER"]][["CAP.ADONIS__SUPP_5D.1"]] <- {
   
+  # Function to perform beta diversity analysis for a given alpha and beta metric
   perform_beta_analysis <- function(alpha_metric, beta_metric) {
     tmp.psOBJ %>%
+      # Create Cluster groups based on alpha diversity metric thresholds
       ps_mutate(Cluster = if_else(
         Treatment == "Exposed" & Total.Worm.Count > 0,
         case_when(
@@ -549,23 +557,31 @@ beta.stats[[tmp.resSubSection]][["TEMP:CLUSTER"]][["CAP.ADONIS__SUPP_5D.1"]] <- 
         ),
         "Other"
       ), .after = Treatment) %>%
+      # Reorder factor levels for Cluster
       ps_mutate(Cluster = fct_relevel(factor(Cluster, levels = c("Other", "Low", "High")))) %>%
+      # Create numeric version of Cluster
       ps_mutate(Cluster. = as.numeric(Cluster)) %>%
+      # Aggregate taxa based on beta metric type
       tax_agg(ifelse(beta_metric != "gunifrac", "Genus", "unique")) %>%
+      # Calculate distance matrix
       dist_calc(beta_metric) %>% 
+      # Perform PERMANOVA analysis
       dist_permanova(
         seed = 1,
         variables = "Cluster",
         n_processes = 8,
         n_perms = 999 
       ) %>%
+      # Get permutation results
       perm_get() %>%
+      # Tidy results and add metric information
       tidy() %>%
       dplyr::mutate(Alpha.Metric = alpha_metric,
                     Beta.Metric = beta_metric,
                     .before = 1)
   }
   
+  # Define alpha and beta diversity metrics to analyze
   alpha_metrics <- c("Simpson__Genus_norm", 
                      "Shannon__Genus_norm", 
                      "Richness__Genus_norm", 
@@ -573,23 +589,26 @@ beta.stats[[tmp.resSubSection]][["TEMP:CLUSTER"]][["CAP.ADONIS__SUPP_5D.1"]] <- 
   
   beta_metrics <- c("bray", "canberra", "gunifrac")
   
+  # Perform analysis for all combinations of alpha and beta metrics
   results <-
     cross2(alpha_metrics, beta_metrics) %>%
     map(~ perform_beta_analysis(.x[[1]], .x[[2]])) %>%
     set_names(map_chr(cross2(alpha_metrics, beta_metrics), ~ paste(.x[[1]], .x[[2]], sep = "_"))) %>%
     bind_rows() %>%
+    # Clean up metric names
     cutCellNames(col = "Alpha.Metric", sep = "__") %>%
+    # Add significance stars
     SigStars()
   
   results
-  
-  
 }
 
 
 beta.stats[[tmp.resSubSection]][["TEMP:CLUSTER"]][["HoD.Tukey__SUPP_6D.1"]]  <- {
+  # Function to perform beta dispersion analysis
   perform_betaDisp_analysis <- function(alpha_metric, beta_metric) {
     tmp.res <- tmp.psOBJ %>%
+      # Create Cluster groups based on alpha diversity metric thresholds
       ps_mutate(Cluster = if_else(
         Treatment == "Exposed" & Total.Worm.Count > 0,
         case_when(
@@ -599,20 +618,28 @@ beta.stats[[tmp.resSubSection]][["TEMP:CLUSTER"]][["HoD.Tukey__SUPP_6D.1"]]  <- 
         ),
         "Other"
       ), .after = Treatment) %>%
+      # Reorder factor levels for Cluster
       ps_mutate(Cluster = fct_relevel(factor(Cluster, levels = c("Other", "Low", "High")))) %>%
+      # Create numeric version of Cluster
       ps_mutate(Cluster. = as.numeric(Cluster)) %>%
+      # Aggregate taxa based on beta metric type
       tax_agg(ifelse(beta_metric != "gunifrac", "Genus", "unique")) %>%
+      # Calculate distance matrix
       dist_calc(beta_metric) %>%
+      # Perform beta dispersion analysis
       dist_bdisp(variables = "Cluster") %>%
       bdisp_get()
     
+    # Get ANOVA results from dispersion analysis
     tmp.res$Cluster$anova %>% tidy() %>%
+      # Add metric information
       dplyr::mutate(Alpha.Metric = alpha_metric,
                     Beta.Metric = beta_metric,
                     .before = 1)
     
   }
   
+  # Define alpha and beta diversity metrics to analyze
   alpha_metrics <- c("Simpson__Genus_norm", 
                      "Shannon__Genus_norm", 
                      "Richness__Genus_norm", 
@@ -620,12 +647,15 @@ beta.stats[[tmp.resSubSection]][["TEMP:CLUSTER"]][["HoD.Tukey__SUPP_6D.1"]]  <- 
   
   beta_metrics <- c("bray", "canberra", "gunifrac")
   
+  # Perform analysis for all combinations of alpha and beta metrics
   results <-
     cross2(alpha_metrics, beta_metrics) %>%
     map(~ perform_betaDisp_analysis(.x[[1]], .x[[2]])) %>%
     set_names(map_chr(cross2(alpha_metrics, beta_metrics), ~ paste(.x[[1]], .x[[2]], sep = "_"))) %>%
     bind_rows() %>%
+    # Clean up metric names
     cutCellNames(col = "Alpha.Metric", sep = "__") %>%
+    # Add significance stars
     SigStars()
   
   results
@@ -634,21 +664,24 @@ beta.stats[[tmp.resSubSection]][["TEMP:CLUSTER"]][["HoD.Tukey__SUPP_6D.1"]]  <- 
 
 #### Counts by Temp and Cluster ----------------------------------------------
 
-
+# Create table of sample counts by temperature and cluster
 alpha.stats[[tmp.resSubSection]][["TEMP:CLUSTER"]][["Counts_Temp.Cluster"]] <- 
   tmp.psOBJ %>%
   
   # Convert phyloseq object into a dataframe and pivot longer by Alpha Metric and Score
   psObjToDfLong(div.score = "Alpha.Score", div.metric = "Alpha.Metric") %>%
   
+  # Create Cluster groups based on alpha diversity score thresholds
   dplyr::mutate(Cluster = 
            case_when(
              Alpha.Score <= 0.5 ~ "Low",
              Alpha.Score > 0.5 ~ "High",
              .default = "Other"
            ), .after = Treatment) %>%
+  # Reorder factor levels for Cluster
   dplyr::mutate(Cluster = fct_relevel(factor(Cluster, levels = c("Other", "Low", "High")))) %>%
   
+  # Additional Cluster grouping for exposed fish with worms
   dplyr::mutate(Cluster = if_else(
     Treatment == "Exposed" & Total.Worm.Count > 0,
     case_when(
@@ -659,13 +692,19 @@ alpha.stats[[tmp.resSubSection]][["TEMP:CLUSTER"]][["Counts_Temp.Cluster"]] <-
     "Other"
   )) %>%
   
-  # Clean up cell value names by removing any strings including and after "__"
+  # Clean up metric names
   cutCellNames(col = "Alpha.Metric", sep = "__") %>%
-  # filter(Alpha.Metric == "Simpson") %>%
+  # Group by metric, cluster, and temperature to count samples
   dplyr::group_by(Alpha.Metric, Cluster, Temperature) %>%
-  dplyr::count(name = "Count") %>%
-  dplyr::ungroup() %>%
+  dplyr::summarise(Count = n(), .groups = 'drop') %>%
+  # Calculate percentage of samples in each cluster
   dplyr::group_by(Alpha.Metric, Cluster) %>%
-  dplyr::mutate(Percentage = round(n / sum(n) * 100, 2)) %>%
+  dplyr::mutate(Percentage = round(Count / sum(Count) * 100, 2)) %>%
   dplyr::ungroup() %>%
-  dplyr::group_by(Alpha.Metric, Cluster) 
+  dplyr::group_by(Alpha.Metric, Cluster)
+
+# Add end message with timestamp and duration
+end_time <- Sys.time()
+duration <- difftime(end_time, start_time, units = "secs")
+message("Completed 05__TempPathInf_Exposed__Stats.R at ", format(end_time, "%Y-%m-%d %H:%M:%S"))
+message("Total execution time: ", round(duration, 2), " seconds")

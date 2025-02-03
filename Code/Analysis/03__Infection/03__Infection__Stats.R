@@ -1,3 +1,6 @@
+# Add start message with timestamp
+start_time <- Sys.time()
+message("Starting 03__Infection__Stats.R at ", format(start_time, "%Y-%m-%d %H:%M:%S"))
 
 # 03__Infection_Stats -----------------------------------------------------------
 
@@ -199,6 +202,12 @@ worm.stats[[tmp.resSubSection]][["TEMP:DPE"]][["TUKEY_GLM.NB.Table"]] <-
     title = "Pairwise Tukey's HSD, p.adj: Dunnett",
     subtitle = "Tukey(Total.Worm.Count ~ Temperature*DPE); Exposed fish"
   )
+
+# Add end message with timestamp and duration
+end_time <- Sys.time()
+duration <- difftime(end_time, start_time, units = "secs")
+message("Completed 03__Infection__Stats.R at ", format(end_time, "%Y-%m-%d %H:%M:%S"))
+message("Total execution time: ", round(duration, 2), " seconds")
 
 
 

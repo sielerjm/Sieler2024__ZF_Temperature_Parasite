@@ -1,5 +1,9 @@
 # 07__TaxonAbund_Unexp_Exp__Stats --------------------------------------------------
 
+# Add start message with timestamp
+start_time <- Sys.time()
+message("Starting 07__TaxonAbund_Unexp_Exp__Plots.R at ", format(start_time, "%Y-%m-%d %H:%M:%S"))
+
 cat("07__TaxonAbund_Unexp_Exp__Stats \n")
 
 tmp.psOBJ <- ps.list[["All"]]
@@ -261,6 +265,7 @@ html_output <- htmltools::div(
 #### All Sig -----------------------------------------------------------------
 
 diffAbnd.plots[["All"]][["All__TEMP_DPE_TREAT_PATH_WORM_CLUSTER"]][["Maaslin2"]][["All_sig"]] <-
+# 07__TaxonAbund_Unexp_Exp__Stats --------------------------------------------------
   diffAbnd.stats[["All"]][["All__TEMP_DPE_TREAT_PATH_WORM_CLUSTER"]][["Maaslin2"]][["output"]] %>%
   
   # Rename Columns
@@ -456,6 +461,13 @@ diffAbnd.plots[["All"]][["All__TEMP_DPE_TREAT_PATH_WORM_CLUSTER"]][["Maaslin2"]]
       columns = everything(),
       decimals = 0
     )
+
+
+# Add end message with timestamp and duration
+end_time <- Sys.time()
+duration <- difftime(end_time, start_time, units = "secs")
+message("Completed 07__TaxonAbund_Unexp_Exp__Plots.R at ", format(end_time, "%Y-%m-%d %H:%M:%S"))
+message("Total execution time: ", round(duration, 2), " seconds")
 
 
 

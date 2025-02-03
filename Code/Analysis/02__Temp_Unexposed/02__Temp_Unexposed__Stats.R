@@ -1,5 +1,8 @@
-
 # 02__Temp_Unexposed__Stats --------------------------------------------------
+
+# Add start message with timestamp
+start_time <- Sys.time()
+message("Starting 02__Temp_Unexposed__Stats.R at ", format(start_time, "%Y-%m-%d %H:%M:%S"))
 
 tmp.psOBJ <- ps.list[["Unexposed"]]
 tmp.resSubSection <- "Unexposed"
@@ -360,6 +363,12 @@ beta.stats[[tmp.resSubSection]][["TEMP:DPE"]][["HoD.Tukey.Table"]] <-
     title = "Tukey: Homogeneity of Dispersion",
     subtitle = "Tukey(Beta Disperson ~ Temperature*DPE); Unexposed fish"
   )
+
+# Add end message with timestamp and duration
+end_time <- Sys.time()
+duration <- difftime(end_time, start_time, units = "secs")
+message("Completed 02__Temp_Unexposed__Stats.R at ", format(end_time, "%Y-%m-%d %H:%M:%S"))
+message("Total execution time: ", round(duration, 2), " seconds")
 
 
 

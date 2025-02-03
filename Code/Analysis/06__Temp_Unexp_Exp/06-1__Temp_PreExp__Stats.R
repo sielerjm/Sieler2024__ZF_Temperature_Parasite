@@ -1,6 +1,10 @@
 
 # 06-1__Temp_PreExp__Stats --------------------------------------------------
 
+# Add start message with timestamp
+start_time <- Sys.time()
+message("Starting 06-1__Temp_PreExp__Stats.R at ", format(start_time, "%Y-%m-%d %H:%M:%S"))
+
 tmp.psOBJ <- ps.list[["PreExposed"]]
 tmp.resSubSection <- "PreExposed"
 
@@ -251,3 +255,8 @@ beta.stats[[tmp.resSubSection]][["TEMP:TREAT"]][["HoD.Tukey__SUPP_6C.1"]] <- {
 
 
 
+# Add end message with timestamp and duration
+end_time <- Sys.time()
+duration <- difftime(end_time, start_time, units = "secs")
+message("Completed 06-1__Temp_PreExp__Stats.R at ", format(end_time, "%Y-%m-%d %H:%M:%S"))
+message("Total execution time: ", round(duration, 2), " seconds")
