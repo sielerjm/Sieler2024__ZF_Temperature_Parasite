@@ -52,6 +52,7 @@ run_cap_adonis <- function(ps.OBJ, dist.matrix, beta_metric_col = diversity.meth
     dist <- dist.matrix[[x]] %>% microViz::dist_get()
     
     # Run Adonis
+    set.seed(42)  # Set seed before adonis
     adonis2(formula = as.formula(formula_str), data, by = by.method, parallel = 8) %>%
       broom::tidy() %>%
       dplyr::mutate(Beta.Metric = x, .before = 1)  %>%
@@ -81,6 +82,7 @@ run_BetaDispersion <- function(dist.matrix, beta_metric_col = diversity.method[[
   # Run HoD models for each unique alpha metric
   HoD_models <- purrr::map(unique_metrics, function(x){
     
+    set.seed(42)  # Set seed before dispersion test
     dist.matrix[[x]] %>% 
       microViz::dist_bdisp(variables = var) %>% 
       microViz::bdisp_get()
@@ -439,6 +441,7 @@ par.dbrdas <- function(dist.mats, dbrda.frm, sample.data, nCores, verbose = TRUE
     .verbose = verbose
   ) %dopar% {
     dist <- dist.mats[[n]] %>% microViz::dist_get()
+    set.seed(42)  # Set seed before capscale
     dbrda.obj <- vegan::capscale(as.formula(dbrda.frm), data = sample.data,
                                  na.action = na.omit,
                                  sqrt.dist = FALSE)
@@ -529,10 +532,9 @@ par.anova.rda <- function(
     .verbose = verbose
   ) %dopar% {
     dbrda.obj <- dbrdas[[n]]
-    set.seed(seed)
+    set.seed(42)  # Set seed before anova
     permanova <- 
       vegan::anova.cca(dbrda.obj, by = by.what, model = perm.model) %>% 
-      # tidy() %>% 
       tidyr::as_tibble(rownames = "term") %>%
       dplyr::rename("p.value" = "Pr(>F)" ,
                     "statistic" = "F") %>%
@@ -611,6 +613,7 @@ par.adonis.rda <- function(dist.mats,
     .verbose = verbose
   ) %dopar% {
     dist <- dist.mats[[n]] %>% microViz::dist_get()
+    set.seed(42)  # Set seed before adonis
     adonis.res <- vegan::adonis2(as.formula(dbrda.frm), 
                                  data = sample.data,
                                  by = by.what,
@@ -635,7 +638,7 @@ process_permanova <- function(ps_obj, var, var_filt, var_test, metric) {
     tax_agg(ifelse(metric != "gunifrac", "Genus", "unique")) %>%
     dist_calc(metric) %>%
     dist_permanova(
-      seed = 1,
+      seed = 42,  
       variables = c(var_test),
       n_processes = 8,
       n_perms = 999 # only 99 perms used in examples for speed (use 9999+!)
@@ -648,18 +651,27 @@ process_permanova <- function(ps_obj, var, var_filt, var_test, metric) {
 }
 
 
-process_bdisp <- function(ps_obj, temperature, metric) {
-  tmp.res <- ps_obj %>%
-    ps_filter(Temperature == temperature) %>%
-    tax_agg(ifelse(metric != "gunifrac", "Genus", "unique")) %>%
-    dist_calc(metric) %>%
-    dist_bdisp(variables = "Treatment") %>%
-    bdisp_get() 
+process_bdisp <- function(ps_obj, var, var_filt, var_test, metric) {
+  # Filter the phyloseq object by the specified variable and value
+  ps_filtered <- ps_obj %>%
+    ps_filter(!!sym(var) == var_filt)
   
-  tmp.res$Treatment$anova %>% tidy() %>%
-    mutate(Temperature = temperature,
-           Metric = metric,
-           .before = 1)
+  # Calculate distance matrix
+  dist_obj <- ps_filtered %>%
+    tax_agg(ifelse(metric != "gunifrac", "Genus", "unique")) %>%
+    dist_calc(metric)
+  
+  # Run beta dispersion test
+  bdisp_result <- dist_obj %>%
+    dist_bdisp(variables = var_test) %>%
+    bdisp_get()
+  
+  # Extract and tidy ANOVA results
+  bdisp_result[[var_test]]$anova %>%
+    broom::tidy() %>%
+    dplyr::mutate(!!sym(var) := var_filt,
+                  Metric = metric,
+                  .before = 1)
 }
 
 

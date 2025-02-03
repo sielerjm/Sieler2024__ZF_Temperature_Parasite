@@ -18,18 +18,19 @@ norm_scores <- function(x) {
   # 
 
   
+  set.seed(42)  # Set seed before normality test
   if (nortest::ad.test(x)$p.value <= 0.05) {
     # If the alpha scores do not follow a normal distribution, then you transform it using Tukey's (not Turkey's) power of ladders
     #   - This will transform your data as closely to a normal distribution
     
-    # Sub-function to transform data that isn't normally distributed using Tukey's (not Turkey's) power of ladders
-    #   - Check this out for more info: ?transformTukey()
+    set.seed(42)  # Set seed before transformation
     x.trans <- rcompanion::transformTukey(x, plotit = F, quiet = F, statistic = 2)
     
     x.trans.norm <- (x.trans-min(x.trans, na.rm = TRUE))/(max(x.trans, na.rm = TRUE)-min(x.trans, na.rm = TRUE))   # Fixes normalization 0 to 1
     
     # Runs ad.test again to see if data returns higher than 0.05 p-value, if true then it transforms your data along tukey's power of ladders
     
+    set.seed(42)  # Set seed before second normality test
     if (nortest::ad.test(x.trans.norm)$p.value < 0.05) {
       
       x.trans.norm <- (x.trans.norm - min(x.trans.norm, na.rm = TRUE ))/(max(x.trans.norm, na.rm = TRUE )-min(x.trans.norm, na.rm = TRUE )) 
@@ -60,7 +61,8 @@ norm_scores <- function(x) {
 
 
 # Calculate Phylogenetic Diversity -------------------------------------------------------------------------
-# Description: 
+# Description: Calculates phylogenetic diversity from phylogenetic tree
+#   Note: Cannot aggregate at a different taxonomic level given how tree tips are calculated at ASV level
 # Input: 
 # Output: 
 
@@ -100,7 +102,6 @@ ps_calc_diversity.phy <- function(ps,
 }
 
 
-
 # Run GLM (Alpha) -------------------------------------------------------------------------
 # Description: 
 # Input: 
@@ -112,6 +113,7 @@ run_glm_models <- function(data, alpha_metric_col = "Alpha.Metric", alpha_score_
   
   # Run GLM models for each unique alpha metric
   glm_models <- purrr::map(unique_metrics, function(x){
+    set.seed(42)  # Set seed before GLM
     glm( formula = as.formula(formula_str),
          data = subset(data, Alpha.Metric == x),
          family = family_str)
@@ -126,9 +128,7 @@ run_glm.nb_models <- function(data, alpha_metric_col = "Alpha.Metric", alpha_sco
   
   # Run GLM models for each unique alpha metric
   glm.nb_models <- purrr::map(unique_metrics, function(x){
-    # glm( formula = as.formula(formula_str),
-    #      data = subset(data, Alpha.Metric == x),
-    #      family = family_str)
+    set.seed(42)  # Set seed before GLM
     MASS::glm.nb(formula = as.formula(formula_str), data = subset(data, Alpha.Metric == x))
   }) %>% setNames(unique_metrics) 
   

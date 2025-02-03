@@ -1,140 +1,130 @@
-
-# Beta Diversity ----------------------------------------------------------
+# =============================================================================
+# Beta Diversity Calculations
+# =============================================================================
 #   - Calculate Distance Matrices
 #   - Permanova
 #   - Beta Dispersion
 
+
+# Add start message with timestamp
+start_time <- Sys.time()
+message("Starting BetaDiversity.R at ", format(start_time, "%Y-%m-%d %H:%M:%S"))
+
+
 ## Variables, lists, etc.
-beta.dist.mat <- list() # Saves distnace matrix values here
+beta.dist.mat <- list() # Saves distance matrix values here
 
+## Set up parallel processing using all available cores minus one
+future::plan(future::multisession, workers = (detectCores()-1))
 
-## Run purrr::map() in parallel
-future::plan(future::multisession, workers = (detectCores()-1) )
-
-
-
-# All ---------------------------------------------------------------------
-
-cat("Calculating beta diversity scores: all \n")
-
-## Calc Distance Matrix ----------------------------------------------------
+# All Samples -----------------------------------------------------------------
+cat("\n[INFO] Calculating beta diversity scores: all samples\n")
 
 tmp.psOBJ <- ps.list[["All"]]
+set.seed(42)
+beta.dist.mat[["All"]] <- 
+  furrr::future_map(diversity.method[["beta"]], function(x){
+    set.seed(42)
+    tmp.psOBJ %>%
+      microViz::tax_transform(trans = "identity",
+                    rank = ifelse(x == "gunifrac" || x == "wunifrac" || x == "unifrac", "unique", "Genus")) %>%
+      microViz::dist_calc(x, gunifrac_alpha = 0.5)
+  }, .options = furrr::furrr_options(seed = TRUE)) %>%
+  setNames(diversity.method[["beta"]])
 
-beta.dist.mat[["All"]] <- # saves the results of this loop to a list
-  furrr::future_map(diversity.method[["beta"]], function(x){ # Future_map runs the function in parallel
-    tmp.psOBJ %>% # is the phyloseq object we are looping over
-      microViz::tax_transform(trans = "identity", # tax transform transforms taxa counts
-                    rank = ifelse(x == "gunifrac" || x == "wunifrac" || x == "unifrac", "unique", "Genus")) %>% # phylogenetic methods need "unique" ASV counts
-      microViz::dist_calc(x, gunifrac_alpha = 0.5) # calculates the distance between samples. gunifrac_alpha = 0.5 weights abundance into its calculation
-  }) %>%
-  setNames(diversity.method[["beta"]]) # assigns names of the beta methods to the list 
-
-
-
-# Unexposed ---------------------------------------------------------------
-
-cat("Calculating beta diversity scores: unexposed \n")
-
-## Calc Distance Matrix ----------------------------------------------------
+# Unexposed Samples -----------------------------------------------------------
+cat("\n[INFO] Calculating beta diversity scores: unexposed samples\n")
 
 tmp.psOBJ <- ps.list[["Unexposed"]]
+set.seed(42)
+beta.dist.mat[["Unexposed"]] <- 
+  furrr::future_map(diversity.method[["beta"]], function(x){
+    set.seed(42)
+    tmp.psOBJ %>%
+      microViz::tax_transform(trans = "identity",
+                    rank = ifelse(x == "gunifrac" || x == "wunifrac" || x == "unifrac", "unique", "Genus")) %>%
+      microViz::dist_calc(x, gunifrac_alpha = 0.5)
+  }, .options = furrr::furrr_options(seed = TRUE)) %>%
+  setNames(diversity.method[["beta"]])
 
-beta.dist.mat[["Unexposed"]] <- # saves the results of this loop to a list
-  furrr::future_map(diversity.method[["beta"]], function(x){ # Future_map runs the function in parallel
-    tmp.psOBJ %>% # is the phyloseq object we are looping over
-      microViz::tax_transform(trans = "identity", # tax transform transforms taxa counts
-                    rank = ifelse(x == "gunifrac" || x == "wunifrac" || x == "unifrac", "unique", "Genus")) %>% # phylogenetic methods need "unique" ASV counts
-      microViz::dist_calc(x, gunifrac_alpha = 0.5) # calculates the distance between samples. gunifrac_alpha = 0.5 weights abundance into its calculation
-  }) %>%
-  setNames(diversity.method[["beta"]]) # assigns names of the beta methods to the list 
-
-
-# Exposed -----------------------------------------------------------------
-
-cat("Calculating beta diversity scores: exposed \n")
-
-## Calc Distance Matrix ----------------------------------------------------
+# Exposed Samples -------------------------------------------------------------
+cat("\n[INFO] Calculating beta diversity scores: exposed samples\n")
 
 tmp.psOBJ <- ps.list[["Exposed"]]
+set.seed(42)
+beta.dist.mat[["Exposed"]] <- 
+  furrr::future_map(diversity.method[["beta"]], function(x){
+    set.seed(42)
+    tmp.psOBJ %>%
+      microViz::tax_transform(trans = "identity",
+                              rank = ifelse(x == "gunifrac" || x == "wunifrac" || x == "unifrac", "unique", "Genus")) %>%
+      microViz::dist_calc(x, gunifrac_alpha = 0.5)
+  }, .options = furrr::furrr_options(seed = TRUE)) %>%
+  setNames(diversity.method[["beta"]])
 
-beta.dist.mat[["Exposed"]] <- # saves the results of this loop to a list
-  furrr::future_map(diversity.method[["beta"]], function(x){ # Future_map runs the function in parallel
-    tmp.psOBJ %>% # is the phyloseq object we are looping over
-      microViz::tax_transform(trans = "identity", # tax transform transforms taxa counts
-                              rank = ifelse(x == "gunifrac" || x == "wunifrac" || x == "unifrac", "unique", "Genus")) %>% # phylogenetic methods need "unique" ASV counts
-      microViz::dist_calc(x, gunifrac_alpha = 0.5) # calculates the distance between samples. gunifrac_alpha = 0.5 weights abundance into its calculation
-  }) %>%
-  setNames(diversity.method[["beta"]]) # assigns names of the beta methods to the list 
-
-# Pre-Exposed -----------------------------------------------------------------
-
-cat("Calculating beta diversity scores: pre-exposed \n")
-
-## Calc Distance Matrix ----------------------------------------------------
+# Pre-Exposed Samples ---------------------------------------------------------
+cat("\n[INFO] Calculating beta diversity scores: pre-exposed samples\n")
 
 tmp.psOBJ <- ps.list[["PreExposed"]]
+set.seed(42)
+beta.dist.mat[["PreExposed"]] <- 
+  furrr::future_map(diversity.method[["beta"]], function(x){
+    set.seed(42)
+    tmp.psOBJ %>%
+      microViz::tax_transform(trans = "identity",
+                              rank = ifelse(x == "gunifrac" || x == "wunifrac" || x == "unifrac", "unique", "Genus")) %>%
+      microViz::dist_calc(x, gunifrac_alpha = 0.5)
+  }, .options = furrr::furrr_options(seed = TRUE)) %>%
+  setNames(diversity.method[["beta"]])
 
-beta.dist.mat[["PreExposed"]] <- # saves the results of this loop to a list
-  furrr::future_map(diversity.method[["beta"]], function(x){ # Future_map runs the function in parallel
-    tmp.psOBJ %>% # is the phyloseq object we are looping over
-      microViz::tax_transform(trans = "identity", # tax transform transforms taxa counts
-                              rank = ifelse(x == "gunifrac" || x == "wunifrac" || x == "unifrac", "unique", "Genus")) %>% # phylogenetic methods need "unique" ASV counts
-      microViz::dist_calc(x, gunifrac_alpha = 0.5) # calculates the distance between samples. gunifrac_alpha = 0.5 weights abundance into its calculation
-  }) %>%
-  setNames(diversity.method[["beta"]]) # assigns names of the beta methods to the list 
-
-# Post-Exposed ---------------------------------------------------------------------
-
-cat("Calculating beta diversity scores: post-exposed \n")
-
-## Calc Distance Matrix ----------------------------------------------------
+# Post-Exposed Samples --------------------------------------------------------
+cat("\n[INFO] Calculating beta diversity scores: post-exposed samples\n")
 
 tmp.psOBJ <- ps.list[["PostExposed"]]
+set.seed(42)
+beta.dist.mat[["PostExposed"]] <- 
+  furrr::future_map(diversity.method[["beta"]], function(x){
+    set.seed(42)
+    tmp.psOBJ %>%
+      microViz::tax_transform(trans = "identity",
+                              rank = ifelse(x == "gunifrac" || x == "wunifrac" || x == "unifrac", "unique", "Genus")) %>%
+      microViz::dist_calc(x, gunifrac_alpha = 0.5)
+  }, .options = furrr::furrr_options(seed = TRUE)) %>%
+  setNames(diversity.method[["beta"]])
 
-beta.dist.mat[["PostExposed"]] <- # saves the results of this loop to a list
-  furrr::future_map(diversity.method[["beta"]], function(x){ # Future_map runs the function in parallel
-    tmp.psOBJ %>% # ps.list[["PostExposed"]] is the phyloseq object we are looping over
-      microViz::tax_transform(trans = "identity", # tax transform transforms taxa counts
-                              rank = ifelse(x == "gunifrac" || x == "wunifrac" || x == "unifrac", "unique", "Genus")) %>% # phylogenetic methods need "unique" ASV counts
-      microViz::dist_calc(x, gunifrac_alpha = 0.5) # calculates the distance between samples. gunifrac_alpha = 0.5 weights abundance into its calculation
-  }) %>%
-  setNames(diversity.method[["beta"]]) # assigns names of the beta methods to the list 
-
-
-# TimeFinal ---------------------------------------------------------------
-
-cat("Calculating beta diversity scores: final timepoint \n")
-
-## Calc Distance Matrix ----------------------------------------------------
+# Final Timepoint -------------------------------------------------------------
+cat("\n[INFO] Calculating beta diversity scores: final timepoint\n")
 
 tmp.psOBJ <- ps.list[["TimeFinal"]]
+set.seed(42)
+beta.dist.mat[["TimeFinal"]] <- 
+  furrr::future_map(diversity.method[["beta"]], function(x){
+    set.seed(42)
+    tmp.psOBJ %>%
+      microViz::tax_transform(trans = "identity",
+                              rank = ifelse(x == "gunifrac" || x == "wunifrac" || x == "unifrac", "unique", "Genus")) %>%
+      microViz::dist_calc(x, gunifrac_alpha = 0.5)
+  }, .options = furrr::furrr_options(seed = TRUE)) %>%
+  setNames(diversity.method[["beta"]])
 
-beta.dist.mat[["TimeFinal"]] <- # saves the results of this loop to a list
-  furrr::future_map(diversity.method[["beta"]], function(x){ # Future_map runs the function in parallel
-    tmp.psOBJ %>% # is the phyloseq object we are looping over
-      microViz::tax_transform(trans = "identity", # tax transform transforms taxa counts
-                              rank = ifelse(x == "gunifrac" || x == "wunifrac" || x == "unifrac", "unique", "Genus")) %>% # phylogenetic methods need "unique" ASV counts
-      microViz::dist_calc(x, gunifrac_alpha = 0.5) # calculates the distance between samples. gunifrac_alpha = 0.5 weights abundance into its calculation
-  }) %>%
-  setNames(diversity.method[["beta"]]) # assigns names of the beta methods to the list 
-
-
-# InitialFinal ------------------------------------------------------------
-
-
-cat("Calculating beta diversity scores: initial vs final timepoint \n")
-
-## Calc Distance Matrix ----------------------------------------------------
+# Initial vs Final Timepoint --------------------------------------------------
+cat("\n[INFO] Calculating beta diversity scores: initial vs final timepoint\n")
 
 tmp.psOBJ <- ps.list[["InitialFinal"]]
+set.seed(42)
+beta.dist.mat[["InitialFinal"]] <- 
+  furrr::future_map(diversity.method[["beta"]], function(x){
+    set.seed(42)
+    tmp.psOBJ %>%
+      microViz::tax_transform(trans = "identity",
+                              rank = ifelse(x == "gunifrac" || x == "wunifrac" || x == "unifrac", "unique", "Genus")) %>%
+      microViz::dist_calc(x, gunifrac_alpha = 0.5)
+  }, .options = furrr::furrr_options(seed = TRUE)) %>%
+  setNames(diversity.method[["beta"]])
 
-beta.dist.mat[["InitialFinal"]] <- # saves the results of this loop to a list
-  furrr::future_map(diversity.method[["beta"]], function(x){ # Future_map runs the function in parallel
-    tmp.psOBJ %>% # is the phyloseq object we are looping over
-      microViz::tax_transform(trans = "identity", # tax transform transforms taxa counts
-                              rank = ifelse(x == "gunifrac" || x == "wunifrac" || x == "unifrac", "unique", "Genus")) %>% # phylogenetic methods need "unique" ASV counts
-      microViz::dist_calc(x, gunifrac_alpha = 0.5) # calculates the distance between samples. gunifrac_alpha = 0.5 weights abundance into its calculation
-  }) %>%
-  setNames(diversity.method[["beta"]]) # assigns names of the beta methods to the list 
 
+# Add end message with timestamp and duration
+end_time <- Sys.time()
+duration <- difftime(end_time, start_time, units = "secs")
+message("Completed BetaDiversity.R at ", format(end_time, "%Y-%m-%d %H:%M:%S"))
+message("Total execution time: ", round(duration, 2), " seconds")

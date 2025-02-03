@@ -31,29 +31,29 @@ ps_pivot_longer <- function(ps, cols = c(), names_to = "", values_to = "", ...) 
 # Improve: 
 #   - Dynamic rank input vis-a-vis: https://github.com/david-barnett/microViz/blob/11cdd447c4e7d59a75f7194b249f4ddb1b942867/R/ps_calc_diversity.R#L55
 
-ps_calc_diversity.phy <- function(ps,
-                                  index = "Phylogenetic__Genus",
-                                  varname = index,
-                                  use.root = T
-) {
-  
-  df <- picante::pd(samp = otu.matrix(ps), tree = phyloseq::phy_tree(ps), include.root = use.root) %>% 
-    rename(phylogenetic_Genus = PD) %>%
-    select(-SR)  # Remove richness column
-  
-  # check if varname is already in the phyloseq sample data
-  colnames(df)[colnames(df) == index] <- varname
-  df[[".rownames."]] <- rownames(df)
-  if (varname %in% phyloseq::sample_variables(ps)) {
-    warning(varname, " is already a variable in phyloseq sample data -> OVERWRITING")
-    phyloseq::sample_data(ps)[[varname]] <- NULL
-  }
-  ps <- ps_join(x = ps, y = df, type = "left", .keep_all_taxa = TRUE, 
-                match_sample_names = ".rownames.", keep_sample_name_col = FALSE)
-  
-  
-  return(ps)
-}
+# ps_calc_diversity.phy <- function(ps,
+#                                   index = "Phylogenetic__Genus",
+#                                   varname = index,
+#                                   use.root = T
+# ) {
+#   
+#   df <- picante::pd(samp = otu.matrix(ps), tree = phyloseq::phy_tree(ps), include.root = use.root) %>% 
+#     rename(phylogenetic_Genus = PD) %>%
+#     select(-SR)  # Remove richness column
+#   
+#   # check if varname is already in the phyloseq sample data
+#   colnames(df)[colnames(df) == index] <- varname
+#   df[[".rownames."]] <- rownames(df)
+#   if (varname %in% phyloseq::sample_variables(ps)) {
+#     warning(varname, " is already a variable in phyloseq sample data -> OVERWRITING")
+#     phyloseq::sample_data(ps)[[varname]] <- NULL
+#   }
+#   ps <- ps_join(x = ps, y = df, type = "left", .keep_all_taxa = TRUE, 
+#                 match_sample_names = ".rownames.", keep_sample_name_col = FALSE)
+#   
+#   
+#   return(ps)
+# }
 
 
 # Rowname Fixer -----------------------------------------------------------
