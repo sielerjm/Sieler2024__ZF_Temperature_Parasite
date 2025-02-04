@@ -148,6 +148,7 @@ tryCatch({
     # Save environment
     cat(" - Saving Environment\n")
     sesh.info <- sessionInfo()
+    saveRDS(sesh.info, file.path(path.results, "Stats_Plots", "sessionInfo.rds"))
     save_env(path.objects, ID = analysis.ID, extra_info = "microbiomeProcessing")
   }, error = function(e) create_error_report(e, "Saving Results"))
   
