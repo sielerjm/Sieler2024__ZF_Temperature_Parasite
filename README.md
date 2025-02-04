@@ -2,7 +2,7 @@
 
 This repository contains [figures and tables](https://sielerjm.github.io/Sieler2024__ZF_Temperature_Parasite/Results_Overview.html), and the analysis code and data processing pipelines for:
 
-Sieler et al. (2024) "Title of paper" *Journal Name*. DOI: [pending]
+Sieler et al. (2025) "Title of paper" *Journal Name*. DOI: [pending]
 
 ## Overview
 
