@@ -23,6 +23,8 @@ Sieler et al. (2024) "Title of paper" *Journal Name*. DOI: [pending]
 
 To reproduce the analysis and generate the manuscript figures and tables, you have two options:
 
+**Note:** The complete analysis pipeline is documented in `starting_doc.Rmd`. This R Markdown file contains all the code needed to either run the full analysis from scratch or load pre-computed results. You can open this file in RStudio to interactively run the analysis.
+
 ### Option 1: Run Full Analysis from Scratch
 This will run all analyses post-DADA2 processing (may take several minutes). In R:
 
