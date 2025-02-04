@@ -1,6 +1,6 @@
 # Add at the start
 start_time <- Sys.time()
-message("Starting 06-2__Temp_PostExp__Stats.R at ", format(start_time, "%Y-%m-%d %H:%M:%S"))
+cat("Starting 06-2__Temp_PostExp__Stats.R at", format(start_time, "%Y-%m-%d %H:%M:%S"), "\n")
 
 # 06-2__Temp_Unexp_Exp/06-2__Temp_PostExp__Stats.R --------------------------------------------------
 
@@ -8,7 +8,7 @@ tmp.psOBJ <- ps.list[["PostExposed"]]
 tmp.resSubSection <- "PostExposed"
 
 # Add after tmp.resSubSection definition
-message("Processing PostExposed data for Temperature and Treatment effects")
+cat("Processing PostExposed data for Temperature and Treatment effects\n")
 
 ## TEMP:TREAT ---------------------------------------------------------------
 
@@ -191,7 +191,7 @@ beta.stats[[tmp.resSubSection]][["TEMP:TREAT"]][["HoD.Tukey.Table"]] <-
 
 ## SUPP ---------------------------------------------------------------
 
-message("\nProcessing supplementary analyses...")
+cat("\nProcessing supplementary analyses...\n")
 
 ### 6D.1 TREAT by TEMP ------------------------------------------------------
 
@@ -263,8 +263,8 @@ beta.stats[[tmp.resSubSection]][["TEMP:TREAT"]][["HoD.Tukey__SUPP_6D.1"]] <- {
 # Add at the end
 end_time <- Sys.time()
 duration <- difftime(end_time, start_time, units = "secs")
-message("Completed 06-2__Temp_PostExp__Stats.R at ", format(end_time, "%Y-%m-%d %H:%M:%S"))
-message("Total execution time: ", round(duration, 2), " seconds")
+cat("Completed 06-2__Temp_PostExp__Stats.R at", format(end_time, "%Y-%m-%d %H:%M:%S"), "\n")
+cat("Total execution time:", round(duration, 2), "seconds\n")
 
 
 

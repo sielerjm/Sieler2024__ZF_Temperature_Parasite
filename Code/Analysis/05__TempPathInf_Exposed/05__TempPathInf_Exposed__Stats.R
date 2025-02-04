@@ -2,7 +2,7 @@
 
 # Add start message with timestamp
 start_time <- Sys.time()
-message("Starting 05__TempPathInf_Exposed__Stats.R at ", format(start_time, "%Y-%m-%d %H:%M:%S"))
+cat("Starting 05__TempPathInf_Exposed__Stats.R at", format(start_time, "%Y-%m-%d %H:%M:%S"), "\n")
 
 tmp.psOBJ <- ps.list[["Exposed"]]
 tmp.resSubSection <- "Exposed"
@@ -706,5 +706,5 @@ alpha.stats[[tmp.resSubSection]][["TEMP:CLUSTER"]][["Counts_Temp.Cluster"]] <-
 # Add end message with timestamp and duration
 end_time <- Sys.time()
 duration <- difftime(end_time, start_time, units = "secs")
-message("Completed 05__TempPathInf_Exposed__Stats.R at ", format(end_time, "%Y-%m-%d %H:%M:%S"))
-message("Total execution time: ", round(duration, 2), " seconds")
+cat("Completed 05__TempPathInf_Exposed__Stats.R at", format(end_time, "%Y-%m-%d %H:%M:%S"), "\n")
+cat("Total execution time:", round(duration, 2), "seconds\n")

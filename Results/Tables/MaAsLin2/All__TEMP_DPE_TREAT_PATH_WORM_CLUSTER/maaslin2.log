@@ -1,43 +1,43 @@
-2024-08-21 12:57:53.865966 INFO::Writing function arguments to log file
-2024-08-21 12:57:53.874714 DEBUG::Function arguments
-2024-08-21 12:57:53.882138 DEBUG::Output folder: /Users/michaelsieler/Dropbox/Mac (2)/Documents/Sharpton_Lab/Projects_Repository/Rules_of_Life/Sieler2024__ZF_Temperature_Parasite/Results/Tables/MaAsLin2/All__TEMP_DPE_TREAT_PATH_WORM_CLUSTER
-2024-08-21 12:57:53.882493 DEBUG::Min Abundance: 0.000000
-2024-08-21 12:57:53.882797 DEBUG::Min Prevalence: 0.000000
-2024-08-21 12:57:53.883076 DEBUG::Normalization: TSS
-2024-08-21 12:57:53.883357 DEBUG::Transform: LOG
-2024-08-21 12:57:53.883646 DEBUG::Analysis method: LM
-2024-08-21 12:57:53.883918 DEBUG::Max significance: 0.250000
-2024-08-21 12:57:53.884187 DEBUG::Random effects:
-2024-08-21 12:57:53.884473 DEBUG::Fixed effects: Temperature,DPE,Treatment,Pathology.Results,Total.Worm.Count,Cluster
-2024-08-21 12:57:53.884733 DEBUG::Correction method: BH
-2024-08-21 12:57:53.884993 DEBUG::Standardize: FALSE
-2024-08-21 12:57:53.885247 DEBUG::Cores: 8
-2024-08-21 12:57:53.885494 INFO::Verifying options selected are valid
-2024-08-21 12:57:54.094731 INFO::Determining format of input files
-2024-08-21 12:57:54.096277 INFO::Input format is data samples as rows and metadata samples as rows
-2024-08-21 12:57:54.099134 DEBUG::A total of 260 samples were found in both the data and metadata
-2024-08-21 12:57:54.101677 DEBUG::Reordering data/metadata to use same sample ordering
-2024-08-21 12:57:54.106274 INFO::Formula for fixed effects: expr ~  Temperature + DPE + Treatment + Pathology.Results + Total.Worm.Count + Cluster
-2024-08-21 12:57:54.108332 INFO::Filter data based on min abundance and min prevalence
-2024-08-21 12:57:54.109115 INFO::Total samples in data: 260
-2024-08-21 12:57:54.109842 INFO::Min samples required with min abundance for a feature not to be filtered: 0.000000
-2024-08-21 12:57:54.11861 INFO::Total filtered features: 0
-2024-08-21 12:57:54.119835 INFO::Filtered feature names from abundance and prevalence filtering:
-2024-08-21 12:57:54.160607 INFO::Total filtered features with variance filtering: 0
-2024-08-21 12:57:54.162117 INFO::Filtered feature names from variance filtering:
-2024-08-21 12:57:54.163074 INFO::Running selected normalization method: TSS
-2024-08-21 12:57:54.174802 INFO::Bypass z-score application to metadata
-2024-08-21 12:57:54.179938 INFO::Running selected transform method: LOG
-2024-08-21 12:57:54.193575 INFO::Running selected analysis method: LM
-2024-08-21 12:57:54.197801 INFO::Creating cluster of 8 R processes
-2024-08-21 12:58:04.212453 INFO::Counting total values for each feature
-2024-08-21 12:58:04.309401 INFO::Writing filtered data to file /Users/michaelsieler/Dropbox/Mac (2)/Documents/Sharpton_Lab/Projects_Repository/Rules_of_Life/Sieler2024__ZF_Temperature_Parasite/Results/Tables/MaAsLin2/All__TEMP_DPE_TREAT_PATH_WORM_CLUSTER/features/filtered_data.tsv
-2024-08-21 12:58:04.346464 INFO::Writing filtered, normalized data to file /Users/michaelsieler/Dropbox/Mac (2)/Documents/Sharpton_Lab/Projects_Repository/Rules_of_Life/Sieler2024__ZF_Temperature_Parasite/Results/Tables/MaAsLin2/All__TEMP_DPE_TREAT_PATH_WORM_CLUSTER/features/filtered_data_norm.tsv
-2024-08-21 12:58:04.543673 INFO::Writing filtered, normalized, transformed data to file /Users/michaelsieler/Dropbox/Mac (2)/Documents/Sharpton_Lab/Projects_Repository/Rules_of_Life/Sieler2024__ZF_Temperature_Parasite/Results/Tables/MaAsLin2/All__TEMP_DPE_TREAT_PATH_WORM_CLUSTER/features/filtered_data_norm_transformed.tsv
-2024-08-21 12:58:04.719375 WARNING::Deleting existing residuals file: /Users/michaelsieler/Dropbox/Mac (2)/Documents/Sharpton_Lab/Projects_Repository/Rules_of_Life/Sieler2024__ZF_Temperature_Parasite/Results/Tables/MaAsLin2/All__TEMP_DPE_TREAT_PATH_WORM_CLUSTER/fits/residuals.rds
-2024-08-21 12:58:04.724459 INFO::Writing residuals to file /Users/michaelsieler/Dropbox/Mac (2)/Documents/Sharpton_Lab/Projects_Repository/Rules_of_Life/Sieler2024__ZF_Temperature_Parasite/Results/Tables/MaAsLin2/All__TEMP_DPE_TREAT_PATH_WORM_CLUSTER/fits/residuals.rds
-2024-08-21 12:58:04.740955 WARNING::Deleting existing fitted file: /Users/michaelsieler/Dropbox/Mac (2)/Documents/Sharpton_Lab/Projects_Repository/Rules_of_Life/Sieler2024__ZF_Temperature_Parasite/Results/Tables/MaAsLin2/All__TEMP_DPE_TREAT_PATH_WORM_CLUSTER/fits/fitted.rds
-2024-08-21 12:58:04.743074 INFO::Writing fitted values to file /Users/michaelsieler/Dropbox/Mac (2)/Documents/Sharpton_Lab/Projects_Repository/Rules_of_Life/Sieler2024__ZF_Temperature_Parasite/Results/Tables/MaAsLin2/All__TEMP_DPE_TREAT_PATH_WORM_CLUSTER/fits/fitted.rds
-2024-08-21 12:58:04.760199 INFO::Writing all results to file (ordered by increasing q-values): /Users/michaelsieler/Dropbox/Mac (2)/Documents/Sharpton_Lab/Projects_Repository/Rules_of_Life/Sieler2024__ZF_Temperature_Parasite/Results/Tables/MaAsLin2/All__TEMP_DPE_TREAT_PATH_WORM_CLUSTER/all_results.tsv
-2024-08-21 12:58:04.784722 INFO::Writing the significant results (those which are less than or equal to the threshold of 0.250000 ) to file (ordered by increasing q-values): /Users/michaelsieler/Dropbox/Mac (2)/Documents/Sharpton_Lab/Projects_Repository/Rules_of_Life/Sieler2024__ZF_Temperature_Parasite/Results/Tables/MaAsLin2/All__TEMP_DPE_TREAT_PATH_WORM_CLUSTER/significant_results.tsv
-2024-08-21 12:58:04.797206 INFO::Writing heatmap of significant results to file: /Users/michaelsieler/Dropbox/Mac (2)/Documents/Sharpton_Lab/Projects_Repository/Rules_of_Life/Sieler2024__ZF_Temperature_Parasite/Results/Tables/MaAsLin2/All__TEMP_DPE_TREAT_PATH_WORM_CLUSTER/heatmap.pdf
+2025-02-03 16:26:52.878886 INFO::Writing function arguments to log file
+2025-02-03 16:26:52.885736 DEBUG::Function arguments
+2025-02-03 16:26:52.891786 DEBUG::Output folder: /Users/michaelsieler/Dropbox/Mac (2)/Documents/Sharpton_Lab/Projects_Repository/Rules_of_Life/Sieler2024__ZF_Temperature_Parasite/Results/Tables/MaAsLin2/All__TEMP_DPE_TREAT_PATH_WORM_CLUSTER
+2025-02-03 16:26:52.892095 DEBUG::Min Abundance: 0.000000
+2025-02-03 16:26:52.89235 DEBUG::Min Prevalence: 0.000000
+2025-02-03 16:26:52.892598 DEBUG::Normalization: TSS
+2025-02-03 16:26:52.892846 DEBUG::Transform: LOG
+2025-02-03 16:26:52.893089 DEBUG::Analysis method: LM
+2025-02-03 16:26:52.893309 DEBUG::Max significance: 0.250000
+2025-02-03 16:26:52.893539 DEBUG::Random effects:
+2025-02-03 16:26:52.893771 DEBUG::Fixed effects: Temperature,DPE,Treatment,Pathology.Results,Total.Worm.Count,Cluster
+2025-02-03 16:26:52.894095 DEBUG::Correction method: BH
+2025-02-03 16:26:52.894329 DEBUG::Standardize: FALSE
+2025-02-03 16:26:52.89456 DEBUG::Cores: 8
+2025-02-03 16:26:52.894787 INFO::Verifying options selected are valid
+2025-02-03 16:26:52.938773 INFO::Determining format of input files
+2025-02-03 16:26:52.940133 INFO::Input format is data samples as rows and metadata samples as rows
+2025-02-03 16:26:52.942345 DEBUG::A total of 260 samples were found in both the data and metadata
+2025-02-03 16:26:52.942743 DEBUG::Reordering data/metadata to use same sample ordering
+2025-02-03 16:26:52.945555 INFO::Formula for fixed effects: expr ~  Temperature + DPE + Treatment + Pathology.Results + Total.Worm.Count + Cluster
+2025-02-03 16:26:52.947528 INFO::Filter data based on min abundance and min prevalence
+2025-02-03 16:26:52.948485 INFO::Total samples in data: 260
+2025-02-03 16:26:52.949321 INFO::Min samples required with min abundance for a feature not to be filtered: 0.000000
+2025-02-03 16:26:52.958757 INFO::Total filtered features: 0
+2025-02-03 16:26:52.960207 INFO::Filtered feature names from abundance and prevalence filtering:
+2025-02-03 16:26:52.996735 INFO::Total filtered features with variance filtering: 0
+2025-02-03 16:26:52.997962 INFO::Filtered feature names from variance filtering:
+2025-02-03 16:26:52.998772 INFO::Running selected normalization method: TSS
+2025-02-03 16:26:53.006981 INFO::Bypass z-score application to metadata
+2025-02-03 16:26:53.009007 INFO::Running selected transform method: LOG
+2025-02-03 16:26:53.018629 INFO::Running selected analysis method: LM
+2025-02-03 16:26:53.022488 INFO::Creating cluster of 8 R processes
+2025-02-03 16:27:04.274033 INFO::Counting total values for each feature
+2025-02-03 16:27:04.376023 INFO::Writing filtered data to file /Users/michaelsieler/Dropbox/Mac (2)/Documents/Sharpton_Lab/Projects_Repository/Rules_of_Life/Sieler2024__ZF_Temperature_Parasite/Results/Tables/MaAsLin2/All__TEMP_DPE_TREAT_PATH_WORM_CLUSTER/features/filtered_data.tsv
+2025-02-03 16:27:04.422194 INFO::Writing filtered, normalized data to file /Users/michaelsieler/Dropbox/Mac (2)/Documents/Sharpton_Lab/Projects_Repository/Rules_of_Life/Sieler2024__ZF_Temperature_Parasite/Results/Tables/MaAsLin2/All__TEMP_DPE_TREAT_PATH_WORM_CLUSTER/features/filtered_data_norm.tsv
+2025-02-03 16:27:04.523985 INFO::Writing filtered, normalized, transformed data to file /Users/michaelsieler/Dropbox/Mac (2)/Documents/Sharpton_Lab/Projects_Repository/Rules_of_Life/Sieler2024__ZF_Temperature_Parasite/Results/Tables/MaAsLin2/All__TEMP_DPE_TREAT_PATH_WORM_CLUSTER/features/filtered_data_norm_transformed.tsv
+2025-02-03 16:27:04.855075 WARNING::Deleting existing residuals file: /Users/michaelsieler/Dropbox/Mac (2)/Documents/Sharpton_Lab/Projects_Repository/Rules_of_Life/Sieler2024__ZF_Temperature_Parasite/Results/Tables/MaAsLin2/All__TEMP_DPE_TREAT_PATH_WORM_CLUSTER/fits/residuals.rds
+2025-02-03 16:27:04.857583 INFO::Writing residuals to file /Users/michaelsieler/Dropbox/Mac (2)/Documents/Sharpton_Lab/Projects_Repository/Rules_of_Life/Sieler2024__ZF_Temperature_Parasite/Results/Tables/MaAsLin2/All__TEMP_DPE_TREAT_PATH_WORM_CLUSTER/fits/residuals.rds
+2025-02-03 16:27:04.875953 WARNING::Deleting existing fitted file: /Users/michaelsieler/Dropbox/Mac (2)/Documents/Sharpton_Lab/Projects_Repository/Rules_of_Life/Sieler2024__ZF_Temperature_Parasite/Results/Tables/MaAsLin2/All__TEMP_DPE_TREAT_PATH_WORM_CLUSTER/fits/fitted.rds
+2025-02-03 16:27:04.877861 INFO::Writing fitted values to file /Users/michaelsieler/Dropbox/Mac (2)/Documents/Sharpton_Lab/Projects_Repository/Rules_of_Life/Sieler2024__ZF_Temperature_Parasite/Results/Tables/MaAsLin2/All__TEMP_DPE_TREAT_PATH_WORM_CLUSTER/fits/fitted.rds
+2025-02-03 16:27:04.889465 INFO::Writing all results to file (ordered by increasing q-values): /Users/michaelsieler/Dropbox/Mac (2)/Documents/Sharpton_Lab/Projects_Repository/Rules_of_Life/Sieler2024__ZF_Temperature_Parasite/Results/Tables/MaAsLin2/All__TEMP_DPE_TREAT_PATH_WORM_CLUSTER/all_results.tsv
+2025-02-03 16:27:04.917215 INFO::Writing the significant results (those which are less than or equal to the threshold of 0.250000 ) to file (ordered by increasing q-values): /Users/michaelsieler/Dropbox/Mac (2)/Documents/Sharpton_Lab/Projects_Repository/Rules_of_Life/Sieler2024__ZF_Temperature_Parasite/Results/Tables/MaAsLin2/All__TEMP_DPE_TREAT_PATH_WORM_CLUSTER/significant_results.tsv
+2025-02-03 16:27:04.93206 INFO::Writing heatmap of significant results to file: /Users/michaelsieler/Dropbox/Mac (2)/Documents/Sharpton_Lab/Projects_Repository/Rules_of_Life/Sieler2024__ZF_Temperature_Parasite/Results/Tables/MaAsLin2/All__TEMP_DPE_TREAT_PATH_WORM_CLUSTER/heatmap.pdf

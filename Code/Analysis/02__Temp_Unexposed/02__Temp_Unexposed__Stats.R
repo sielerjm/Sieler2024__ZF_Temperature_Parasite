@@ -2,7 +2,7 @@
 
 # Add start message with timestamp
 start_time <- Sys.time()
-message("Starting 02__Temp_Unexposed__Stats.R at ", format(start_time, "%Y-%m-%d %H:%M:%S"))
+cat("Starting 02__Temp_Unexposed__Stats.R at", format(start_time, "%Y-%m-%d %H:%M:%S"), "\n")
 
 tmp.psOBJ <- ps.list[["Unexposed"]]
 tmp.resSubSection <- "Unexposed"
@@ -367,8 +367,8 @@ beta.stats[[tmp.resSubSection]][["TEMP:DPE"]][["HoD.Tukey.Table"]] <-
 # Add end message with timestamp and duration
 end_time <- Sys.time()
 duration <- difftime(end_time, start_time, units = "secs")
-message("Completed 02__Temp_Unexposed__Stats.R at ", format(end_time, "%Y-%m-%d %H:%M:%S"))
-message("Total execution time: ", round(duration, 2), " seconds")
+cat("Completed 02__Temp_Unexposed__Stats.R at", format(end_time, "%Y-%m-%d %H:%M:%S"), "\n")
+cat("Total execution time:", round(duration, 2), "seconds\n")
 
 
 

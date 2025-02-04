@@ -38,8 +38,8 @@ create_error_report <- function(error, step) {
 tryCatch({
   # Start timing and logging
   start_time <- Sys.time()
-  message("Starting MicrobiomeProcessing_2024-08-12.R at ", 
-          format(start_time, "%Y-%m-%d %H:%M:%S"))
+  cat("Starting MicrobiomeProcessing_2024-08-12.R at ", 
+      format(start_time, "%Y-%m-%d %H:%M:%S"), "\n")
   
   ## Initialize Environment ------------------------------------------------
   cat("INITIALIZING ENVIRONMENT \n")
@@ -155,9 +155,9 @@ tryCatch({
   
   end_time <- Sys.time()
   duration <- difftime(end_time, start_time, units = "secs")
-  message("Completed MicrobiomeProcessing_2024-08-12.R at ", 
-          format(end_time, "%Y-%m-%d %H:%M:%S"))
-  message("Total execution time: ", round(duration, 2), " seconds")
+  cat("Completed MicrobiomeProcessing_2024-08-12.R at ", 
+      format(end_time, "%Y-%m-%d %H:%M:%S"), "\n")
+  cat("Total execution time: ", round(duration, 2), " seconds\n")
   
 }, error = function(e) {
   create_error_report(e, "Main Script Execution")

@@ -1,5 +1,9 @@
 # 07__TaxonAbund_Unexp_Exp__Stats --------------------------------------------------
 
+# Add start message
+start_time <- Sys.time()
+cat("Starting 07__TaxonAbund_Unexp_Exp__Stats.R at", format(start_time, "%Y-%m-%d %H:%M:%S"), "\n")
+
 tmp.psOBJ <- ps.list[["All"]]
 tmp.resSubSection <- "All"
 
@@ -59,6 +63,12 @@ diffAbnd.stats[["All"]][["All__TEMP_DPE_TREAT_PATH_WORM_CLUSTER"]][["Maaslin2"]]
   dplyr::mutate(Taxon = stringr::str_replace_all(Taxon, "\\.", " ")) %>%
   dplyr::arrange(qval) %>%
   dplyr::ungroup()
+
+# Add end message
+end_time <- Sys.time()
+duration <- difftime(end_time, start_time, units = "secs")
+cat("Completed 07__TaxonAbund_Unexp_Exp__Stats.R at", format(end_time, "%Y-%m-%d %H:%M:%S"), "\n")
+cat("Total execution time:", round(duration, 2), "seconds\n")
 
 
 
