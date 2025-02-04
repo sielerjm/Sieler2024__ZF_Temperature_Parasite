@@ -12,17 +12,40 @@ save_env <- function(
   extra_info = NA
   ){
   
-  if(is.na(extra_info)){
-    save.image(paste0(obj.path, "/Environment/environment_", ID, "_ENV.RData"))
-  } else{
-    save.image(paste0(obj.path, "/Environment/environment__", extra_info, ID, "_ENV.RData"))
+  # Define paths
+  env_dir <- file.path(obj.path, "Environment")
+  archive_dir <- file.path(env_dir, "Archive")
+  
+  # Create directories if they don't exist
+  if (!dir.exists(env_dir)) dir.create(env_dir, recursive = TRUE)
+  if (!dir.exists(archive_dir)) dir.create(archive_dir, recursive = TRUE)
+  
+  # Archive existing files
+  existing_rdata <- list.files(env_dir, pattern = "\\.RData$", full.names = TRUE)
+  existing_session <- list.files(env_dir, pattern = "session_info__.*\\.txt$", full.names = TRUE)
+  
+  # Move files to archive
+  if (length(existing_rdata) > 0) {
+    file.rename(existing_rdata, file.path(archive_dir, basename(existing_rdata)))
   }
+  if (length(existing_session) > 0) {
+    file.rename(existing_session, file.path(archive_dir, basename(existing_session)))
+  }
+  
+  # Save new environment file
+  if(is.na(extra_info)){
+    save_path <- file.path(env_dir, paste0("environment_", ID, "_ENV.RData"))
+  } else {
+    save_path <- file.path(env_dir, paste0("environment__", extra_info, "_", ID, "_ENV.RData"))
+  }
+  save.image(save_path)
   
   # Save Session Info
   session_info <- capture.output(sessionInfo())
-  
-  # Write the captured output to a text file
-  writeLines(session_info, paste0(obj.path, "/Environment/session_info__", extra_info, ID, ".txt") )
+  session_path <- file.path(env_dir, paste0("session_info__", 
+                                            ifelse(is.na(extra_info), "", paste0(extra_info, "_")), 
+                                            ID, ".txt"))
+  writeLines(session_info, session_path)
 }
 
 

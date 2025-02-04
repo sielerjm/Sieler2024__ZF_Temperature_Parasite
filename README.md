@@ -19,6 +19,44 @@ Sieler et al. (2024) "Title of paper" *Journal Name*. DOI: [pending]
     ├── Data/               # Raw and processed data files
     └── Results/           # Output files and figures
 
+## Running the Analysis
+
+To reproduce the analysis and generate the manuscript figures and tables, you have two options:
+
+### Option 1: Run Full Analysis from Scratch
+This will run all analyses post-DADA2 processing (may take several minutes). In R:
+
+```r
+# Set seed for reproducibility
+set.seed(42)
+
+# Run complete analysis pipeline
+source("MicrobiomeProcessing_2024-08-12.R")
+```
+
+### Option 2: Load Pre-computed Results
+This loads saved R objects for quick access to results. Use this if you only need to generate figures and tables. In R:
+
+```r
+# Set seed for reproducibility
+set.seed(42)
+
+# Load most recent saved environment
+latest_env <- fs::dir_info("Data/R_objects/Environment", regexp = "\\.RData$") %>% 
+  dplyr::arrange(dplyr::desc(modification_time)) %>% 
+  dplyr::slice(1) %>% 
+  dplyr::pull(path)
+
+load(latest_env)
+```
+
+After running either option, generate all figures and tables by running:
+
+```r
+# Generate manuscript figures and tables
+rmarkdown::render("Results_Overview.Rmd")
+```
+
 ## Analysis Pipeline
 
 1. **Sequence Processing**:
@@ -52,8 +90,14 @@ The complete analysis results, including all main figures, supplementary plots, 
 
 - R version 4.3.3 or higher
 - Required R packages listed in `Code/Functions/StartFunctions/libraries.R`
+- For full analysis: Machine with at least 16GB RAM recommended
 
+## Troubleshooting
 
+* **Library Installation**: Ensure all required libraries are installed
+* **Project Structure**: Verify `.Rproj` file is located in the top level of your project repository
+* **Memory Issues**: The full analysis may require significant memory
+* **Reporting Problems**: If you identify any issues with the code or analysis, please [open an issue](https://github.com/sielerjm/Sieler2024__ZF_Temperature_Parasite/issues) on GitHub
 
 ## Citation
 

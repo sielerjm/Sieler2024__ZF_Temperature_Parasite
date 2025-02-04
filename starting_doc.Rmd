@@ -1,5 +1,5 @@
 ---
-title: "Getting Started Doc"
+title: "Microbiome Analysis Pipeline"
 author: "Michael Sieler"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
@@ -12,69 +12,82 @@ output:
   pdf_document: 
     toc: yes
     toc_depth: '3'
-    
 ---
 
-This is a template document to get you started. 
+# Microbiome Analysis Pipeline
 
-## Troubleshooting:
-* Make sure you have all libraries installed, otherwise the loading functions will fail.
-* Path names will fail if your `.Rproj` file is not located in the top level of you project repository
-  * For example, it should be located here: `/Path_to_Project/ProjectName/<name_of_project>.Rproj`
+This document provides the complete pipeline to reproduce the microbiome analysis from the manuscript. You can either:
 
+1. **Run the full analysis from scratch** (takes longer but ensures reproducibility)
+2. **Load pre-computed results** (faster, uses saved R objects)
 
-## Setup environment
-
-This chunk of code will need to be run prior to running any of the scripts in `Code/Analysis` directory.
+## Setup Environment
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE)  # Sets default knit settings for document
+# Set default knitr options
+knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE)
+
+# Set seed for reproducibility
+set.seed(42)
 
 # Check project file location is in correct directory
 proj.path <- getwd()
 
-# SourceFolder function
-source(paste0(proj.path,"/Code/Functions/StartFunctions/sourceFolder.R"))
+# Source helper functions
+source(file.path(proj.path, "Code", "Functions", "StartFunctions", "sourceFolder.R"))
+sourceFolder(file.path(proj.path, "Code", "Functions", "StartFunctions"), T)
+sourceFolder(file.path(proj.path, "Code", "Functions", "HelperFunctions"), T)
 
-# Import all helper functions found in `/Functions`
-sourceFolder(paste0(proj.path,"/Code/Functions/StartFunctions"), T)
-sourceFolder(paste0(proj.path,"/Code/Functions/HelperFunctions"), T)
+# Define important paths
+path.code <- file.path(proj.path, "Code")
+path.data <- file.path(proj.path, "Data")
+path.objects <- file.path(proj.path, "Data", "R_objects")
+path.input <- file.path(proj.path, "Data", "Input")
+path.results <- file.path(proj.path, "Results") 
+```
 
+## Analysis Options
 
+Choose one of the following options to proceed with the analysis:
 
-# Important Paths
-path.code <- paste0(proj.path,"/Code")
-path.data <- paste0(proj.path,"/Data")
-path.objects <- paste0(proj.path, "/Data/R_objects")
-path.input <- paste0(proj.path,"/Data/Input") 
-path.results <- paste0(proj.path,"/Results") 
+### Option 1: Run Full Analysis from Scratch
+This will run all analyses post-DADA2 processing (may take several minutes).
 
-# Load Environment
-## This loads all the data required for analysis.
-# 
-# load(file.path(path.data,
-#                "R_objects/RoL_HeaterTrial_PostMicrobiomeProcessing_ENV_2024-02-21.RData"
-#                ))
+```{r run_full_analysis, eval=FALSE}
+# Run complete analysis pipeline
+source(file.path(proj.path, "MicrobiomeProcessing_2024-08-12.R"))
+```
+
+### Option 2: Load Pre-computed Results
+This loads saved R objects for quick access to results. Use this if you only need to generate figures and tables.
+
+```{r load_precomputed, eval=FALSE}
+# Load most recent saved environment
+latest_env <- fs::dir_info(file.path(path.objects, "Environment"), regexp = "\\.RData$") %>% 
+  dplyr::arrange(dplyr::desc(modification_time)) %>% 
+  dplyr::slice(1) %>% 
+  dplyr::pull(path)
+
+load(latest_env)
 
 
 ```
 
+## Troubleshooting
 
+* **Library Installation**: Ensure all required libraries are installed
+* **Project Structure**: Verify `.Rproj` file is located in the top level of your project repository
+  * Correct location: `/Path_to_Project/ProjectName/<name_of_project>.Rproj`
+* **Memory Issues**: The full analysis may require significant memory. Consider using a machine with at least 16GB RAM
 
+## Results
 
+After running either Option 1 or 2, you can generate all figures and tables by running:
 
-## Analyses
-
-### Stats & Plots
-
-Run this code to:
-  - Calculate alpha diversity scores
-  - Calculate beta dissimilarity matrices
-  - Run code to generate alpha and beta stats and plots
-
-```{r}
-# This function will run all the scripts within the folders contained in Analysis directory
-source(paste0(proj.path,"/MicrobiomeProcessing_2024-08-12.R"))
-
+```{r generate_results, eval=FALSE}
+# Generate manuscript figures and tables
+rmarkdown::render(file.path(proj.path, "Results_Overview.Rmd"))
 ```
+
+For questions about the analysis pipeline, please contact corresponding author.
 
