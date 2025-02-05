@@ -81,7 +81,7 @@ rmarkdown::render("Results_Overview.Rmd")
 
 ## Data Availability
 
-Raw sequencing data is available at [NCBI BioProject PRJNAXXXXXX](https://www.ncbi.nlm.nih.gov/bioproject/PRJNAXXXXXX). Processed data files are included in the `Data/` directory.
+Raw sequencing data is available at [NCBI BioProject PRJNA1219243](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA1219243). Post-DADA2 processed data files are included in the `Data/` directory.
 
 ## Results
 
