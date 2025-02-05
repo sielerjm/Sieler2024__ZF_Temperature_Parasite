@@ -1,7 +1,12 @@
 ---
-title: "Zebrafish Temperature and Parasite"
+title: "Modelling the zebrafish gut microbiome's resistance and sensitivity to climate change and infection"
 subtitle: "Main Figures and Supplemental Results"
-author: "Michael Sieler"
+author: 
+  - "Michael J. Sieler Jr."
+  - "Colleen E. Al-Samarrie"
+  - "Kristin D. Kasschau"
+  - "Mike L. Kent"
+  - "Thomas J. Sharpton"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: 
   html_document:
