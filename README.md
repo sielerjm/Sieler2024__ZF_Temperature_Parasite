@@ -69,7 +69,6 @@ rmarkdown::render("Results_Overview.Rmd")
 2. **Taxonomic Analysis**:
    - Taxonomic assignment using SILVA database (v138)
    - Diversity metric calculations
-   - 
 
 3. **Statistical Analysis**:
    - Temperature effect analysis using linear mixed models
