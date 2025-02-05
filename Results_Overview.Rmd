@@ -78,7 +78,9 @@ source(paste0(proj.path,"/Code/Functions/HelperFunctions/miscFunctions.R"))
 The published version of this manuscript can be found here:
 Sieler Jr M.J., Al-Samarrie C.E., Kasschau K.D., Kent M.L., Sharpton T.J.. Modelling the zebrafish gut microbiome's resistance and sensitivity to climate change and infection. *Journal Name* (2025). DOI
 
-[GitHub Repository](https://github.com/sielerjm/Sieler2025__ZF_Temperature_Parasite/)
+All code generated during this analysis is available in the [GitHub Repository](https://github.com/sielerjm/Sieler2025__ZF_Temperature_Parasite/).
+
+The raw sequence files generated during the current study are available at the NCBI Sequence Read Archive (SRA) project numbers: [PRJNA1219243](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA1219243). 
 
 
 ### Fig. 1) Experimental Design Schematic
