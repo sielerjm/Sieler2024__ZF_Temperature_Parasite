@@ -85,7 +85,7 @@ Raw sequencing data is available at [NCBI BioProject PRJNA1219243](https://www.n
 
 ## Results
 
-The complete analysis results, including all main figures, supplementary plots, and tables can be accessed through our [Results Overview Page](https://sielerjm.github.io/Sieler2024__ZF_Temperature_Parasite/Results_Overview.html).
+The complete analysis results, including all main figures, supplementary plots, and tables can be accessed through our [Results Overview Page](https://sielerjm.github.io/Sieler2025__ZF_Temperature_Parasite/Results_Overview.html).
 
 ## Requirements
 
@@ -98,7 +98,7 @@ The complete analysis results, including all main figures, supplementary plots, 
 * **Library Installation**: Ensure all required libraries are installed
 * **Project Structure**: Verify `.Rproj` file is located in the top level of your project repository
 * **Memory Issues**: The full analysis may require significant memory
-* **Reporting Problems**: If you identify any issues with the code or analysis, please [open an issue](https://github.com/sielerjm/Sieler2024__ZF_Temperature_Parasite/issues) on GitHub
+* **Reporting Problems**: If you identify any issues with the code or analysis, please [open an issue](https://github.com/sielerjm/Sieler2025__ZF_Temperature_Parasite/issues) on GitHub
 
 ## Citation
 
@@ -121,4 +121,4 @@ This work is licensed under the Oregon State University License. See the [LICENS
 
 ## Contact
 
-For questions about the code or analysis, please [open an issue](https://github.com/sielerjm/Sieler2024__ZF_Temperature_Parasite/issues) or contact the corresponding author listed in the manuscript.
+For questions about the code or analysis, please [open an issue](https://github.com/sielerjm/Sieler2025__ZF_Temperature_Parasite/issues) or contact the corresponding author listed in the manuscript.
