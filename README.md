@@ -1,8 +1,9 @@
-# Temperature and Parasitic Infection Shape the Zebrafish Gut Microbiome
+# Modelling the zebrafish gut microbiome's resistance and sensitivity to climate change and infection
 
 This repository contains [figures and tables](https://sielerjm.github.io/Sieler2025__ZF_Temperature_Parasite/Results_Overview.html), and the analysis code and data processing pipelines for:
 
-Sieler et al. (2025) "Title of paper" *Journal Name*. DOI: [pending]
+"Modelling the zebrafish gut microbiome's resistance and sensitivity to climate change and infection" (*in-prep*). DOI: [pending]
+* Michael J. Sieler Jr., Colleen E. Al-Samarrie, Kristin D. Kasschau, Mike L. Kent, Thomas J. Sharpton
 
 ## Overview
 
@@ -85,7 +86,7 @@ Raw sequencing data is available at [NCBI BioProject PRJNA1219243](https://www.n
 
 ## Results
 
-The complete analysis results, including all main figures, supplementary plots, and tables can be accessed through our [Results Overview Page](https://sielerjm.github.io/Sieler2024__ZF_Temperature_Parasite/Results_Overview.html).
+The complete analysis results, including all main figures, supplementary plots, and tables can be accessed through our [Results Overview Page](https://sielerjm.github.io/Sieler2025__ZF_Temperature_Parasite/Results_Overview.html).
 
 ## Requirements
 
@@ -98,14 +99,14 @@ The complete analysis results, including all main figures, supplementary plots, 
 * **Library Installation**: Ensure all required libraries are installed
 * **Project Structure**: Verify `.Rproj` file is located in the top level of your project repository
 * **Memory Issues**: The full analysis may require significant memory
-* **Reporting Problems**: If you identify any issues with the code or analysis, please [open an issue](https://github.com/sielerjm/Sieler2024__ZF_Temperature_Parasite/issues) on GitHub
+* **Reporting Problems**: If you identify any issues with the code or analysis, please [open an issue](https://github.com/sielerjm/Sieler2025__ZF_Temperature_Parasite/issues) on GitHub
 
 ## Citation
 
 ```bibtex
-@article{sieler2024temperature,
-  title={Temperature and Parasitic Infection Shape the Zebrafish Gut Microbiome},
-  author={Sieler Jr., Michael James et. al.},
+@article{sieler2025,
+  title={Modelling the zebrafish gut microbiome's resistance and sensitivity to climate change and infection},
+  author={Michael J. Sieler Jr., Colleen E. Al-Samarrie, Kristin D. Kasschau, Mike L. Kent, Thomas J. Sharpton},
   journal={Journal Name},
   volume={XX},
   number={XX},
@@ -121,4 +122,4 @@ This work is licensed under the Oregon State University License. See the [LICENS
 
 ## Contact
 
-For questions about the code or analysis, please [open an issue](https://github.com/sielerjm/Sieler2024__ZF_Temperature_Parasite/issues) or contact the corresponding author listed in the manuscript.
+For questions about the code or analysis, please [open an issue](https://github.com/sielerjm/Sieler2025__ZF_Temperature_Parasite/issues) or contact the corresponding author listed in the manuscript.
