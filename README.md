@@ -1,4 +1,4 @@
-# Temperature and Parasitic Infection Shape the Zebrafish Gut Microbiome
+# Modelling the zebrafish gut microbiome's resistance and sensitivity to climate change and infection
 
 This repository contains [figures and tables](https://sielerjm.github.io/Sieler2025__ZF_Temperature_Parasite/Results_Overview.html), and the analysis code and data processing pipelines for:
 
