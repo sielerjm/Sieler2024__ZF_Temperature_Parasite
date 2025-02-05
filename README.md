@@ -64,21 +64,21 @@ rmarkdown::render("Results_Overview.Rmd")
 1. **Sequence Processing**:
    - Raw sequence processing using DADA2 (v2.0)
    - Quality filtering and chimera removal
-   - ASV table generation
+   - ASV assignment
 
 2. **Taxonomic Analysis**:
    - Taxonomic assignment using SILVA database (v138)
-   - Abundance calculations and normalization
+   - Diversity metric calculations
+   - 
 
 3. **Statistical Analysis**:
    - Temperature effect analysis using linear mixed models
    - Parasite infection impact assessment
-   - Differential abundance testing (ANCOM, DESeq2)
+   - Differential abundance testing (MaAsLin2)
 
 4. **Visualization**:
-   - Principal Coordinates Analysis (PCoA)
-   - Heatmaps and taxonomic composition plots
-   - Statistical result visualizations
+   - Alpha and beta diversity plots
+   - Taxonomic abundance heatmap
 
 ## Data Availability
 
