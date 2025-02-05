@@ -405,9 +405,9 @@ worm.plots[[tmp.resSubSection]][["TEMP:DPE"]][["Method.Counts"]][["Plot"]] <-
     scale_x_discrete(labels = c("Histo", "Wet")) +
     scale_y_continuous(limits = c(0, 10), breaks = seq(0, 10, by = 2)) +
     
-    scale_fill_manual(values = c(pal.Paired[2], pal.Paired[1],
-                                 pal.Paired[4], pal.Paired[3],
-                                 pal.Paired[6], pal.Paired[5]),
+    scale_fill_manual(values = c(col.Temp[1], pal.Paired[1],
+                                 col.Temp[2], pal.Paired[3],
+                                 col.Temp[3], pal.Paired[5]),
                       name = "Method",
                       labels = c("28°C Histo",
                                  "28°C Wet mount",
@@ -428,3 +428,5 @@ worm.plots[[tmp.resSubSection]][["TEMP:DPE"]][["Method.Counts"]][["Plot"]] <-
                                                              col.Temp[3], col.Temp[3]))
     )) # Specify the number of columns in the legend
 
+# "#3B65DB" "#7AB84C" "#A03022"
+# "#A6CEE3" "#1F78B4" "#B2DF8A" "#33A02C" "#FB9A99" "#E31A1C" "#FDBF6F" "#FF7F00" "#CAB2D6" "#6A3D9A" "#FFFF99" "#B15928"

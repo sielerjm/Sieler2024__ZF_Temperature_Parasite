@@ -203,6 +203,140 @@ worm.stats[[tmp.resSubSection]][["TEMP:DPE"]][["TUKEY_GLM.NB.Table"]] <-
     subtitle = "Tukey(Total.Worm.Count ~ Temperature*DPE); Exposed fish"
   )
 
+
+### INF DETECT ----------------------------------------------------------------
+
+tmp.inf.data <- readxl::read_excel(file.path(path.data, "Raw/Connor Hot Fish RTF Primary No Controls Ver 2.xlsx")) %>%
+  dplyr::rename(
+    Path.Res.Comb = "Infect combine",
+    Histo = "histo",
+    Histo.Res = "histo result"
+  ) %>%
+  dplyr::mutate(
+    
+    Histo = case_when(
+      Histo == "pos" ~ "positive",
+      Histo == "neg" ~ "negative",
+      .default = NA
+    ),
+    
+    # Convert character columns to factors
+    Histo = factor(Histo, levels = c("negative", "positive")),
+    Temperature = factor(Temperature, levels = c(28, 32, 35)),
+    DPE = factor(DPE, levels = c(0, 14, 21, 28, 42)),
+    
+    # Ensure numeric columns are properly typed
+    Wet = as.numeric(Wet),
+    
+    # Create logical detection columns
+    Wet.Detect = Wet > 0,
+    Histo.Detect = Histo == "positive"
+  ) %>%
+  # Select and order relevant columns
+  dplyr::select(Sample, Temperature, DPE, Wet, Histo, Histo.Res,
+                Wet.Detect, Histo.Detect)
+
+
+
+#### COUNTS ------------------------------------------------------------------
+
+# Function to summarize detection counts by DPE
+summarize_detection_counts <- function(data) {
+  data %>%
+    dplyr::group_by(Temperature, DPE) %>%
+    dplyr::summarize(
+      
+      Histo_Positive = sum(Histo.Detect == TRUE, na.rm = TRUE),
+      Wet_Positive = sum(Wet.Detect == TRUE, na.rm = TRUE),
+      
+      Histo_Negative = sum(Histo.Detect == FALSE, na.rm = TRUE),
+      Wet_Negative = sum(Wet.Detect == FALSE, na.rm = TRUE),
+      .groups = 'drop'
+    )
+}
+
+# Create detection count summary table
+detection_counts <- tmp.inf.data %>%
+  summarize_detection_counts() %>%
+  dplyr::group_by(Temperature) %>%
+  gt::gt() %>%
+  gt::tab_header(
+    title = "Detection Method Comparison by DPE",
+    subtitle = "Number of positive and negative detections for Wet and Histo methods"
+  ) %>%
+  gt::cols_label(
+    DPE = "Days Post Exposure",
+    Wet_Positive = "Wet Positive",
+    Histo_Positive = "Histo Positive",
+    Wet_Negative = "Wet Negative",
+    Histo_Negative = "Histo Negative"
+  )
+
+# Store and display results
+worm.stats[[tmp.resSubSection]][["Method.Counts"]][["Detection_Counts"]] <- detection_counts
+
+
+
+#### MCNEMARS ----------------------------------------------------------------
+
+# Function to perform McNemar's test for each Temperature and DPE combination
+
+compare_methods_by_temp_dpe <- function(data) {
+  results <- data %>%
+    dplyr::group_by(Temperature, DPE) %>%
+    dplyr::summarize(
+      # Create 2x2 contingency table
+      Histo_Only = sum(!Wet.Detect & Histo.Detect, na.rm = TRUE),
+      Wet_Only = sum(Wet.Detect & !Histo.Detect, na.rm = TRUE),
+      Both_Positive = sum(Wet.Detect & Histo.Detect, na.rm = TRUE),
+      Both_Negative = sum(!Wet.Detect & !Histo.Detect, na.rm = TRUE),
+      .groups = 'drop'
+    ) %>%
+    dplyr::rowwise() %>%
+    dplyr::mutate(
+      # Perform McNemar's test
+      mcnemar_test = list(stats::mcnemar.test(matrix(c(Both_Positive, Wet_Only, Histo_Only, Both_Negative), nrow = 2))),
+      p.value = mcnemar_test$p.value,
+      statistic = mcnemar_test$statistic
+    ) %>%
+    dplyr::select(-mcnemar_test)
+  
+  return(results)
+}
+
+# Perform comparisons and store results
+set.seed(42)  # Set seed for reproducibility
+method_comparison_results <- compare_methods_by_temp_dpe(tmp.inf.data)
+
+# Create formatted table
+method_comparison_table <- method_comparison_results %>%
+  dplyr::group_by(Temperature) %>%
+  gt::gt() %>%
+  gt::tab_header(
+    title = "Statistical Comparison of Detection Methods",
+    subtitle = "McNemar's test comparing Wet and Histo methods by Temperature and DPE"
+  ) %>%
+  gt::cols_label(
+    Temperature = "Temperature (°C)",
+    DPE = "Days Post Exposure",
+    Histo_Only = "Histo Only",
+    Wet_Only = "Wet Only",
+    Both_Positive = "Both Positive",
+    Both_Negative = "Both Negative",
+    p.value = "P-value",
+    statistic = "Chi-squared"
+  ) %>%
+  gt::fmt_number(columns = c(p.value), decimals = 4) %>%
+  gt::tab_footnote(
+    footnote = "McNemar's test compares the discordant pairs (Wet Only vs Histo Only)",
+    locations = cells_column_labels(columns = p.value)
+  )
+
+# Store and display results
+worm.stats[[tmp.resSubSection]][["Method.Counts"]][["Method_Comparison_Stats"]] <- method_comparison_table
+
+
+
 # Replace end message
 end_time <- Sys.time()
 duration <- difftime(end_time, start_time, units = "secs")
