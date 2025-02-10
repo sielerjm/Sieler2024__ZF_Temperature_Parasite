@@ -7,9 +7,10 @@ This repository contains [figures and tables](https://sielerjm.github.io/Sieler2
 
 ## Overview
 
-
 ![Experimental Design Overview](ExperimentalDesignSchematic.png)
 
+![Zebrafish Microbiome Animation](Media/0210/0210.gif)
+*Figure: Animation demonstrating how to navigate the supplemental figures and tables document. [View full document](https://sielerjm.github.io/Sieler2025__ZF_Temperature_Parasite/Results_Overview.html)*
 
 ## Repository Structure
 
@@ -111,11 +112,10 @@ The complete analysis results, including all main figures, supplementary plots, 
   volume={XX},
   number={XX},
   pages={XX--XX},
-  year={2024},
+  year={202},
   doi={XX.XXXX/XXXXXX}
 }
 ```
-
 ## License
 
 This work is licensed under the Oregon State University License. See the [LICENSE](LICENSE.md) file for details.
@@ -123,3 +123,4 @@ This work is licensed under the Oregon State University License. See the [LICENS
 ## Contact
 
 For questions about the code or analysis, please [open an issue](https://github.com/sielerjm/Sieler2025__ZF_Temperature_Parasite/issues) or contact the corresponding author listed in the manuscript.
+
