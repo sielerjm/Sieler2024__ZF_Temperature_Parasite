@@ -1,4 +1,4 @@
-Copyright (c) 2024 Oregon State University All Rights Reserved.
+Copyright (c) 2025 Oregon State University All Rights Reserved.
 Permission to use, copy, modify, and distribute this software and its documentation for educational, research and non-profit purposes, without fee, and without a written agreement is hereby granted, provided that the above copyright notice, this paragraph and the following three paragraphs appear in all copies.
 Permission to incorporate this software into commercial products may be obtained by contacting Oregon State University Office of Technology Transfer.
 This software program and documentation are copyrighted by Oregon State University. The software program and documentation are supplied “as is”, without any accompanying services from Oregon State University. OSU does not warrant that the operation of the program will be uninterrupted or error-free. The end-user understands that the program was developed for research purposes and is advised not to rely exclusively on the program for any reason.
