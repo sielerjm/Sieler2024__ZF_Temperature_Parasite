@@ -1,3 +1,3 @@
 # Manuscript
 
-Contains the manuscripts derived from the project
+Draft manuscript available upon request. You can email me: <sielerjm@oregonstate.edu>.
