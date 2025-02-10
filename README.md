@@ -10,7 +10,7 @@ This repository contains [figures and tables](https://sielerjm.github.io/Sieler2
 ![Experimental Design Overview](ExperimentalDesignSchematic.png)
 
 ![Zebrafish Microbiome Animation](Media/0210/0210.gif)
-*Figure: Animation demonstrating how to navigate the supplemental figures and tables document. [View full document](https://sielerjm.github.io/Sieler2025__ZF_Temperature_Parasite/Results_Overview.html)*
+*Animation demonstrating how to navigate the supplemental figures and tables document. [View online supplemental tables and figures document](https://sielerjm.github.io/Sieler2025__ZF_Temperature_Parasite/Results_Overview.html)*
 
 ## Repository Structure
 
